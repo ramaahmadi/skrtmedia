@@ -80,6 +80,20 @@ export default function AnggotaPage() {
     if (savedMembers) {
       const members = JSON.parse(savedMembers);
       setMembers(members);
+    } else {
+      // Initialize with admin user
+      const adminMember: Member = {
+        id: '1',
+        name: 'RAMA',
+        phone: '082122451622',
+        position: 'Admin',
+        email: '082122451622@skrtmedia.com',
+        joinDate: new Date().toLocaleDateString('id-ID'),
+        isAdmin: true
+      };
+      const initialMembers = [adminMember];
+      localStorage.setItem('skrt_members', JSON.stringify(initialMembers));
+      setMembers(initialMembers);
     }
   };
 
