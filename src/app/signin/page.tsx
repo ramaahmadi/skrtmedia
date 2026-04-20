@@ -21,16 +21,30 @@ const SigninPage = () => {
       return;
     }
 
-    // Store phone in localStorage as auth token
-    localStorage.setItem('auth_token', phone);
-    localStorage.setItem('user_data', JSON.stringify({
-      phone: phone,
-      name: 'Anggota',
-      isAdmin: true
-    }));
+    try {
+      // Check if phone number is the admin
+      const isAdmin = phone === '082122451622';
+      
+      // Store phone in localStorage as auth token
+      localStorage.setItem('auth_token', phone);
+      localStorage.setItem('user_data', JSON.stringify({
+        phone: phone,
+        name: isAdmin ? 'RAMA' : 'Anggota',
+        isAdmin: isAdmin
+      }));
+      
+      console.log('Auth token stored:', localStorage.getItem('auth_token'));
+      console.log('User data stored:', localStorage.getItem('user_data'));
 
-    // Redirect to skrt-army
-    router.push('/skrt-army');
+      // Redirect to skrt-army after a small delay to ensure localStorage is set
+      setTimeout(() => {
+        router.push('/skrt-army');
+      }, 100);
+    } catch (error) {
+      console.error('Error storing auth data:', error);
+      setError('Terjadi kesalahan saat login. Silakan coba lagi.');
+      setIsLoggingIn(false);
+    }
   };
 
   return (

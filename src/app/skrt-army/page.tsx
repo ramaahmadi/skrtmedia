@@ -15,9 +15,14 @@ export default function SKRTArmyPage() {
         const token = localStorage.getItem('auth_token');
         const user = localStorage.getItem('user_data');
         
+        console.log('Auth check - Token:', token);
+        console.log('Auth check - User:', user);
+        
         if (token && user) {
+          console.log('Auth check - PASSED');
           setIsAuthenticated(true);
         } else {
+          console.log('Auth check - FAILED, redirecting to signin');
           setIsAuthenticated(false);
           router.push('/signin');
         }
