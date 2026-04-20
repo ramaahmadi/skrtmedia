@@ -32,13 +32,19 @@ export default function ArtikelPage() {
 
   useEffect(() => {
     const checkAuth = () => {
-      const token = localStorage.getItem('auth_token');
-      const user = localStorage.getItem('user_data');
-      
-      if (token && user) {
-        setIsAuthenticated(true);
-        loadArticles();
-      } else {
+      try {
+        const token = localStorage.getItem('auth_token');
+        const user = localStorage.getItem('user_data');
+        
+        if (token && user) {
+          setIsAuthenticated(true);
+          loadArticles();
+        } else {
+          setIsAuthenticated(false);
+          router.push('/signin');
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
         setIsAuthenticated(false);
         router.push('/signin');
       }

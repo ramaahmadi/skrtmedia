@@ -15,12 +15,18 @@ export default function SKRTArmyLayout({
 
   useEffect(() => {
     const checkAuth = () => {
-      const token = localStorage.getItem('auth_token');
-      const user = localStorage.getItem('user_data');
-      
-      if (token && user) {
-        setIsAuthenticated(true);
-      } else {
+      try {
+        const token = localStorage.getItem('auth_token');
+        const user = localStorage.getItem('user_data');
+        
+        if (token && user) {
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+          router.push('/signin');
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
         setIsAuthenticated(false);
         router.push('/signin');
       }
