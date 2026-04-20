@@ -7,6 +7,7 @@
   "background_color": "#FCFCFC",
   "theme_color": "#000000",
   "orientation": "portrait-primary",
+  "scope": "/",
   "icons": [
     {
       "src": "/icon-192.png",
@@ -19,6 +20,23 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "categories": ["news", "media"],
+  "shortcuts": [
+    {
+      "name": "Berita",
+      "short_name": "Berita",
+      "description": "Baca berita terbaru",
+      "url": "/skrt-army/berita",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Artikel",
+      "short_name": "Artikel",
+      "description": "Baca artikel",
+      "url": "/skrt-army/artikel",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

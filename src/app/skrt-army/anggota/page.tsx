@@ -58,14 +58,7 @@ export default function AnggotaPage() {
     const savedMembers = localStorage.getItem('skrt_members');
     if (savedMembers) {
       const members = JSON.parse(savedMembers);
-      const updatedMembers = members.map((member: Member) => {
-        if (member.phone === '082122451622') {
-          return { ...member, isAdmin: true };
-        }
-        return member;
-      });
-      setMembers(updatedMembers);
-      localStorage.setItem('skrt_members', JSON.stringify(updatedMembers));
+      setMembers(members);
     }
   };
 
@@ -90,7 +83,7 @@ export default function AnggotaPage() {
         position: '',
         email: '',
         joinDate: new Date().toLocaleDateString('id-ID'),
-        isAdmin: memberForm.phone === '082122451622'
+        isAdmin: false
       };
 
       const existingMembers = JSON.parse(localStorage.getItem('skrt_members') || '[]');
@@ -128,8 +121,7 @@ export default function AnggotaPage() {
 
   const isAdminUser = () => {
     const user = JSON.parse(localStorage.getItem('user_data') || '{}');
-    const userPhone = user.phone?.replace(/^0/, '62') || '';
-    return userPhone.startsWith('6282122451622');
+    return user.isAdmin === true;
   };
 
   const handleToggleAdmin = (id: string) => {
@@ -313,6 +305,14 @@ export default function AnggotaPage() {
                     >
                       {member.isAdmin ? 'Hapus Admin' : 'Jadikan Admin'}
                     </button>
+                    {isAdminUser() && (
+                      <button
+                        onClick={() => handleDeleteMember(member.id)}
+                        className="flex-1 rounded-lg border border-red-300 px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50 dark:border-red-600 dark:text-red-300 dark:hover:bg-red-900/20"
+                      >
+                        🗑️ Hapus
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -366,7 +366,6 @@ export default function AnggotaPage() {
                     required
                   />
                 </div>
-
 
                 <div className="flex gap-3">
                   <button

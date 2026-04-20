@@ -37,34 +37,34 @@ export default function SKRTArmyPage() {
 
     const normalizedPhone = phone.replace(/[\s\-()]/g, '');
 
-    const allowedPrefixes = [
-      '082122451622',
-    ];
+    // Check against stored members in localStorage
+    const savedMembers = JSON.parse(localStorage.getItem('skrt_members') || '[]');
+    
+    // Try to find member with exact match first
+    let member = savedMembers.find((m: any) => m.phone === normalizedPhone);
+    
+    // If not found, try with normalized phone numbers
+    if (!member) {
+      member = savedMembers.find((m: any) => m.phone.replace(/[^0-9]/g, '') === normalizedPhone);
+    }
 
-    const isAllowed = allowedPrefixes.some(prefix => normalizedPhone.startsWith(prefix));
-
-    if (isAllowed) {
-      // Load members to find the name based on phone number
-      const savedMembers = localStorage.getItem('skrt_members');
-      let memberName = 'Admin';
-      
-      if (savedMembers) {
-        const members = JSON.parse(savedMembers);
-        const member = members.find((m: any) => m.phone === normalizedPhone);
-        if (member) {
-          memberName = member.name;
-        }
-      }
-
-      localStorage.setItem('auth_token', 'skrt_army_token_' + Date.now());
-      localStorage.setItem('user_data', JSON.stringify({
-        name: memberName,
-        phone: normalizedPhone,
-        designation: 'Admin'
-      }));
+    if (member) {
+      // Member found - allow login
+      const user = {
+        id: member.id,
+        name: member.name,
+        phone: member.phone,
+        role: member.isAdmin ? 'admin' : 'member',
+        isAdmin: member.isAdmin
+      };
+      const token = btoa(JSON.stringify({ user, exp: Date.now() + 24 * 60 * 60 * 1000 }));
+      localStorage.setItem('auth_token', token);
+      localStorage.setItem('user_data', JSON.stringify(user));
+      // Dispatch custom event to trigger header update
+      window.dispatchEvent(new Event('custom-auth-change'));
       setIsAuthenticated(true);
     } else {
-      setLoginError('Nomor handphone tidak terdaftar');
+      setLoginError('Nomor handphone tidak terdaftar sebagai anggota');
     }
 
     setIsLoggingIn(false);

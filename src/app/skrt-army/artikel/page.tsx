@@ -11,7 +11,7 @@ interface Article {
   paragraph: string;
   images: string[];
   author: string;
-  designation: string;
+  role: string;
   publishDate: string;
 }
 
@@ -107,7 +107,7 @@ export default function ArtikelPage() {
         paragraph: articleForm.paragraph,
         images: articleForm.images,
         author: user.name || 'Admin',
-        designation: user.designation || 'Panitia SKRT',
+        role: user.role || 'member',
         publishDate: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
       };
 

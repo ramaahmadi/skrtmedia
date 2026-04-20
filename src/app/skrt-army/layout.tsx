@@ -12,12 +12,32 @@ export default function SKRTArmyLayout({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const user = localStorage.getItem('user_data');
-    if (user) {
-      const userData = JSON.parse(user);
-      setUsername(userData.name || 'Panitia');
-      setIsAuthenticated(true);
-    }
+    const checkAuth = () => {
+      const user = localStorage.getItem('user_data');
+      if (user) {
+        const userData = JSON.parse(user);
+        setUsername(userData.name || 'Panitia');
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+        setUsername('');
+      }
+    };
+
+    checkAuth();
+
+    // Listen for storage changes (e.g., after login)
+    const handleStorageChange = () => {
+      checkAuth();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('custom-auth-change', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('custom-auth-change', handleStorageChange);
+    };
   }, []);
 
   const handleLogout = () => {

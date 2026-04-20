@@ -12,6 +12,7 @@ interface EventNews {
   category: string;
   date: string;
   author: string;
+  role: string;
 }
 
 export default function BeritaPage() {
@@ -73,7 +74,8 @@ export default function BeritaPage() {
         content: formData.content,
         category: formData.category,
         date: new Date().toLocaleDateString('id-ID'),
-        author: user.name || 'Panitia'
+        author: user.name || 'Panitia',
+        role: user.role || 'member'
       };
 
       const existingNews = JSON.parse(localStorage.getItem('event_news') || '[]');

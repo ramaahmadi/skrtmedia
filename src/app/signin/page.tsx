@@ -6,7 +6,7 @@ import Link from "next/link";
 const SigninPage = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    email: '',
+    phone: '',
     password: ''
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -19,30 +19,59 @@ const SigninPage = () => {
     });
   };
 
+  const normalizePhone = (phone: string) => {
+    return phone.replace(/[^0-9]/g, '');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
     try {
-      const response = await fetch('/api/auth/signin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('auth_token', data.token);
-        localStorage.setItem('user_data', JSON.stringify(data.user));
-        router.push('/skrt-army');
-      } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Login gagal');
+      // Normalize the input phone number
+      const normalizedInputPhone = normalizePhone(formData.phone);
+      
+      // First check against stored members in localStorage
+      const savedMembers = JSON.parse(localStorage.getItem('skrt_members') || '[]');
+      console.log('Saved members:', savedMembers);
+      console.log('Input phone:', formData.phone);
+      console.log('Normalized input phone:', normalizedInputPhone);
+      
+      // Try to find member with exact match first
+      let member = savedMembers.find((m: any) => m.phone === formData.phone);
+      console.log('Exact match member:', member);
+      
+      // If not found, try with normalized phone numbers
+      if (!member) {
+        member = savedMembers.find((m: any) => normalizePhone(m.phone) === normalizedInputPhone);
+        console.log('Normalized match member:', member);
       }
+
+      if (member) {
+        // Member found - allow login with any password
+        const user = {
+          id: member.id,
+          name: member.name,
+          phone: member.phone,
+          role: member.isAdmin ? 'admin' : 'member',
+          isAdmin: member.isAdmin
+        };
+        const token = btoa(JSON.stringify({ user, exp: Date.now() + 24 * 60 * 60 * 1000 }));
+        localStorage.setItem('auth_token', token);
+        localStorage.setItem('user_data', JSON.stringify(user));
+        // Dispatch custom event to trigger header update
+        window.dispatchEvent(new Event('custom-auth-change'));
+        router.push('/skrt-army');
+        return;
+      }
+
+      // If no member found, show error
+      setError('Nomor HP tidak terdaftar sebagai anggota');
+      setIsLoading(false);
+      return;
     } catch (error) {
+      console.error('Login error:', error);
       setError('Terjadi kesalahan. Silakan coba lagi.');
     } finally {
       setIsLoading(false);
@@ -72,17 +101,17 @@ const SigninPage = () => {
                 <form onSubmit={handleSubmit}>
                   <div className="mb-8">
                     <label
-                      htmlFor="email"
+                      htmlFor="phone"
                       className="text-dark mb-3 block text-sm dark:text-white"
                     >
-                      Email
+                      Nomor HP
                     </label>
                     <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
                       onChange={handleInputChange}
-                      placeholder="Enter your Email"
+                      placeholder="Contoh: 08123456789"
                       className="border-stroke dark:text-body-color-dark dark:shadow-two text-body-color focus:border-primary dark:focus:border-primary w-full rounded-xs border bg-[#f8f8f8] px-6 py-3 text-base outline-hidden transition-all duration-300 dark:border-transparent dark:bg-[#2C303B] dark:focus:shadow-none"
                       required
                     />
@@ -99,7 +128,7 @@ const SigninPage = () => {
                       name="password"
                       value={formData.password}
                       onChange={handleInputChange}
-                      placeholder="Enter your Password"
+                      placeholder="Password bebas untuk anggota"
                       className="border-stroke dark:text-body-color-dark dark:shadow-two text-body-color focus:border-primary dark:focus:border-primary w-full rounded-xs border bg-[#f8f8f8] px-6 py-3 text-base outline-hidden transition-all duration-300 dark:border-transparent dark:bg-[#2C303B] dark:focus:shadow-none"
                       required
                     />

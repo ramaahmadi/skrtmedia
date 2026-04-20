@@ -45,16 +45,6 @@ const Footer = () => {
               >
                 skrtmedia
               </a>
-              {/* {", "}
-              template by{" "}
-              <a
-                href="http://uideck.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-primary font-semibold"
-              >
-                UIdeck
-              </a> */}
             </p>
           </div>
         </div>
