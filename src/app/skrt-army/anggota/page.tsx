@@ -17,8 +17,6 @@ interface Member {
 
 export default function AnggotaPage() {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [members, setMembers] = useState<Member[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -37,22 +35,8 @@ export default function AnggotaPage() {
   });
 
   useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem('auth_token');
-      const user = localStorage.getItem('user_data');
-      
-      if (token && user) {
-        setIsAuthenticated(true);
-        loadMembers();
-      } else {
-        setIsAuthenticated(false);
-        router.push('/skrt-army');
-      }
-      setIsLoading(false);
-    };
-
-    checkAuth();
-  }, [router]);
+    loadMembers();
+  }, []);
 
   const loadMembers = () => {
     const savedMembers = localStorage.getItem('skrt_members');
@@ -188,16 +172,6 @@ export default function AnggotaPage() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-white dark:bg-black">
-        <div className="text-center">
-          <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-          <p className="text-gray-600 dark:text-gray-400">Memeriksa autentikasi...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-[#FCFCFC] dark:bg-black">

@@ -8,8 +8,6 @@ import ConfirmDialog from '@/components/ConfirmDialog';
 
 export default function KegiatanPage() {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -41,22 +39,8 @@ export default function KegiatanPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem('auth_token');
-      const user = localStorage.getItem('user_data');
-      
-      if (token && user) {
-        setIsAuthenticated(true);
-        loadActivities();
-      } else {
-        setIsAuthenticated(false);
-        router.push('/skrt-army');
-      }
-      setIsLoading(false);
-    };
-
-    checkAuth();
-  }, [router]);
+    loadActivities();
+  }, []);
 
   const loadActivities = () => {
     const savedActivities = localStorage.getItem(ACTIVITIES_STORAGE_KEY);
@@ -413,16 +397,6 @@ export default function KegiatanPage() {
 
   const sortedActivities = [...activities].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-white dark:bg-black">
-        <div className="text-center">
-          <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-          <p className="text-gray-600 dark:text-gray-400">Memeriksa autentikasi...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-[#FCFCFC] dark:bg-black">
