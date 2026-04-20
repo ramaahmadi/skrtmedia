@@ -38,25 +38,33 @@ export default function AnggotaPage() {
     loadMembers();
   }, []);
 
-  const loadMembers = () => {
-    const savedMembers = localStorage.getItem('skrt_members');
-    if (savedMembers) {
-      const members = JSON.parse(savedMembers);
-      setMembers(members);
-    } else {
-      // Initialize with admin user
-      const adminMember: Member = {
-        id: '1',
-        name: 'RAMA',
-        phone: '082122451622',
-        position: 'Admin',
-        email: '082122451622@skrtmedia.com',
-        joinDate: new Date().toLocaleDateString('id-ID'),
-        isAdmin: true
-      };
-      const initialMembers = [adminMember];
-      localStorage.setItem('skrt_members', JSON.stringify(initialMembers));
-      setMembers(initialMembers);
+  const loadMembers = async () => {
+    try {
+      const response = await fetch('/api/anggota');
+      const data = await response.json();
+      setMembers(data);
+      
+      // If no members, initialize with admin user
+      if (data.length === 0) {
+        const adminMember = {
+          name: 'RAMA',
+          phone: '082122451622',
+          position: 'Admin',
+          email: '082122451622@skrtmedia.com',
+          joinDate: new Date().toLocaleDateString('id-ID'),
+          isAdmin: true
+        };
+        const response = await fetch('/api/anggota', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(adminMember)
+        });
+        if (response.ok) {
+          await loadMembers();
+        }
+      }
+    } catch (error) {
+      console.error('Error loading members:', error);
     }
   };
 
@@ -69,13 +77,12 @@ export default function AnggotaPage() {
     });
   };
 
-  const handleSubmitMember = (e: React.FormEvent) => {
+  const handleSubmitMember = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      const member: Member = {
-        id: Date.now().toString(),
+      const member = {
         name: memberForm.name,
         phone: memberForm.phone,
         position: '',
@@ -84,14 +91,19 @@ export default function AnggotaPage() {
         isAdmin: false
       };
 
-      const existingMembers = JSON.parse(localStorage.getItem('skrt_members') || '[]');
-      const updatedMembers = [member, ...existingMembers];
-      localStorage.setItem('skrt_members', JSON.stringify(updatedMembers));
-      
-      setMembers(updatedMembers);
-      setMemberForm({ name: '', phone: '' });
-      setShowModal(false);
+      const response = await fetch('/api/anggota', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(member)
+      });
+
+      if (response.ok) {
+        await loadMembers();
+        setMemberForm({ name: '', phone: '' });
+        setShowModal(false);
+      }
     } catch (error) {
+      console.error('Error creating member:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -102,11 +114,19 @@ export default function AnggotaPage() {
     setShowDeleteDialog(true);
   };
 
-  const confirmDeleteMember = () => {
+  const confirmDeleteMember = async () => {
     if (itemToDelete) {
-      const updatedMembers = members.filter(member => member.id !== itemToDelete);
-      setMembers(updatedMembers);
-      localStorage.setItem('skrt_members', JSON.stringify(updatedMembers));
+      try {
+        const response = await fetch(`/api/anggota?id=${itemToDelete}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          await loadMembers();
+        }
+      } catch (error) {
+        console.error('Error deleting member:', error);
+      }
     }
     setShowDeleteDialog(false);
     setItemToDelete(null);
@@ -122,19 +142,30 @@ export default function AnggotaPage() {
     return user.isAdmin === true;
   };
 
-  const handleToggleAdmin = (id: string) => {
+  const handleToggleAdmin = async (id: string) => {
     if (!isAdminUser()) {
       return;
     }
 
-    const updatedMembers = members.map(member => {
-      if (member.id === id) {
-        return { ...member, isAdmin: !member.isAdmin };
+    const member = members.find(m => m.id === id);
+    if (!member) return;
+
+    try {
+      const response = await fetch('/api/anggota', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: id,
+          isAdmin: !member.isAdmin
+        })
+      });
+
+      if (response.ok) {
+        await loadMembers();
       }
-      return member;
-    });
-    setMembers(updatedMembers);
-    localStorage.setItem('skrt_members', JSON.stringify(updatedMembers));
+    } catch (error) {
+      console.error('Error toggling admin:', error);
+    }
   };
 
   const handleEditMember = (member: Member) => {
@@ -157,30 +188,31 @@ export default function AnggotaPage() {
     });
   };
 
-  const handleUpdateMember = (e: React.FormEvent) => {
+  const handleUpdateMember = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
       if (!editingMember) return;
 
-      const updatedMembers = members.map(member => {
-        if (member.id === editingMember.id) {
-          return {
-            ...member,
-            name: editForm.name,
-            phone: editForm.phone,
-            position: editForm.position
-          };
-        }
-        return member;
+      const response = await fetch('/api/anggota', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: editingMember.id,
+          name: editForm.name,
+          phone: editForm.phone,
+          position: editForm.position
+        })
       });
 
-      setMembers(updatedMembers);
-      localStorage.setItem('skrt_members', JSON.stringify(updatedMembers));
-      setShowEditModal(false);
-      setEditingMember(null);
+      if (response.ok) {
+        await loadMembers();
+        setShowEditModal(false);
+        setEditingMember(null);
+      }
     } catch (error) {
+      console.error('Error updating member:', error);
     } finally {
       setIsSubmitting(false);
     }

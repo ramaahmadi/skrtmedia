@@ -36,10 +36,13 @@ export default function PembukuanPage() {
     loadFinancialRecords();
   }, []);
 
-  const loadFinancialRecords = () => {
-    const savedRecords = localStorage.getItem('skrt_financial_records');
-    if (savedRecords) {
-      setFinancialRecords(JSON.parse(savedRecords));
+  const loadFinancialRecords = async () => {
+    try {
+      const response = await fetch('/api/pembukuan');
+      const data = await response.json();
+      setFinancialRecords(data);
+    } catch (error) {
+      console.error('Error loading financial records:', error);
     }
   };
 
@@ -50,14 +53,13 @@ export default function PembukuanPage() {
     });
   };
 
-  const handleSubmitFinancial = (e: React.FormEvent) => {
+  const handleSubmitFinancial = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
       const user = JSON.parse(localStorage.getItem('user_data') || '{}');
-      const record: FinancialRecord = {
-        id: Date.now().toString(),
+      const record = {
         date: financialForm.date,
         type: financialForm.type,
         category: financialForm.category,
@@ -66,14 +68,19 @@ export default function PembukuanPage() {
         createdBy: user.name || 'Admin'
       };
 
-      const existingRecords = JSON.parse(localStorage.getItem('skrt_financial_records') || '[]');
-      const updatedRecords = [record, ...existingRecords];
-      localStorage.setItem('skrt_financial_records', JSON.stringify(updatedRecords));
-      
-      setFinancialRecords(updatedRecords);
-      setFinancialForm({ date: '', type: 'income', category: '', amount: '', description: '' });
-      setShowModal(false);
+      const response = await fetch('/api/pembukuan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(record)
+      });
+
+      if (response.ok) {
+        await loadFinancialRecords();
+        setFinancialForm({ date: '', type: 'income', category: '', amount: '', description: '' });
+        setShowModal(false);
+      }
     } catch (error) {
+      console.error('Error creating financial record:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -84,11 +91,19 @@ export default function PembukuanPage() {
     setShowDeleteDialog(true);
   };
 
-  const confirmDeleteFinancial = () => {
+  const confirmDeleteFinancial = async () => {
     if (itemToDelete) {
-      const updatedRecords = financialRecords.filter(record => record.id !== itemToDelete);
-      setFinancialRecords(updatedRecords);
-      localStorage.setItem('skrt_financial_records', JSON.stringify(updatedRecords));
+      try {
+        const response = await fetch(`/api/pembukuan?id=${itemToDelete}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          await loadFinancialRecords();
+        }
+      } catch (error) {
+        console.error('Error deleting financial record:', error);
+      }
     }
     setShowDeleteDialog(false);
     setItemToDelete(null);

@@ -42,129 +42,18 @@ export default function KegiatanPage() {
     loadActivities();
   }, []);
 
-  const loadActivities = () => {
-    const savedActivities = localStorage.getItem(ACTIVITIES_STORAGE_KEY);
-    
-    if (savedActivities) {
-      let existingActivities = JSON.parse(savedActivities);
-      
-      // Migrate old activities with location to locations array
-      existingActivities = existingActivities.map((activity: Activity) => {
-        if ((activity as any).location && !activity.locations) {
-          return {
-            ...activity,
-            locations: [(activity as any).location]
-          };
-        }
-        return activity;
-      });
+  const loadActivities = async () => {
+    try {
+      const response = await fetch('/api/kegiatan');
+      const data = await response.json();
       
       // Auto-update status based on date
-      existingActivities = autoUpdateActivityStatus(existingActivities);
-      localStorage.setItem(ACTIVITIES_STORAGE_KEY, JSON.stringify(existingActivities));
-      
-      // Check if Trust Islam already exists in activities
-      const trustIslamExists = existingActivities.some((activity: Activity) => activity.id === 'trust-islam');
-      
-      if (!trustIslamExists) {
-        // Add Trust Islam as a default activity
-        const trustIslamActivity: Activity = {
-          id: 'trust-islam',
-          title: 'Trust Islam - Temukan Kembali Arahmu',
-          description: 'Di tengah arus informasi yang tak terbendung, mudah sekali kita merasa bingung dan kehilangan pegangan. Kami hadir untuk menciptakan sebuah ruang jeda—sebuah jembatan untuk terhubung kembali dengan nilai-nilai yang memberi ketenangan dan tujuan hidup.',
-          date: '2025-06-15',
-          time: '16:00',
-          locations: ['Jakarta Convention Center'],
-          status: 'upcoming',
-          featured: true,
-          category: 'Kajian',
-          ticket_price: 50000,
-          registration_link: '/trust-islam',
-          contact_person: 'Admin SKRT',
-          contact_phone: '6281234567890',
-          max_participants: 100,
-          hero_title: 'TRUST ISLAM',
-          hero_subtitle: 'Saat logika dan perasaan seolah tak sejalan, ke mana kita harus menaruh percaya?',
-          hero_quote: 'Bukan dunia yang salah, mungkin kita yang lupa arah.',
-          about_section: {
-            background: 'Di era digital yang penuh distraksi, banyak dari kita yang merasa semakin tahu banyak, semakin bingung. Muncul krisis kepercayaan, bukan hanya pada orang lain, tapi juga pada nilai-nilai yang seharusnya kita pegang.',
-            goals: ['Menemukan Solusi Praktis', 'Memperkuat Pegangan Hidup', 'Menjawab Keraguan', 'Membangun Silaturahmi']
-          },
-          sponsors: [
-            { logo: '/images/component/kuwehku.png', name: 'Kuwehku' },
-            { logo: '/images/component/alifah.png', name: 'Alifah Cllinic' },
-            { logo: '/images/component/alyafa.png', name: 'Alyafa Salon' },
-            { logo: '/images/component/senja.png', name: 'Senja Kosmetik' },
-            { logo: '/images/component/dhinda.png', name: 'Dhinda Hijab' }
-          ],
-          media_partners: [
-            { logo: '/images/component/hallo-muslimah.jpg', name: 'Hallo Muslimah' },
-            { logo: '/images/component/odoj.png', name: 'One Day One Juz' },
-            { logo: '/images/component/tfq.png', name: 'Tafaquh' }
-          ]
-        };
-        const updatedActivities = [trustIslamActivity, ...existingActivities];
-        localStorage.setItem(ACTIVITIES_STORAGE_KEY, JSON.stringify(updatedActivities));
-        setActivities(updatedActivities);
-      } else {
-        setActivities(existingActivities);
-      }
-    } else {
-      // Initialize with Trust Islam as default activity
-      const trustIslamActivity: Activity = {
-        id: 'trust-islam',
-        title: 'Trust Islam - Temukan Kembali Arahmu',
-        description: 'Di tengah arus informasi yang tak terbendung, mudah sekali kita merasa bingung dan kehilangan pegangan. Kami hadir untuk menciptakan sebuah ruang jeda—sebuah jembatan untuk terhubung kembali dengan nilai-nilai yang memberi ketenangan dan tujuan hidup.',
-        date: '2025-06-15',
-        time: '16:00',
-        locations: ['Jakarta Convention Center'],
-        status: 'upcoming',
-        featured: true,
-        category: 'Kajian',
-        ticket_price: 50000,
-        registration_link: '/trust-islam',
-        contact_person: 'Admin SKRT',
-        contact_phone: '6281234567890',
-        max_participants: 100,
-        hero_title: 'TRUST ISLAM',
-        hero_subtitle: 'Saat logika dan perasaan seolah tak sejalan, ke mana kita harus menaruh percaya?',
-        hero_quote: 'Bukan dunia yang salah, mungkin kita yang lupa arah.',
-        about_section: {
-          background: 'Di era digital yang penuh distraksi, banyak dari kita yang merasa semakin tahu banyak, semakin bingung. Muncul krisis kepercayaan, bukan hanya pada orang lain, tapi juga pada nilai-nilai yang seharusnya kita pegang.',
-          goals: ['Menemukan Solusi Praktis', 'Memperkuat Pegangan Hidup', 'Menjawab Keraguan', 'Membangun Silaturahmi']
-        },
-        sponsors: [
-          { logo: '/images/component/kuwehku.png', name: 'Kuwehku' },
-          { logo: '/images/component/alifah.png', name: 'Alifah Cllinic' },
-          { logo: '/images/component/alyafa.png', name: 'Alyafa Salon' },
-          { logo: '/images/component/senja.png', name: 'Senja Kosmetik' },
-          { logo: '/images/component/dhinda.png', name: 'Dhinda Hijab' }
-        ],
-        media_partners: [
-          { logo: '/images/component/hallo-muslimah.jpg', name: 'Hallo Muslimah' },
-          { logo: '/images/component/odoj.png', name: 'One Day One Juz' },
-          { logo: '/images/component/tfq.png', name: 'Tafaquh' }
-        ]
-      };
-      localStorage.setItem(ACTIVITIES_STORAGE_KEY, JSON.stringify([trustIslamActivity]));
-      setActivities([trustIslamActivity]);
+      const updatedActivities = autoUpdateActivityStatus(data);
+      setActivities(updatedActivities);
+    } catch (error) {
+      console.error('Error loading activities:', error);
     }
   };
-
-  useEffect(() => {
-    // Listen for localStorage changes (sync across tabs/pages)
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === ACTIVITIES_STORAGE_KEY && e.newValue) {
-        loadActivities();
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
 
   const handleActivityChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const target = e.target as HTMLInputElement;
@@ -341,11 +230,19 @@ export default function KegiatanPage() {
     setShowDeleteDialog(true);
   };
 
-  const confirmDeleteActivity = () => {
+  const confirmDeleteActivity = async () => {
     if (itemToDelete) {
-      const updatedActivities = activities.filter(activity => activity.id !== itemToDelete);
-      setActivities(updatedActivities);
-      localStorage.setItem(ACTIVITIES_STORAGE_KEY, JSON.stringify(updatedActivities));
+      try {
+        const response = await fetch(`/api/kegiatan?id=${itemToDelete}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          await loadActivities();
+        }
+      } catch (error) {
+        console.error('Error deleting activity:', error);
+      }
     }
     setShowDeleteDialog(false);
     setItemToDelete(null);
@@ -356,15 +253,20 @@ export default function KegiatanPage() {
     setItemToDelete(null);
   };
 
-  const handleUpdateStatus = (id: string, status: 'upcoming' | 'ongoing' | 'completed') => {
-    const updatedActivities = activities.map(activity => {
-      if (activity.id === id) {
-        return { ...activity, status };
+  const handleUpdateStatus = async (id: string, status: 'upcoming' | 'ongoing' | 'completed') => {
+    try {
+      const response = await fetch('/api/kegiatan', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status })
+      });
+
+      if (response.ok) {
+        await loadActivities();
       }
-      return activity;
-    });
-    setActivities(updatedActivities);
-    localStorage.setItem(ACTIVITIES_STORAGE_KEY, JSON.stringify(updatedActivities));
+    } catch (error) {
+      console.error('Error updating status:', error);
+    }
   };
 
   const handleCloseModal = () => {

@@ -31,10 +31,13 @@ export default function NotulensiPage() {
     loadMeetingNotes();
   }, []);
 
-  const loadMeetingNotes = () => {
-    const savedNotes = localStorage.getItem('skrt_meeting_notes');
-    if (savedNotes) {
-      setMeetingNotes(JSON.parse(savedNotes));
+  const loadMeetingNotes = async () => {
+    try {
+      const response = await fetch('/api/notulensi');
+      const data = await response.json();
+      setMeetingNotes(data);
+    } catch (error) {
+      console.error('Error loading meeting notes:', error);
     }
   };
 
@@ -45,28 +48,32 @@ export default function NotulensiPage() {
     });
   };
 
-  const handleSubmitMeeting = (e: React.FormEvent) => {
+  const handleSubmitMeeting = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
       const user = JSON.parse(localStorage.getItem('user_data') || '{}');
-      const note: MeetingNote = {
-        id: Date.now().toString(),
+      const note = {
         date: meetingForm.date,
         title: meetingForm.title,
         content: meetingForm.content,
         createdBy: user.name || 'Admin'
       };
 
-      const existingNotes = JSON.parse(localStorage.getItem('skrt_meeting_notes') || '[]');
-      const updatedNotes = [note, ...existingNotes];
-      localStorage.setItem('skrt_meeting_notes', JSON.stringify(updatedNotes));
-      
-      setMeetingNotes(updatedNotes);
-      setMeetingForm({ date: '', title: '', content: '' });
-      setShowModal(false);
+      const response = await fetch('/api/notulensi', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(note)
+      });
+
+      if (response.ok) {
+        await loadMeetingNotes();
+        setMeetingForm({ date: '', title: '', content: '' });
+        setShowModal(false);
+      }
     } catch (error) {
+      console.error('Error creating meeting note:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -77,11 +84,19 @@ export default function NotulensiPage() {
     setShowDeleteDialog(true);
   };
 
-  const confirmDeleteMeeting = () => {
+  const confirmDeleteMeeting = async () => {
     if (itemToDelete) {
-      const updatedNotes = meetingNotes.filter(note => note.id !== itemToDelete);
-      setMeetingNotes(updatedNotes);
-      localStorage.setItem('skrt_meeting_notes', JSON.stringify(updatedNotes));
+      try {
+        const response = await fetch(`/api/notulensi?id=${itemToDelete}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          await loadMeetingNotes();
+        }
+      } catch (error) {
+        console.error('Error deleting meeting note:', error);
+      }
     }
     setShowDeleteDialog(false);
     setItemToDelete(null);

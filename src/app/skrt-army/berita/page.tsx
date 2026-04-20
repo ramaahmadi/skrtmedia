@@ -32,10 +32,13 @@ export default function BeritaPage() {
     loadEventNews();
   }, []);
 
-  const loadEventNews = () => {
-    const savedNews = localStorage.getItem('event_news');
-    if (savedNews) {
-      setEventNews(JSON.parse(savedNews));
+  const loadEventNews = async () => {
+    try {
+      const response = await fetch('/api/berita');
+      const data = await response.json();
+      setEventNews(data);
+    } catch (error) {
+      console.error('Error loading event news:', error);
     }
   };
 
@@ -52,8 +55,7 @@ export default function BeritaPage() {
 
     try {
       const user = JSON.parse(localStorage.getItem('user_data') || '{}');
-      const newsItem: EventNews = {
-        id: Date.now().toString(),
+      const newsItem = {
         title: formData.title,
         content: formData.content,
         category: formData.category,
@@ -62,14 +64,19 @@ export default function BeritaPage() {
         role: user.role || 'member'
       };
 
-      const existingNews = JSON.parse(localStorage.getItem('event_news') || '[]');
-      const updatedNews = [newsItem, ...existingNews];
-      localStorage.setItem('event_news', JSON.stringify(updatedNews));
-      
-      setEventNews(updatedNews);
-      setFormData({ title: '', content: '', category: 'kegiatan' });
-      setShowModal(false);
+      const response = await fetch('/api/berita', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newsItem)
+      });
+
+      if (response.ok) {
+        await loadEventNews();
+        setFormData({ title: '', content: '', category: 'kegiatan' });
+        setShowModal(false);
+      }
     } catch (error) {
+      console.error('Error creating news:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -80,11 +87,19 @@ export default function BeritaPage() {
     setShowDeleteDialog(true);
   };
 
-  const confirmDeleteNews = () => {
+  const confirmDeleteNews = async () => {
     if (itemToDelete) {
-      const updatedNews = eventNews.filter(news => news.id !== itemToDelete);
-      setEventNews(updatedNews);
-      localStorage.setItem('event_news', JSON.stringify(updatedNews));
+      try {
+        const response = await fetch(`/api/berita?id=${itemToDelete}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          await loadEventNews();
+        }
+      } catch (error) {
+        console.error('Error deleting news:', error);
+      }
     }
     setShowDeleteDialog(false);
     setItemToDelete(null);

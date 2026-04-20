@@ -32,10 +32,13 @@ export default function ArtikelPage() {
     loadArticles();
   }, []);
 
-  const loadArticles = () => {
-    const savedArticles = localStorage.getItem('skrt_articles');
-    if (savedArticles) {
-      setArticles(JSON.parse(savedArticles));
+  const loadArticles = async () => {
+    try {
+      const response = await fetch('/api/artikel');
+      const data = await response.json();
+      setArticles(data);
+    } catch (error) {
+      console.error('Error loading articles:', error);
     }
   };
 
@@ -85,8 +88,7 @@ export default function ArtikelPage() {
 
     try {
       const user = JSON.parse(localStorage.getItem('user_data') || '{}');
-      const article: Article = {
-        id: Date.now().toString(),
+      const article = {
         title: articleForm.title,
         paragraph: articleForm.paragraph,
         images: articleForm.images,
@@ -95,13 +97,17 @@ export default function ArtikelPage() {
         publishDate: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
       };
 
-      const existingArticles = JSON.parse(localStorage.getItem('skrt_articles') || '[]');
-      const updatedArticles = [article, ...existingArticles];
-      localStorage.setItem('skrt_articles', JSON.stringify(updatedArticles));
-      
-      setArticles(updatedArticles);
-      setArticleForm({ title: '', paragraph: '', images: [] });
-      setShowModal(false);
+      const response = await fetch('/api/artikel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(article)
+      });
+
+      if (response.ok) {
+        await loadArticles();
+        setArticleForm({ title: '', paragraph: '', images: [] });
+        setShowModal(false);
+      }
     } catch (error) {
       console.error('Gagal menambahkan artikel:', error);
     } finally {
@@ -114,11 +120,19 @@ export default function ArtikelPage() {
     setShowDeleteDialog(true);
   };
 
-  const confirmDeleteArticle = () => {
+  const confirmDeleteArticle = async () => {
     if (itemToDelete) {
-      const updatedArticles = articles.filter(article => article.id !== itemToDelete);
-      setArticles(updatedArticles);
-      localStorage.setItem('skrt_articles', JSON.stringify(updatedArticles));
+      try {
+        const response = await fetch(`/api/artikel?id=${itemToDelete}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          await loadArticles();
+        }
+      } catch (error) {
+        console.error('Error deleting article:', error);
+      }
     }
     setShowDeleteDialog(false);
     setItemToDelete(null);
