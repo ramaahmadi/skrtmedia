@@ -1,67 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 
 export default function SKRTArmyPage() {
-  const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const checkAuth = () => {
-      try {
-        const token = localStorage.getItem('auth_token');
-        const user = localStorage.getItem('user_data');
-        
-        console.log('Auth check - Token:', token);
-        console.log('Auth check - User:', user);
-        
-        if (token && user) {
-          console.log('Auth check - PASSED');
-          setIsAuthenticated(true);
-        } else {
-          console.log('Auth check - FAILED, redirecting to signin');
-          setIsAuthenticated(false);
-        }
-      } catch (error) {
-        console.error('Auth check error:', error);
-        setIsAuthenticated(false);
-      }
-      setIsLoading(false);
-    };
-
-    checkAuth();
-  }, []);
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-white dark:bg-black">
-        <div className="text-center">
-          <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-          <p className="text-gray-600 dark:text-gray-400">Memeriksa autentikasi...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-white dark:bg-black">
-        <div className="text-center">
-          <p className="mb-4 text-gray-600 dark:text-gray-400">Silakan login terlebih dahulu</p>
-          <a
-            href="/signin"
-            className="inline-flex items-center rounded-lg bg-primary hover:bg-primary/90 px-6 py-3 font-medium text-white transition"
-          >
-            Login
-          </a>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-[#FCFCFC] dark:bg-black">
       <div className="container py-8">
