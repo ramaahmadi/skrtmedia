@@ -12,6 +12,27 @@ const SigninPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Initialize default admin in localStorage
+  useState(() => {
+    const savedMembers = JSON.parse(localStorage.getItem('skrt_members') || '[]');
+    const adminPhone = '082122451622';
+    
+    // Check if admin already exists
+    const adminExists = savedMembers.some((m: any) => m.phone === adminPhone);
+    
+    if (!adminExists) {
+      const defaultAdmin = {
+        id: 1,
+        name: 'Admin SKRT',
+        phone: adminPhone,
+        isAdmin: true,
+        createdAt: new Date().toISOString()
+      };
+      savedMembers.push(defaultAdmin);
+      localStorage.setItem('skrt_members', JSON.stringify(savedMembers));
+    }
+  });
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
