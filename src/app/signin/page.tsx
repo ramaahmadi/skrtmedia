@@ -1,11 +1,35 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import Link from "next/link";
+import { useState } from 'react';
 
 const SigninPage = () => {
   const router = useRouter();
+  const [phone, setPhone] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleDirectAccess = () => {
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoggingIn(true);
+    setError('');
+
+    // Simple validation - allow any phone number format
+    if (!phone || phone.length < 10) {
+      setError('Nomor HP tidak valid');
+      setIsLoggingIn(false);
+      return;
+    }
+
+    // Store phone in localStorage as auth token
+    localStorage.setItem('auth_token', phone);
+    localStorage.setItem('user_data', JSON.stringify({
+      phone: phone,
+      name: 'Anggota',
+      isAdmin: true
+    }));
+
+    // Redirect to skrt-army
     router.push('/skrt-army');
   };
 
@@ -23,12 +47,35 @@ const SigninPage = () => {
                   Masuk ke dashboard panitia SKRT MEDIA
                 </p>
                 
-                <button
-                  onClick={handleDirectAccess}
-                  className="shadow-submit dark:shadow-submit-dark bg-primary hover:bg-primary/90 mb-6 flex w-full items-center justify-center rounded-xs px-9 py-4 text-base font-medium text-white duration-300"
-                >
-                  Masuk ke SKRT Army
-                </button>
+                <form onSubmit={handleLogin} className="mb-6">
+                  <div className="mb-4">
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Nomor Handphone
+                    </label>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="Contoh: 08123456789"
+                      className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-primary focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                      required
+                    />
+                  </div>
+                  
+                  {error && (
+                    <p className="mb-4 text-sm text-red-600 dark:text-red-400">
+                      {error}
+                    </p>
+                  )}
+                  
+                  <button
+                    type="submit"
+                    disabled={isLoggingIn}
+                    className="shadow-submit dark:shadow-submit-dark bg-primary hover:bg-primary/90 flex w-full items-center justify-center rounded-xs px-9 py-4 text-base font-medium text-white duration-300 disabled:opacity-50"
+                  >
+                    {isLoggingIn ? 'Memproses...' : 'Masuk'}
+                  </button>
+                </form>
                 
                 <div className="text-center">
                   <Link
