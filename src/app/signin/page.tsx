@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from "next/link";
 
@@ -13,7 +13,7 @@ const SigninPage = () => {
   const [error, setError] = useState('');
 
   // Initialize default admin in localStorage
-  useState(() => {
+  useEffect(() => {
     const savedMembers = JSON.parse(localStorage.getItem('skrt_members') || '[]');
     const adminPhone = '082122451622';
     
@@ -30,8 +30,11 @@ const SigninPage = () => {
       };
       savedMembers.push(defaultAdmin);
       localStorage.setItem('skrt_members', JSON.stringify(savedMembers));
+      console.log('Admin initialized:', defaultAdmin);
+    } else {
+      console.log('Admin already exists');
     }
-  });
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
