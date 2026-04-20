@@ -97,7 +97,7 @@ export default function KegiatanPage() {
     description: 'Di tengah arus informasi yang tak terbendung, mudah sekali kita merasa bingung dan kehilangan pegangan. Kami hadir untuk menciptakan sebuah ruang jeda—sebuah jembatan untuk terhubung kembali dengan nilai-nilai yang memberi ketenangan dan tujuan hidup.',
     date: '2025-06-15',
     time: '16:00',
-    location: 'Jakarta Convention Center',
+    locations: ['Jakarta Convention Center'],
     status: 'upcoming',
     featured: true,
     category: 'Kajian',
@@ -160,7 +160,7 @@ export default function KegiatanPage() {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
-                        <span className="truncate max-w-[150px]">{trustIslamActivity.location}</span>
+                        <span className="truncate max-w-[150px]">{trustIslamActivity.locations.join(', ')}</span>
                       </div>
                       {trustIslamActivity.ticket_price !== undefined && (
                         <div className="flex items-center gap-2">
@@ -227,7 +227,7 @@ export default function KegiatanPage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                               </svg>
-                              <span className="truncate max-w-[150px]">{activity.location}</span>
+                              <span className="truncate max-w-[150px]">{activity.locations.join(', ')}</span>
                             </div>
                             {activity.ticket_price !== undefined && (
                               <div className="flex items-center gap-2">

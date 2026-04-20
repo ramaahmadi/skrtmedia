@@ -209,7 +209,7 @@ export default function ActivityDetailPage() {
                   </svg>
                   <div>
                     <p className="text-gray-600 text-xs">Lokasi</p>
-                    <p className="font-semibold text-gray-900">{activity.location}</p>
+                    <p className="font-semibold text-gray-900">{activity.locations.join(', ')}</p>
                   </div>
                 </div>
 
