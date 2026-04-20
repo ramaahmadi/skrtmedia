@@ -1,40 +1,16 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from "next/link";
+import { login } from './actions';
 
 const SigninPage = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    phone: '',
-    password: ''
+    phone: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-
-  // Initialize default admin in localStorage
-  useEffect(() => {
-    const savedMembers = JSON.parse(localStorage.getItem('skrt_members') || '[]');
-    const adminPhone = '082122451622';
-    
-    // Check if admin already exists
-    const adminExists = savedMembers.some((m: any) => m.phone === adminPhone);
-    
-    if (!adminExists) {
-      const defaultAdmin = {
-        id: 1,
-        name: 'Admin SKRT',
-        phone: adminPhone,
-        isAdmin: true,
-        createdAt: new Date().toISOString()
-      };
-      savedMembers.push(defaultAdmin);
-      localStorage.setItem('skrt_members', JSON.stringify(savedMembers));
-      console.log('Admin initialized:', defaultAdmin);
-    } else {
-      console.log('Admin already exists');
-    }
-  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -43,60 +19,24 @@ const SigninPage = () => {
     });
   };
 
-  const normalizePhone = (phone: string) => {
-    return phone.replace(/[^0-9]/g, '');
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
     try {
-      // Normalize the input phone number
-      const normalizedInputPhone = normalizePhone(formData.phone);
-      
-      // First check against stored members in localStorage
-      const savedMembers = JSON.parse(localStorage.getItem('skrt_members') || '[]');
-      console.log('Saved members:', savedMembers);
-      console.log('Input phone:', formData.phone);
-      console.log('Normalized input phone:', normalizedInputPhone);
-      
-      // Try to find member with exact match first
-      let member = savedMembers.find((m: any) => m.phone === formData.phone);
-      console.log('Exact match member:', member);
-      
-      // If not found, try with normalized phone numbers
-      if (!member) {
-        member = savedMembers.find((m: any) => normalizePhone(m.phone) === normalizedInputPhone);
-        console.log('Normalized match member:', member);
-      }
+      const formDataObj = new FormData();
+      formDataObj.append('phone', formData.phone);
 
-      if (member) {
-        // Member found - allow login with any password
-        const user = {
-          id: member.id,
-          name: member.name,
-          phone: member.phone,
-          role: member.isAdmin ? 'admin' : 'member',
-          isAdmin: member.isAdmin
-        };
-        const token = btoa(JSON.stringify({ user, exp: Date.now() + 24 * 60 * 60 * 1000 }));
-        localStorage.setItem('auth_token', token);
-        localStorage.setItem('user_data', JSON.stringify(user));
-        // Dispatch custom event to trigger header update
-        window.dispatchEvent(new Event('custom-auth-change'));
+      const result = await login(formDataObj);
+      
+      if (result) {
         router.push('/skrt-army');
-        return;
+        router.refresh();
       }
-
-      // If no member found, show error
-      setError('Nomor HP tidak terdaftar sebagai anggota');
-      setIsLoading(false);
-      return;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login error:', error);
-      setError('Terjadi kesalahan. Silakan coba lagi.');
+      setError(error.message || 'Terjadi kesalahan. Silakan coba lagi.');
     } finally {
       setIsLoading(false);
     }
@@ -135,24 +75,7 @@ const SigninPage = () => {
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      placeholder="Contoh: 08123456789"
-                      className="border-stroke dark:text-body-color-dark dark:shadow-two text-body-color focus:border-primary dark:focus:border-primary w-full rounded-xs border bg-[#f8f8f8] px-6 py-3 text-base outline-hidden transition-all duration-300 dark:border-transparent dark:bg-[#2C303B] dark:focus:shadow-none"
-                      required
-                    />
-                  </div>
-                  <div className="mb-8">
-                    <label
-                      htmlFor="password"
-                      className="text-dark mb-3 block text-sm dark:text-white"
-                    >
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      placeholder="Password bebas untuk anggota"
+                      placeholder="Contoh: 082122451622"
                       className="border-stroke dark:text-body-color-dark dark:shadow-two text-body-color focus:border-primary dark:focus:border-primary w-full rounded-xs border bg-[#f8f8f8] px-6 py-3 text-base outline-hidden transition-all duration-300 dark:border-transparent dark:bg-[#2C303B] dark:focus:shadow-none"
                       required
                     />
