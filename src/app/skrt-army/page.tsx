@@ -24,18 +24,16 @@ export default function SKRTArmyPage() {
         } else {
           console.log('Auth check - FAILED, redirecting to signin');
           setIsAuthenticated(false);
-          router.push('/signin');
         }
       } catch (error) {
         console.error('Auth check error:', error);
         setIsAuthenticated(false);
-        router.push('/signin');
       }
       setIsLoading(false);
     };
 
     checkAuth();
-  }, [router]);
+  }, []);
 
   if (isLoading) {
     return (
@@ -49,7 +47,19 @@ export default function SKRTArmyPage() {
   }
 
   if (!isAuthenticated) {
-    return null;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white dark:bg-black">
+        <div className="text-center">
+          <p className="mb-4 text-gray-600 dark:text-gray-400">Silakan login terlebih dahulu</p>
+          <a
+            href="/signin"
+            className="inline-flex items-center rounded-lg bg-primary hover:bg-primary/90 px-6 py-3 font-medium text-white transition"
+          >
+            Login
+          </a>
+        </div>
+      </div>
+    );
   }
 
   return (
