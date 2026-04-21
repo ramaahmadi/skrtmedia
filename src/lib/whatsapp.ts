@@ -63,7 +63,7 @@ export async function sendWhatsAppNotification(
         const formattedPhone = phone.startsWith('0') ? '62' + phone.slice(1) : phone;
         console.log(`Sending to ${phone} -> formatted: ${formattedPhone}`);
 
-        const apiUrl = `https://www.waboxapp.com/api/send/${config.token}`;
+        const apiUrl = `https://www.waboxapp.com/api/send?token=${config.token}`;
         console.log('API URL:', apiUrl);
 
         const requestBody = {
