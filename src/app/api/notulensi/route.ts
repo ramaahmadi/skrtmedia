@@ -65,11 +65,12 @@ export async function POST(request: Request) {
     console.log('Successfully created notulensi:', data[0]);
 
     // Send WhatsApp notification to selected anggota (temporarily awaited for debugging)
-    const waboxappToken = process.env.WABOXAPP_TOKEN;
-    const waboxappUid = process.env.WABOXAPP_UID;
+    const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
+    const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
+    const twilioFromNumber = process.env.TWILIO_FROM_NUMBER;
     const selectedPhones = body.selectedPhones; // Array of phone numbers
 
-    if (waboxappToken && waboxappUid) {
+    if (twilioAccountSid && twilioAuthToken && twilioFromNumber) {
       const message = formatNotulensiMessage(
         body.title,
         body.date,
@@ -81,8 +82,9 @@ export async function POST(request: Request) {
         const notificationResult = await sendWhatsAppNotification(
           message,
           {
-            token: waboxappToken,
-            uid: waboxappUid
+            accountSid: twilioAccountSid,
+            authToken: twilioAuthToken,
+            fromNumber: twilioFromNumber
           },
           selectedPhones
         );
@@ -91,7 +93,7 @@ export async function POST(request: Request) {
         console.error('WhatsApp notification error:', error);
       }
     } else {
-      console.warn('Waboxapp credentials not configured, skipping WhatsApp notification');
+      console.warn('Twilio credentials not configured, skipping WhatsApp notification');
     }
 
     return Response.json(data[0]);

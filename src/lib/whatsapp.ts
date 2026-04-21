@@ -6,8 +6,9 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl!, supabaseKey!);
 
 interface WhatsAppConfig {
-  token: string;
-  uid: string;
+  accountSid: string;
+  authToken: string;
+  fromNumber: string;
 }
 
 export async function sendWhatsAppNotification(
@@ -16,9 +17,9 @@ export async function sendWhatsAppNotification(
   phoneNumbers?: string[]
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    console.log('=== WhatsApp Notification Debug ===');
-    console.log('Config token:', config.token ? config.token.substring(0, 10) + '...' : 'Not set');
-    console.log('Config uid:', config.uid);
+    console.log('=== WhatsApp Notification Debug (Twilio) ===');
+    console.log('Config accountSid:', config.accountSid ? config.accountSid.substring(0, 10) + '...' : 'Not set');
+    console.log('Config fromNumber:', config.fromNumber);
     console.log('Phone numbers provided:', phoneNumbers);
     console.log('Message:', message);
 
@@ -63,16 +64,19 @@ export async function sendWhatsAppNotification(
         const formattedPhone = phone.startsWith('0') ? '62' + phone.slice(1) : phone;
         console.log(`Sending to ${phone} -> formatted: ${formattedPhone}`);
 
-        const apiUrl = `https://www.waboxapp.com/api/send`;
+        // Twilio API endpoint
+        const apiUrl = `https://api.twilio.com/2010-04-01/Accounts/${config.accountSid}/Messages.json`;
         console.log('API URL:', apiUrl);
 
-        const requestBody = {
-          token: config.token,
-          uid: config.uid,
-          to: formattedPhone,
-          text: message,
-        };
-        console.log('Request body:', JSON.stringify(requestBody, null, 2));
+        // Twilio requires Basic Auth with accountSid:authToken
+        const auth = btoa(`${config.accountSid}:${config.authToken}`);
+        
+        const requestBody = new URLSearchParams({
+          From: `whatsapp:${config.fromNumber}`,
+          To: `whatsapp:${formattedPhone}`,
+          Body: message,
+        });
+        console.log('Request body:', requestBody.toString());
 
         // Add timeout to fetch
         const controller = new AbortController();
@@ -82,9 +86,10 @@ export async function sendWhatsAppNotification(
           const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'Authorization': `Basic ${auth}`,
             },
-            body: JSON.stringify(requestBody),
+            body: requestBody,
             signal: controller.signal,
           });
 
@@ -107,7 +112,7 @@ export async function sendWhatsAppNotification(
 
           if (!response.ok) {
             console.error(`Failed to send WhatsApp to ${formattedPhone}:`, data);
-            throw new Error(data.error || data.message || `HTTP ${response.status}: ${responseText}`);
+            throw new Error(data.message || data.error || `HTTP ${response.status}: ${responseText}`);
           }
 
           console.log(`WhatsApp sent successfully to ${formattedPhone}`);
@@ -115,8 +120,8 @@ export async function sendWhatsAppNotification(
         } catch (fetchError) {
           clearTimeout(timeoutId);
           if (fetchError.name === 'AbortError') {
-            console.error('Request timeout - Waboxapp API did not respond within 30 seconds');
-            throw new Error('Waboxapp API timeout - check if the service is available');
+            console.error('Request timeout - Twilio API did not respond within 30 seconds');
+            throw new Error('Twilio API timeout - check if the service is available');
           }
           throw fetchError;
         }
