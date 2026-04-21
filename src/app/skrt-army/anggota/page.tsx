@@ -152,8 +152,6 @@ export default function AnggotaPage() {
 
   const isAdminUser = () => {
     const user = JSON.parse(localStorage.getItem('user_data') || '{}');
-    console.log('Current user data:', user);
-    console.log('Is admin:', user.is_admin === true);
     return user.is_admin === true;
   };
 
@@ -180,23 +178,12 @@ export default function AnggotaPage() {
   };
 
   const handleToggleAdmin = async (id: string) => {
-    console.log('handleToggleAdmin called with id:', id);
-    console.log('isAdminUser():', isAdminUser());
-    
     if (!isAdminUser()) {
-      alert('Anda tidak memiliki izin untuk mengubah status admin');
       return;
     }
 
     const member = members.find(m => m.id === id);
-    if (!member) {
-      alert('Anggota tidak ditemukan');
-      return;
-    }
-
-    console.log('Member found:', member);
-    console.log('Current is_admin:', member.is_admin);
-    console.log('New is_admin will be:', !member.is_admin);
+    if (!member) return;
 
     try {
       const response = await fetch('/api/anggota', {
@@ -208,20 +195,11 @@ export default function AnggotaPage() {
         })
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response ok:', response.ok);
-
       if (response.ok) {
         await loadMembers();
-        alert(`Status admin berhasil diubah untuk ${member.name}`);
-      } else {
-        const errorData = await response.json();
-        console.error('Error response:', errorData);
-        alert(`Gagal mengubah status admin: ${errorData.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error toggling admin:', error);
-      alert('Terjadi kesalahan saat mengubah status admin');
     }
   };
 
