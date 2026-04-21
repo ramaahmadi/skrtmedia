@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import ShareDialog from '@/components/ShareDialog';
+import ExportFormatDialog from '@/components/ExportFormatDialog';
 
 interface FinancialRecord {
   id: string;
@@ -35,6 +36,8 @@ export default function PembukuanPage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState<FinancialRecord | null>(null);
+  const [showFormatDialog, setShowFormatDialog] = useState(false);
+  const [selectedFormat, setSelectedFormat] = useState<'excel' | 'pdf' | 'text'>('text');
 
   useEffect(() => {
     loadFinancialRecords();
@@ -314,7 +317,7 @@ export default function PembukuanPage() {
                         <button
                           onClick={() => {
                             setSelectedItem(record);
-                            setShowShareDialog(true);
+                            setShowFormatDialog(true);
                           }}
                           className="text-gray-400 hover:text-blue-600 transition"
                           title="Export"
@@ -464,6 +467,17 @@ export default function PembukuanPage() {
           item={selectedItem}
           title="Data Transaksi"
           itemName={selectedItem ? `transaksi-${selectedItem.date}-${selectedItem.category}` : 'transaksi'}
+          format={selectedFormat}
+        />
+        
+        <ExportFormatDialog
+          isOpen={showFormatDialog}
+          onClose={() => setShowFormatDialog(false)}
+          onFormatSelect={(format) => {
+            setSelectedFormat(format);
+            setShowFormatDialog(false);
+            setShowShareDialog(true);
+          }}
         />
       </div>
     </div>

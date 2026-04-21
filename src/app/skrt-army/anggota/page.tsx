@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import ShareDialog from '@/components/ShareDialog';
+import ExportFormatDialog from '@/components/ExportFormatDialog';
 
 interface Member {
   id: string;
@@ -36,6 +37,8 @@ export default function AnggotaPage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Member | null>(null);
+  const [showFormatDialog, setShowFormatDialog] = useState(false);
+  const [selectedFormat, setSelectedFormat] = useState<'excel' | 'pdf' | 'text'>('text');
 
   useEffect(() => {
     loadMembers();
@@ -363,7 +366,7 @@ export default function AnggotaPage() {
                     <button
                       onClick={() => {
                         setSelectedItem(member);
-                        setShowShareDialog(true);
+                        setShowFormatDialog(true);
                       }}
                       className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                     >
@@ -554,6 +557,17 @@ export default function AnggotaPage() {
           item={selectedItem}
           title="Data Anggota"
           itemName={selectedItem ? `anggota-${selectedItem.name}` : 'anggota'}
+          format={selectedFormat}
+        />
+        
+        <ExportFormatDialog
+          isOpen={showFormatDialog}
+          onClose={() => setShowFormatDialog(false)}
+          onFormatSelect={(format) => {
+            setSelectedFormat(format);
+            setShowFormatDialog(false);
+            setShowShareDialog(true);
+          }}
         />
       </div>
     </div>

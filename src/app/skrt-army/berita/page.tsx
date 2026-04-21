@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import ShareDialog from '@/components/ShareDialog';
+import ExportFormatDialog from '@/components/ExportFormatDialog';
 
 interface EventNews {
   id: string;
@@ -30,6 +31,8 @@ export default function BeritaPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState<EventNews | null>(null);
+  const [showFormatDialog, setShowFormatDialog] = useState(false);
+  const [selectedFormat, setSelectedFormat] = useState<'excel' | 'pdf' | 'text'>('text');
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
@@ -231,7 +234,7 @@ export default function BeritaPage() {
                     <button
                       onClick={() => {
                         setSelectedItem(news);
-                        setShowShareDialog(true);
+                        setShowFormatDialog(true);
                       }}
                       className="rounded-lg p-2 text-gray-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20"
                       title="Export"
@@ -358,6 +361,17 @@ export default function BeritaPage() {
           item={selectedItem}
           title="Berita & Pengumuman"
           itemName={selectedItem ? `berita-${selectedItem.title}` : 'berita'}
+          format={selectedFormat}
+        />
+        
+        <ExportFormatDialog
+          isOpen={showFormatDialog}
+          onClose={() => setShowFormatDialog(false)}
+          onFormatSelect={(format) => {
+            setSelectedFormat(format);
+            setShowFormatDialog(false);
+            setShowShareDialog(true);
+          }}
         />
       </div>
     </div>

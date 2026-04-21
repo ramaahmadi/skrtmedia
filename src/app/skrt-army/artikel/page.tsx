@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import ShareDialog from '@/components/ShareDialog';
+import ExportFormatDialog from '@/components/ExportFormatDialog';
 
 interface Article {
   id: string;
@@ -30,6 +31,8 @@ export default function ArtikelPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Article | null>(null);
+  const [showFormatDialog, setShowFormatDialog] = useState(false);
+  const [selectedFormat, setSelectedFormat] = useState<'excel' | 'pdf' | 'text'>('text');
 
   useEffect(() => {
     loadArticles();
@@ -251,7 +254,7 @@ export default function ArtikelPage() {
                       <button
                         onClick={() => {
                           setSelectedItem(article);
-                          setShowShareDialog(true);
+                          setShowFormatDialog(true);
                         }}
                         className="rounded-lg p-2 text-gray-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20"
                         title="Export"
@@ -395,6 +398,17 @@ export default function ArtikelPage() {
           item={selectedItem}
           title="Artikel"
           itemName={selectedItem ? `artikel-${selectedItem.title}` : 'artikel'}
+          format={selectedFormat}
+        />
+        
+        <ExportFormatDialog
+          isOpen={showFormatDialog}
+          onClose={() => setShowFormatDialog(false)}
+          onFormatSelect={(format) => {
+            setSelectedFormat(format);
+            setShowFormatDialog(false);
+            setShowShareDialog(true);
+          }}
         />
       </div>
     </div>

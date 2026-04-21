@@ -1,4 +1,6 @@
-// Utility function untuk export data ke format text/note
+// Utility function untuk export data ke format text/note, Excel, dan PDF
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
 
 export interface ExportOptions {
   title: string;
@@ -200,4 +202,122 @@ export function exportSingleItemToText(item: any, title: string, itemName: strin
   
   // Download file
   downloadTextFile(content, filename);
+}
+
+/**
+ * Export single item ke format Excel
+ */
+export function exportSingleItemToExcel(item: any, title: string, itemName: string): void {
+  const timestamp = new Date().toISOString().split('T')[0];
+  const filename = `${itemName}-${timestamp}.xlsx`;
+  
+  // Convert item ke format worksheet
+  const worksheetData = Object.keys(item).map(key => {
+    const value = item[key];
+    let formattedValue = value;
+    
+    if (value === null || value === undefined) {
+      formattedValue = '-';
+    } else if (typeof value === 'boolean') {
+      formattedValue = value ? 'Ya' : 'Tidak';
+    } else if (Array.isArray(value)) {
+      formattedValue = value.length > 0 ? value.join(', ') : '-';
+    } else if (typeof value === 'object') {
+      formattedValue = JSON.stringify(value);
+    }
+    
+    const formattedKey = key
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, str => str.toUpperCase())
+      .trim();
+    
+    return {
+      'Field': formattedKey,
+      'Value': formattedValue
+    };
+  });
+  
+  // Create worksheet
+  const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+  
+  // Create workbook
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, title);
+  
+  // Download file
+  XLSX.writeFile(workbook, filename);
+}
+
+/**
+ * Export single item ke format PDF
+ */
+export function exportSingleItemToPDF(item: any, title: string, itemName: string): void {
+  const timestamp = new Date().toISOString().split('T')[0];
+  const filename = `${itemName}-${timestamp}.pdf`;
+  
+  const doc = new jsPDF();
+  
+  // Add title
+  doc.setFontSize(20);
+  doc.text(title.toUpperCase(), 105, 20, { align: 'center' });
+  
+  // Add date
+  doc.setFontSize(10);
+  doc.text(`Tanggal Export: ${new Date().toLocaleString('id-ID')}`, 105, 30, { align: 'center' });
+  
+  // Add content
+  doc.setFontSize(12);
+  let yPosition = 45;
+  
+  Object.keys(item).forEach(key => {
+    const value = item[key];
+    let formattedValue = value;
+    
+    if (value === null || value === undefined) {
+      formattedValue = '-';
+    } else if (typeof value === 'boolean') {
+      formattedValue = value ? 'Ya' : 'Tidak';
+    } else if (Array.isArray(value)) {
+      formattedValue = value.length > 0 ? value.join(', ') : '-';
+    } else if (typeof value === 'object') {
+      formattedValue = JSON.stringify(value);
+    }
+    
+    const formattedKey = key
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, str => str.toUpperCase())
+      .trim();
+    
+    // Check if need new page
+    if (yPosition > 270) {
+      doc.addPage();
+      yPosition = 20;
+    }
+    
+    doc.setFontSize(11);
+    doc.text(`${formattedKey}:`, 20, yPosition);
+    doc.setFontSize(10);
+    
+    // Handle long values by wrapping text
+    const maxWidth = 170;
+    const lines = doc.splitTextToSize(String(formattedValue), maxWidth);
+    
+    lines.forEach((line: string, index: number) => {
+      if (index === 0) {
+        doc.text(line, 50, yPosition);
+      } else {
+        yPosition += 7;
+        if (yPosition > 270) {
+          doc.addPage();
+          yPosition = 20;
+        }
+        doc.text(line, 50, yPosition);
+      }
+    });
+    
+    yPosition += 15;
+  });
+  
+  // Download file
+  doc.save(filename);
 }

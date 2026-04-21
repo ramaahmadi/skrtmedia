@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Activity, autoUpdateActivityStatus } from '@/lib/types';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import ShareDialog from '@/components/ShareDialog';
+import ExportFormatDialog from '@/components/ExportFormatDialog';
 
 // Error boundary to catch client-side errors
 class ErrorBoundary extends Component<
@@ -71,6 +72,8 @@ function KegiatanPageContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Activity | null>(null);
+  const [showFormatDialog, setShowFormatDialog] = useState(false);
+  const [selectedFormat, setSelectedFormat] = useState<'excel' | 'pdf' | 'text'>('text');
 
   useEffect(() => {
     loadActivities();
@@ -554,7 +557,7 @@ function KegiatanPageContent() {
                         <button
                           onClick={() => {
                             setSelectedItem(activity);
-                            setShowShareDialog(true);
+                            setShowFormatDialog(true);
                           }}
                           className="rounded-lg p-2 text-gray-400 hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/20"
                           title="Export"
@@ -1045,6 +1048,17 @@ function KegiatanPageContent() {
           item={selectedItem}
           title="Kegiatan"
           itemName={selectedItem ? `kegiatan-${selectedItem.title}` : 'kegiatan'}
+          format={selectedFormat}
+        />
+        
+        <ExportFormatDialog
+          isOpen={showFormatDialog}
+          onClose={() => setShowFormatDialog(false)}
+          onFormatSelect={(format) => {
+            setSelectedFormat(format);
+            setShowFormatDialog(false);
+            setShowShareDialog(true);
+          }}
         />
       </div>
     </div>

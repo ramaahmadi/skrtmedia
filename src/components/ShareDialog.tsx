@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { exportSingleItemToText, exportSingleItemToExcel, exportSingleItemToPDF } from '@/lib/exportToText';
 
 interface ShareDialogProps {
   isOpen: boolean;
@@ -8,9 +9,10 @@ interface ShareDialogProps {
   item: any;
   title: string;
   itemName: string;
+  format: 'excel' | 'pdf' | 'text';
 }
 
-export default function ShareDialog({ isOpen, onClose, item, title, itemName }: ShareDialogProps) {
+export default function ShareDialog({ isOpen, onClose, item, title, itemName, format }: ShareDialogProps) {
   if (!isOpen) return null;
 
   // Generate text content
@@ -43,17 +45,34 @@ export default function ShareDialog({ isOpen, onClose, item, title, itemName }: 
     return content;
   };
 
+  const getFormatLabel = (): string => {
+    switch (format) {
+      case 'excel': return 'Excel (.xlsx)';
+      case 'pdf': return 'PDF (.pdf)';
+      case 'text': return 'Text/Note (.txt)';
+    }
+  };
+
+  const getFormatIcon = (): string => {
+    switch (format) {
+      case 'excel': return '📊';
+      case 'pdf': return '📕';
+      case 'text': return '📄';
+    }
+  };
+
   const handleDownload = () => {
-    const content = generateTextContent();
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${itemName}-${new Date().toISOString().split('T')[0]}.txt`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    switch (format) {
+      case 'excel':
+        exportSingleItemToExcel(item, title, itemName);
+        break;
+      case 'pdf':
+        exportSingleItemToPDF(item, title, itemName);
+        break;
+      case 'text':
+        exportSingleItemToText(item, title, itemName);
+        break;
+    }
     onClose();
   };
 
@@ -88,7 +107,7 @@ export default function ShareDialog({ isOpen, onClose, item, title, itemName }: 
         </div>
         
         <p className="text-gray-600 dark:text-gray-400 mb-6">
-          Pilih cara untuk membagikan data ini:
+          Format: {getFormatLabel()}
         </p>
         
         <div className="space-y-3">
@@ -96,10 +115,10 @@ export default function ShareDialog({ isOpen, onClose, item, title, itemName }: 
             onClick={handleDownload}
             className="w-full flex items-center gap-3 rounded-lg border border-gray-300 px-4 py-3 text-left hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 transition"
           >
-            <span className="text-2xl">📄</span>
+            <span className="text-2xl">{getFormatIcon()}</span>
             <div>
               <p className="font-medium text-dark dark:text-white">Download sebagai File</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Simpan sebagai file .txt</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Simpan sebagai file {getFormatLabel()}</p>
             </div>
           </button>
           
