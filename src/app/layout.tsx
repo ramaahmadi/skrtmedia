@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import ScrollToTop from "@/components/ScrollToTop";
 import { usePathname } from "next/navigation";
 import { Inter, Caveat } from "next/font/google";
+import { Providers } from "./providers";
 import "../styles/index.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -32,7 +33,7 @@ export default function RootLayout({
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#000000" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="SKRT" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
@@ -50,6 +51,4 @@ export default function RootLayout({
     </html>
   );
 }
-
-import { Providers } from "./providers";
 
