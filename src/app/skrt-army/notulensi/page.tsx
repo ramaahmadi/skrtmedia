@@ -13,18 +13,9 @@ interface MeetingNote {
   createdBy: string;
 }
 
-interface Anggota {
-  id: string;
-  name: string;
-  phone: string;
-  position?: string;
-}
-
 export default function NotulensiPage() {
   const router = useRouter();
   const [meetingNotes, setMeetingNotes] = useState<MeetingNote[]>([]);
-  const [anggota, setAnggota] = useState<Anggota[]>([]);
-  const [selectedAnggota, setSelectedAnggota] = useState<string[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
@@ -50,43 +41,11 @@ export default function NotulensiPage() {
     }
   };
 
-  const loadAnggota = async () => {
-    try {
-      const response = await fetch('/api/anggota');
-      const data = await response.json();
-      setAnggota(data);
-    } catch (error) {
-      console.error('Error loading anggota:', error);
-    }
-  };
-
   const handleMeetingChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setMeetingForm({
       ...meetingForm,
       [e.target.name]: e.target.value
     });
-  };
-
-  const handleAnggotaToggle = (phone: string) => {
-    setSelectedAnggota(prev =>
-      prev.includes(phone)
-        ? prev.filter(p => p !== phone)
-        : [...prev, phone]
-    );
-  };
-
-  const handleSelectAll = () => {
-    if (selectedAnggota.length === anggota.length) {
-      setSelectedAnggota([]);
-    } else {
-      setSelectedAnggota(anggota.map(a => a.phone));
-    }
-  };
-
-  const handleOpenModal = () => {
-    setShowModal(true);
-    loadAnggota();
-    setSelectedAnggota([]);
   };
 
   const handleSubmitMeeting = async (e: React.FormEvent) => {
@@ -99,8 +58,7 @@ export default function NotulensiPage() {
         date: meetingForm.date,
         title: meetingForm.title,
         content: meetingForm.content,
-        createdBy: user.name || 'Admin',
-        selectedPhones: selectedAnggota
+        createdBy: user.name || 'Admin'
       };
 
       const response = await fetch('/api/notulensi', {
@@ -112,7 +70,6 @@ export default function NotulensiPage() {
       if (response.ok) {
         await loadMeetingNotes();
         setMeetingForm({ date: '', title: '', content: '' });
-        setSelectedAnggota([]);
         setShowModal(false);
       }
     } catch (error) {
@@ -175,7 +132,7 @@ export default function NotulensiPage() {
             </p>
           </div>
           <button
-            onClick={handleOpenModal}
+            onClick={() => setShowModal(true)}
             className="rounded-lg bg-primary px-6 py-3 font-medium text-white transition hover:bg-primary/90 shadow-btn hover:shadow-btn-hover"
           >
             + Tambah Notulensi
@@ -326,49 +283,6 @@ export default function NotulensiPage() {
                     required
                   />
                 </div>
-
-                <div>
-                  <div className="mb-2 flex items-center justify-between">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Kirim Notifikasi WhatsApp ke:
-                    </label>
-                    <button
-                      type="button"
-                      onClick={handleSelectAll}
-                      className="text-xs text-primary hover:text-primary/80"
-                    >
-                      {selectedAnggota.length === anggota.length ? 'Deselect All' : 'Select All'}
-                    </button>
-                  </div>
-                  <div className="max-h-40 overflow-y-auto rounded-lg border border-gray-300 p-3 dark:border-gray-600 dark:bg-gray-700">
-                    {anggota.length === 0 ? (
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Memuat anggota...
-                      </p>
-                    ) : (
-                      anggota.map((member) => (
-                        <label
-                          key={member.id}
-                          className="flex items-center gap-2 py-1 hover:bg-gray-50 dark:hover:bg-gray-600"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={selectedAnggota.includes(member.phone)}
-                            onChange={() => handleAnggotaToggle(member.phone)}
-                            className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700"
-                          />
-                          <span className="text-sm text-gray-700 dark:text-gray-300">
-                            {member.name} ({member.phone})
-                          </span>
-                        </label>
-                      ))
-                    )}
-                  </div>
-                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    {selectedAnggota.length} anggota dipilih
-                  </p>
-                </div>
-
 
                 <div className="flex gap-3">
                   <button
