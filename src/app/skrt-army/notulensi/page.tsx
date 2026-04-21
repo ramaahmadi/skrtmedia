@@ -40,8 +40,8 @@ export default function NotulensiPage() {
     }
   };
 
-  const loadAnggota = async () => {
-    try eetingForm({
+  const handleMeetingChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setMeetingForm({
       ...meetingForm,
       [e.target.name]: e.target.value
     });
