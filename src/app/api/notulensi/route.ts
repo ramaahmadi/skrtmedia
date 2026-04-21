@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js';
-import { sendWhatsAppNotification, formatNotulensiMessage } from '@/lib/whatsapp';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -63,38 +62,6 @@ export async function POST(request: Request) {
     }
 
     console.log('Successfully created notulensi:', data[0]);
-
-    // Send WhatsApp notification to selected anggota (temporarily awaited for debugging)
-    const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
-    const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
-    const twilioFromNumber = process.env.TWILIO_FROM_NUMBER;
-    const selectedPhones = body.selectedPhones; // Array of phone numbers
-
-    if (twilioAccountSid && twilioAuthToken && twilioFromNumber) {
-      const message = formatNotulensiMessage(
-        body.title,
-        body.date,
-        body.createdBy
-      );
-      
-      // Temporarily await to see response logs
-      try {
-        const notificationResult = await sendWhatsAppNotification(
-          message,
-          {
-            accountSid: twilioAccountSid,
-            authToken: twilioAuthToken,
-            fromNumber: twilioFromNumber
-          },
-          selectedPhones
-        );
-        console.log('WhatsApp notification result:', notificationResult);
-      } catch (error) {
-        console.error('WhatsApp notification error:', error);
-      }
-    } else {
-      console.warn('Twilio credentials not configured, skipping WhatsApp notification');
-    }
 
     return Response.json(data[0]);
   } catch (error) {
