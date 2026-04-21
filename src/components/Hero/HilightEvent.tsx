@@ -25,20 +25,24 @@ export default function HighlightEvent({
   const [upcomingActivity, setUpcomingActivity] = useState<Activity | null>(null)
 
   useEffect(() => {
-    // Load activities from localStorage
-    const savedActivities = localStorage.getItem(ACTIVITIES_STORAGE_KEY)
-    if (savedActivities) {
-      let activities: Activity[] = JSON.parse(savedActivities)
-      // Auto-update status based on date
-      activities = autoUpdateActivityStatus(activities)
-      localStorage.setItem(ACTIVITIES_STORAGE_KEY, JSON.stringify(activities))
-      // Filter activities with status 'upcoming'
-      const upcomingActivities = activities.filter(a => a.status === 'upcoming')
-      // Get the first upcoming activity
-      if (upcomingActivities.length > 0) {
-        setUpcomingActivity(upcomingActivities[0])
+    // Load activities from API (Supabase) for synchronization with SKRT Army
+    const loadActivities = async () => {
+      try {
+        const response = await fetch('/api/kegiatan')
+        const data = await response.json()
+        // Auto-update status based on date
+        const activities = autoUpdateActivityStatus(data)
+        // Filter activities with status 'upcoming'
+        const upcomingActivities = activities.filter(a => a.status === 'upcoming')
+        // Get the first upcoming activity
+        if (upcomingActivities.length > 0) {
+          setUpcomingActivity(upcomingActivities[0])
+        }
+      } catch (error) {
+        console.error('Error loading activities:', error)
       }
     }
+    loadActivities()
   }, [])
 
   // Fallback to Trust Islam if no upcoming activities found
