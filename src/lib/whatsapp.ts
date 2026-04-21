@@ -73,25 +73,52 @@ export async function sendWhatsAppNotification(
         };
         console.log('Request body:', JSON.stringify(requestBody, null, 2));
 
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestBody),
-        });
+        // Add timeout to fetch
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
-        console.log('Response status:', response.status);
-        const data = await response.json();
-        console.log('Response data:', JSON.stringify(data, null, 2));
+        try {
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+            signal: controller.signal,
+          });
 
-        if (!response.ok) {
-          console.error(`Failed to send WhatsApp to ${formattedPhone}:`, data);
-          throw new Error(data.error || 'Failed to send message');
+          clearTimeout(timeoutId);
+
+          console.log('Response status:', response.status);
+          console.log('Response headers:', response.headers);
+
+          const responseText = await response.text();
+          console.log('Response raw text:', responseText);
+
+          let data;
+          try {
+            data = JSON.parse(responseText);
+            console.log('Response data:', JSON.stringify(data, null, 2));
+          } catch (e) {
+            console.log('Response is not JSON, using raw text');
+            data = { raw: responseText };
+          }
+
+          if (!response.ok) {
+            console.error(`Failed to send WhatsApp to ${formattedPhone}:`, data);
+            throw new Error(data.error || data.message || `HTTP ${response.status}: ${responseText}`);
+          }
+
+          console.log(`WhatsApp sent successfully to ${formattedPhone}`);
+          return data;
+        } catch (fetchError) {
+          clearTimeout(timeoutId);
+          if (fetchError.name === 'AbortError') {
+            console.error('Request timeout - Waboxapp API did not respond within 30 seconds');
+            throw new Error('Waboxapp API timeout - check if the service is available');
+          }
+          throw fetchError;
         }
-
-        console.log(`WhatsApp sent successfully to ${formattedPhone}`);
-        return data;
       })
     );
 
