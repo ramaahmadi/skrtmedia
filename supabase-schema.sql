@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS skrt_anggota (
 -- Table for Kegiatan (Activities)
 CREATE TABLE IF NOT EXISTS skrt_kegiatan (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  slug TEXT UNIQUE NOT NULL,
   title TEXT NOT NULL,
   description TEXT,
   date TEXT NOT NULL,
@@ -41,6 +42,11 @@ CREATE TABLE IF NOT EXISTS skrt_kegiatan (
   hero_quote TEXT,
   about_background TEXT,
   about_goals TEXT,
+  registration_link TEXT,
+  ticket_price NUMERIC DEFAULT 0,
+  max_participants INTEGER DEFAULT 0,
+  contact_person TEXT,
+  contact_phone TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -86,6 +92,7 @@ CREATE TABLE IF NOT EXISTS skrt_notulensi (
 CREATE INDEX IF NOT EXISTS idx_skrt_berita_date ON skrt_berita(date);
 CREATE INDEX IF NOT EXISTS idx_skrt_anggota_name ON skrt_anggota(name);
 CREATE INDEX IF NOT EXISTS idx_skrt_kegiatan_date ON skrt_kegiatan(date);
+CREATE INDEX IF NOT EXISTS idx_skrt_kegiatan_slug ON skrt_kegiatan(slug);
 CREATE INDEX IF NOT EXISTS idx_skrt_artikel_date ON skrt_artikel(publish_date);
 CREATE INDEX IF NOT EXISTS idx_skrt_pembukuan_date ON skrt_pembukuan(date);
 CREATE INDEX IF NOT EXISTS idx_skrt_notulensi_date ON skrt_notulensi(date);

@@ -16,10 +16,20 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// Function to generate slug from title
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+    .trim();
+}
+
 // Transform database record to match TypeScript interface
 function transformToActivity(record: any): Activity {
   return {
-    id: record.id || '',
+    id: record.slug || record.id || '', // Use slug as ID for routing
     title: record.title || '',
     description: record.description || '',
     date: record.date || '',
@@ -32,10 +42,15 @@ function transformToActivity(record: any): Activity {
     hero_quote: record.hero_quote || undefined,
     about_section: {
       background: record.about_background || undefined,
-      goals: record.about_goals && typeof record.about_goals === 'string' 
-        ? record.about_goals.split(',').map((g: string) => g.trim()).filter(g => g) 
+      goals: record.about_goals && typeof record.about_goals === 'string'
+        ? record.about_goals.split(',').map((g: string) => g.trim()).filter(g => g)
         : []
-    }
+    },
+    registration_link: record.registration_link || undefined,
+    ticket_price: record.ticket_price || 0,
+    max_participants: record.max_participants || 0,
+    contact_person: record.contact_person || undefined,
+    contact_phone: record.contact_phone || undefined
   };
 }
 
@@ -67,9 +82,13 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    
+
+    // Generate slug from title
+    const slug = generateSlug(body.title);
+
     // Transform form data to database format
     const dbRecord = {
+      slug: slug,
       title: body.title,
       description: body.description,
       date: body.date,
@@ -80,9 +99,14 @@ export async function POST(request: Request) {
       hero_subtitle: body.hero_subtitle,
       hero_quote: body.hero_quote,
       about_background: body.about_section?.background,
-      about_goals: body.about_section?.goals ? body.about_section.goals.join(', ') : ''
+      about_goals: body.about_section?.goals ? body.about_section.goals.join(', ') : '',
+      registration_link: body.registration_link || null,
+      ticket_price: body.ticket_price || 0,
+      max_participants: body.max_participants || 0,
+      contact_person: body.contact_person || null,
+      contact_phone: body.contact_phone || null
     };
-    
+
     const { data, error } = await supabase
       .from('skrt_kegiatan')
       .insert([dbRecord])
@@ -101,9 +125,13 @@ export async function PUT(request: Request) {
   try {
     const body = await request.json();
     const { id, ...formData } = body;
-    
+
+    // Generate new slug if title changed
+    const slug = formData.title ? generateSlug(formData.title) : id;
+
     // Transform form data to database format
     const dbRecord = {
+      slug: slug,
       title: formData.title,
       description: formData.description,
       date: formData.date,
@@ -114,13 +142,19 @@ export async function PUT(request: Request) {
       hero_subtitle: formData.hero_subtitle,
       hero_quote: formData.hero_quote,
       about_background: formData.about_section?.background,
-      about_goals: formData.about_section?.goals ? formData.about_section.goals.join(', ') : ''
+      about_goals: formData.about_section?.goals ? formData.about_section.goals.join(', ') : '',
+      registration_link: formData.registration_link || null,
+      ticket_price: formData.ticket_price || 0,
+      max_participants: formData.max_participants || 0,
+      contact_person: formData.contact_person || null,
+      contact_phone: formData.contact_phone || null
     };
-    
+
+    // Update by slug (since we're using slug as ID)
     const { data, error } = await supabase
       .from('skrt_kegiatan')
       .update(dbRecord)
-      .eq('id', id)
+      .eq('slug', id)
       .select();
 
     if (error) throw error;

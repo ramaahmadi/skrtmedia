@@ -28,7 +28,7 @@ export default function ActivityDetailPage() {
           activities = data;
         }
         
-        const foundActivity = activities.find((a: Activity) => a.id === params.id);
+        const foundActivity = activities.find((a: Activity) => a.id === params.slug);
         if (foundActivity) {
           setActivity(foundActivity);
         } else {
@@ -43,7 +43,7 @@ export default function ActivityDetailPage() {
     };
 
     loadActivity();
-  }, [params.id, router]);
+  }, [params.slug, router]);
 
   if (loading) {
     return (
