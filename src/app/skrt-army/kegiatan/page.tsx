@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Activity, autoUpdateActivityStatus } from '@/lib/types';
 import ConfirmDialog from '@/components/ConfirmDialog';
+import { exportKegiatanToText } from '@/lib/exportToText';
 
 // Error boundary to catch client-side errors
 class ErrorBoundary extends Component<
@@ -411,6 +412,12 @@ function KegiatanPageContent() {
             </p>
           </div>
           <div className="flex gap-3">
+            <button
+              onClick={() => exportKegiatanToText(activities)}
+              className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+            >
+              📄 Export Text
+            </button>
             <Link
               href="/kegiatan"
               className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"

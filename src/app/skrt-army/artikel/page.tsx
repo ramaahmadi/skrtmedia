@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ConfirmDialog from '@/components/ConfirmDialog';
+import { exportArtikelToText } from '@/lib/exportToText';
 
 interface Article {
   id: string;
@@ -163,6 +164,12 @@ export default function ArtikelPage() {
             </p>
           </div>
           <div className="flex gap-3">
+            <button
+              onClick={() => exportArtikelToText(articles)}
+              className="rounded-lg border border-gray-300 px-6 py-2 font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+            >
+              📄 Export Text
+            </button>
             <Link
               href="/blog"
               className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"

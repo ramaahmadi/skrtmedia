@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ConfirmDialog from '@/components/ConfirmDialog';
+import { exportBeritaToText } from '@/lib/exportToText';
 
 interface EventNews {
   id: string;
@@ -155,12 +156,20 @@ export default function BeritaPage() {
               Kelola berita acara dan pengumuman organisasi
             </p>
           </div>
-          <button
-            onClick={() => setShowModal(true)}
-            className="rounded-lg bg-primary px-6 py-3 font-medium text-white transition hover:bg-primary/90"
-          >
-            + Tambah Berita
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => exportBeritaToText(eventNews)}
+              className="rounded-lg border border-gray-300 px-6 py-3 font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+            >
+              📄 Export Text
+            </button>
+            <button
+              onClick={() => setShowModal(true)}
+              className="rounded-lg bg-primary px-6 py-3 font-medium text-white transition hover:bg-primary/90"
+            >
+              + Tambah Berita
+            </button>
+          </div>
         </div>
 
         {/* Stats */}

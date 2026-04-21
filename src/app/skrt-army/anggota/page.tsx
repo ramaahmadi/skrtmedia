@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ConfirmDialog from '@/components/ConfirmDialog';
+import { exportAnggotaToText } from '@/lib/exportToText';
 
 interface Member {
   id: string;
@@ -276,12 +277,20 @@ export default function AnggotaPage() {
               Kelola data anggota dan hak akses
             </p>
           </div>
-          <button
-            onClick={() => setShowModal(true)}
-            className="rounded-lg bg-primary px-6 py-3 font-medium text-white transition hover:bg-primary/90 shadow-btn hover:shadow-btn-hover"
-          >
-            + Tambah Anggota
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => exportAnggotaToText(members)}
+              className="rounded-lg border border-gray-300 px-6 py-3 font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+            >
+              📄 Export Text
+            </button>
+            <button
+              onClick={() => setShowModal(true)}
+              className="rounded-lg bg-primary px-6 py-3 font-medium text-white transition hover:bg-primary/90 shadow-btn hover:shadow-btn-hover"
+            >
+              + Tambah Anggota
+            </button>
+          </div>
         </div>
 
         {/* Stats */}
