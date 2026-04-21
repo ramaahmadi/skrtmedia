@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { sendWhatsAppNotification, formatNotulensiMessage } from '@/lib/whatsapp';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -54,6 +55,33 @@ export async function POST(request: Request) {
     }
 
     console.log('Successfully created notulensi:', data[0]);
+
+    // Send WhatsApp notification to selected anggota
+    const waboxappToken = process.env.WABOXAPP_TOKEN;
+    const waboxappUid = process.env.WABOXAPP_UID;
+    const selectedPhones = body.selectedPhones; // Array of phone numbers
+
+    if (waboxappToken && waboxappUid) {
+      const message = formatNotulensiMessage(
+        body.title,
+        body.date,
+        body.createdBy
+      );
+      
+      const notificationResult = await sendWhatsAppNotification(
+        message,
+        {
+          token: waboxappToken,
+          uid: waboxappUid
+        },
+        selectedPhones // Pass selected phone numbers, or undefined to send to all
+      );
+      
+      console.log('WhatsApp notification result:', notificationResult);
+    } else {
+      console.warn('Waboxapp credentials not configured, skipping WhatsApp notification');
+    }
+
     return Response.json(data[0]);
   } catch (error) {
     console.error('Error creating notulensi:', error);
