@@ -25,33 +25,13 @@ const SigninPage = () => {
       // Check if phone number is the admin
       const isAdmin = phone === '082122451622';
       
-      // Fetch anggota data from database
-      let userData: any = {
+      // Store phone in localStorage as auth token
+      localStorage.setItem('auth_token', phone);
+      localStorage.setItem('user_data', JSON.stringify({
         phone: phone,
         name: isAdmin ? 'RAMA' : 'Anggota',
         isAdmin: isAdmin
-      };
-
-      try {
-        const response = await fetch('/api/anggota');
-        const anggotaList = await response.json();
-        const anggota = anggotaList.find((a: any) => a.phone === phone);
-        
-        if (anggota) {
-          userData = {
-            ...userData,
-            id: anggota.id,
-            name: anggota.name,
-            phone: anggota.phone
-          };
-        }
-      } catch (error) {
-        console.error('Error fetching anggota data:', error);
-      }
-      
-      // Store phone in localStorage as auth token
-      localStorage.setItem('auth_token', phone);
-      localStorage.setItem('user_data', JSON.stringify(userData));
+      }));
       
       console.log('Auth token stored:', localStorage.getItem('auth_token'));
       console.log('User data stored:', localStorage.getItem('user_data'));
