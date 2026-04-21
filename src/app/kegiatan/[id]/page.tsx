@@ -221,6 +221,24 @@ export default function ActivityDetailPage() {
                   </div>
                 </div>
 
+                {/* Embedded Map */}
+                {activity.locations && activity.locations.length > 0 && (
+                  <div className="mt-6">
+                    <p className="text-gray-600 text-xs mb-2">Peta Lokasi</p>
+                    <div className="rounded-lg overflow-hidden shadow-md">
+                      <iframe
+                        width="100%"
+                        height="300"
+                        style={{ border: 0 }}
+                        loading="lazy"
+                        allowFullScreen
+                        referrerPolicy="no-referrer-when-downgrade"
+                        src={`https://maps.google.com/maps?q=${encodeURIComponent(activity.locations.join(', '))}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+                      />
+                    </div>
+                  </div>
+                )}
+
                 {/* Ticket Price */}
                 {activity.ticket_price !== undefined && (
                   <div className="flex items-center gap-3">
