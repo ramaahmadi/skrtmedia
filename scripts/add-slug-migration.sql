@@ -66,6 +66,7 @@ BEGIN
 END $$;
 
 -- Generate slugs for existing records (hero_title + year format, fallback to title)
+-- This will update ALL records to use hero_title-based slugs
 UPDATE skrt_kegiatan
 SET slug = LOWER(
     REGEXP_REPLACE(
@@ -75,8 +76,7 @@ SET slug = LOWER(
         ),
         '\s+', '-', 'g'
     )
-)
-WHERE slug IS NULL OR slug = '';
+);
 
 -- Add unique constraint on slug
 DO $$
