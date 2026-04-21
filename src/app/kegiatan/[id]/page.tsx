@@ -14,24 +14,32 @@ export default function ActivityDetailPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadActivity = () => {
-      const savedActivities = localStorage.getItem(ACTIVITIES_STORAGE_KEY);
-      if (savedActivities) {
-        let activities: Activity[] = JSON.parse(savedActivities);
-        // Auto-update status based on date
-        activities = autoUpdateActivityStatus(activities);
-        localStorage.setItem(ACTIVITIES_STORAGE_KEY, JSON.stringify(activities));
+    const loadActivity = async () => {
+      try {
+        const response = await fetch('/api/kegiatan');
+        const data = await response.json();
         
-        const foundActivity = activities.find(a => a.id === params.id);
+        // Auto-update status based on date
+        let activities = data;
+        try {
+          activities = autoUpdateActivityStatus(data);
+        } catch (statusError) {
+          console.error('Error updating activity status:', statusError);
+          activities = data;
+        }
+        
+        const foundActivity = activities.find((a: Activity) => a.id === params.id);
         if (foundActivity) {
           setActivity(foundActivity);
         } else {
           router.push('/kegiatan');
         }
-      } else {
+      } catch (error) {
+        console.error('Error loading activity:', error);
         router.push('/kegiatan');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     loadActivity();

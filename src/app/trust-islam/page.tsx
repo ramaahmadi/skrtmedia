@@ -7,7 +7,7 @@ import Beranda from "@/components/Trust-Islam/Beranda";
 import Tentang from "@/components/Trust-Islam/Tentang";
 import Footer from "@/components/Trust-Islam/Footer";
 import Link from 'next/link';
-import { Activity, ACTIVITIES_STORAGE_KEY } from '@/lib/types';
+import { Activity, ACTIVITIES_STORAGE_KEY, autoUpdateActivityStatus } from '@/lib/types';
 
 // Lazy load Detail component
 const Detail = dynamic(() => import('@/components/Trust-Islam/Detail'), {
@@ -19,25 +19,29 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load activities from localStorage
-    const savedActivities = localStorage.getItem(ACTIVITIES_STORAGE_KEY);
-    if (savedActivities) {
-      setActivities(JSON.parse(savedActivities));
-    }
-    setLoading(false);
-
-    // Listen for localStorage changes (sync across tabs/pages)
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === ACTIVITIES_STORAGE_KEY && e.newValue) {
-        setActivities(JSON.parse(e.newValue));
+    // Load activities from API
+    const loadActivities = async () => {
+      try {
+        const response = await fetch('/api/kegiatan');
+        const data = await response.json();
+        // Auto-update status based on date
+        let updatedActivities = data;
+        try {
+          updatedActivities = autoUpdateActivityStatus(data);
+        } catch (statusError) {
+          console.error('Error updating activity status:', statusError);
+          updatedActivities = data;
+        }
+        setActivities(updatedActivities);
+      } catch (error) {
+        console.error('Error loading activities:', error);
+        setActivities([]);
+      } finally {
+        setLoading(false);
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
+    loadActivities();
   }, []);
 
   if (loading) {

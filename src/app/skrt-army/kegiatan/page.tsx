@@ -233,7 +233,10 @@ function KegiatanPageContent() {
         });
 
         if (response.ok) {
+          const newActivity = await response.json();
           await loadActivities();
+          // Redirect to the newly created activity page
+          router.push(`/kegiatan/${newActivity.id}`);
         }
       }
       
