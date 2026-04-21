@@ -30,8 +30,7 @@ export default function AnggotaPage() {
   const [editingMember, setEditingMember] = useState<Member | null>(null);
   const [editForm, setEditForm] = useState({
     name: '',
-    phone: '',
-    position: ''
+    phone: ''
   });
 
   useEffect(() => {
@@ -175,8 +174,7 @@ export default function AnggotaPage() {
     setEditingMember(member);
     setEditForm({
       name: member.name,
-      phone: member.phone,
-      position: member.position
+      phone: member.phone
     });
     setShowEditModal(true);
   };
@@ -201,8 +199,7 @@ export default function AnggotaPage() {
         body: JSON.stringify({
           id: editingMember.id,
           name: editForm.name,
-          phone: editForm.phone,
-          position: editForm.position
+          phone: editForm.phone
         })
       });
 
@@ -319,12 +316,14 @@ export default function AnggotaPage() {
                         ✏️ Edit
                       </button>
                     )}
-                    <button
-                      onClick={() => handleToggleAdmin(member.id)}
-                      className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
-                    >
-                      {member.isAdmin ? 'Hapus Admin' : 'Jadikan Admin'}
-                    </button>
+                    {isAdminUser() && (
+                      <button
+                        onClick={() => handleToggleAdmin(member.id)}
+                        className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                      >
+                        {member.isAdmin ? 'Hapus Admin' : 'Jadikan Admin'}
+                      </button>
+                    )}
                     {isAdminUser() && (
                       <button
                         onClick={() => handleDeleteMember(member.id)}
@@ -458,19 +457,6 @@ export default function AnggotaPage() {
                   />
                 </div>
 
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Posisi/Jabatan
-                  </label>
-                  <input
-                    type="text"
-                    name="position"
-                    value={editForm.position}
-                    onChange={handleEditChange}
-                    placeholder="Contoh: Ketua, Sekretaris, dll"
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  />
-                </div>
 
                 <div className="flex gap-3">
                   <button
