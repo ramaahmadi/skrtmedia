@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ConfirmDialog from '@/components/ConfirmDialog';
-import { exportArtikelToText } from '@/lib/exportToText';
+import { exportSingleItemToText } from '@/lib/exportToText';
 
 interface Article {
   id: string;
@@ -164,12 +164,6 @@ export default function ArtikelPage() {
             </p>
           </div>
           <div className="flex gap-3">
-            <button
-              onClick={() => exportArtikelToText(articles)}
-              className="rounded-lg border border-gray-300 px-6 py-2 font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
-            >
-              📄 Export Text
-            </button>
             <Link
               href="/blog"
               className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
@@ -251,12 +245,21 @@ export default function ArtikelPage() {
                     <p className="text-xs text-gray-500 dark:text-gray-400">
                       {article.author}
                     </p>
-                    <button
-                      onClick={() => handleDeleteArticle(article.id)}
-                      className="rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
-                    >
-                      🗑️
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => exportSingleItemToText(article, 'Artikel', `artikel-${article.title}`)}
+                        className="rounded-lg p-2 text-gray-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20"
+                        title="Export"
+                      >
+                        📄
+                      </button>
+                      <button
+                        onClick={() => handleDeleteArticle(article.id)}
+                        className="rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                      >
+                        🗑️
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

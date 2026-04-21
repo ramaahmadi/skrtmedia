@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Activity, autoUpdateActivityStatus } from '@/lib/types';
 import ConfirmDialog from '@/components/ConfirmDialog';
-import { exportKegiatanToText } from '@/lib/exportToText';
+import { exportSingleItemToText } from '@/lib/exportToText';
 
 // Error boundary to catch client-side errors
 class ErrorBoundary extends Component<
@@ -412,12 +412,6 @@ function KegiatanPageContent() {
             </p>
           </div>
           <div className="flex gap-3">
-            <button
-              onClick={() => exportKegiatanToText(activities)}
-              className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
-            >
-              📄 Export Text
-            </button>
             <Link
               href="/kegiatan"
               className="rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
@@ -554,6 +548,13 @@ function KegiatanPageContent() {
                           className="rounded-lg p-2 text-gray-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20"
                         >
                           ✏️
+                        </button>
+                        <button
+                          onClick={() => exportSingleItemToText(activity, 'Kegiatan', `kegiatan-${activity.title}`)}
+                          className="rounded-lg p-2 text-gray-400 hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-900/20"
+                          title="Export"
+                        >
+                          📄
                         </button>
                         <button
                           onClick={() => handleDeleteActivity(activity.id)}

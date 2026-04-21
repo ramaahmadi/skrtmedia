@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ConfirmDialog from '@/components/ConfirmDialog';
-import { exportAnggotaToText } from '@/lib/exportToText';
+import { exportSingleItemToText } from '@/lib/exportToText';
 
 interface Member {
   id: string;
@@ -277,20 +277,12 @@ export default function AnggotaPage() {
               Kelola data anggota dan hak akses
             </p>
           </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => exportAnggotaToText(members)}
-              className="rounded-lg border border-gray-300 px-6 py-3 font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
-            >
-              📄 Export Text
-            </button>
-            <button
-              onClick={() => setShowModal(true)}
-              className="rounded-lg bg-primary px-6 py-3 font-medium text-white transition hover:bg-primary/90 shadow-btn hover:shadow-btn-hover"
-            >
-              + Tambah Anggota
-            </button>
-          </div>
+          <button
+            onClick={() => setShowModal(true)}
+            className="rounded-lg bg-primary px-6 py-3 font-medium text-white transition hover:bg-primary/90 shadow-btn hover:shadow-btn-hover"
+          >
+            + Tambah Anggota
+          </button>
         </div>
 
         {/* Stats */}
@@ -366,6 +358,12 @@ export default function AnggotaPage() {
                         ✏️ Edit
                       </button>
                     )}
+                    <button
+                      onClick={() => exportSingleItemToText(member, 'Data Anggota', `anggota-${member.name}`)}
+                      className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                    >
+                      📄 Export
+                    </button>
                     {canDeleteMember(member) && (
                       <button
                         onClick={() => handleDeleteMember(member.id)}

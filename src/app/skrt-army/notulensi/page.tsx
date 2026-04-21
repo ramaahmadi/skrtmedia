@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ConfirmDialog from '@/components/ConfirmDialog';
-import { exportNotulensiToText } from '@/lib/exportToText';
+import { exportSingleItemToText } from '@/lib/exportToText';
 
 interface MeetingNote {
   id: string;
@@ -131,20 +131,12 @@ export default function NotulensiPage() {
               Catat dan kelola notulensi pertemuan
             </p>
           </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => exportNotulensiToText(meetingNotes)}
-              className="rounded-lg border border-gray-300 px-6 py-3 font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
-            >
-              📄 Export Text
-            </button>
-            <button
-              onClick={() => setShowModal(true)}
-              className="rounded-lg bg-primary px-6 py-3 font-medium text-white transition hover:bg-primary/90 shadow-btn hover:shadow-btn-hover"
-            >
-              + Tambah Notulensi
-            </button>
-          </div>
+          <button
+            onClick={() => setShowModal(true)}
+            className="rounded-lg bg-primary px-6 py-3 font-medium text-white transition hover:bg-primary/90 shadow-btn hover:shadow-btn-hover"
+          >
+            + Tambah Notulensi
+          </button>
         </div>
 
         {/* Stats */}
@@ -210,12 +202,21 @@ export default function NotulensiPage() {
                       {note.title}
                     </h3>
                   </div>
-                  <button
-                    onClick={() => handleDeleteMeeting(note.id)}
-                    className="rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
-                  >
-                    🗑️
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => exportSingleItemToText(note, 'Notulensi Rapat', `notulensi-${note.title}`)}
+                      className="rounded-lg p-2 text-gray-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20"
+                      title="Export"
+                    >
+                      📄
+                    </button>
+                    <button
+                      onClick={() => handleDeleteMeeting(note.id)}
+                      className="rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                    >
+                      🗑️
+                    </button>
+                  </div>
                 </div>
                 
                 <p className="text-gray-600 dark:text-gray-400 line-clamp-3 mb-4 whitespace-pre-line">

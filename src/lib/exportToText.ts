@@ -151,3 +151,53 @@ export function exportArtikelToText(articles: any[]): void {
     filename: `artikel-${new Date().toISOString().split('T')[0]}.txt`
   });
 }
+
+/**
+ * Export single item ke format text
+ */
+export function exportSingleItemToText(item: any, title: string, itemName: string): void {
+  const timestamp = new Date().toISOString().split('T')[0];
+  const filename = `${itemName}-${timestamp}.txt`;
+  
+  let content = `${'='.repeat(50)}\n`;
+  content += `${title.toUpperCase()}\n`;
+  content += `${'='.repeat(50)}\n`;
+  content += `Tanggal Export: ${new Date().toLocaleString('id-ID')}\n`;
+  content += `${'='.repeat(50)}\n\n`;
+  
+  content += `${'-'.repeat(40)}\n`;
+  content += `Detail Item\n`;
+  content += `${'-'.repeat(40)}\n`;
+  
+  // Loop setiap field dalam item
+  Object.keys(item).forEach(key => {
+    const value = item[key];
+    let formattedValue = value;
+    
+    // Format nilai berdasarkan tipe
+    if (value === null || value === undefined) {
+      formattedValue = '-';
+    } else if (typeof value === 'boolean') {
+      formattedValue = value ? 'Ya' : 'Tidak';
+    } else if (Array.isArray(value)) {
+      formattedValue = value.length > 0 ? value.join(', ') : '-';
+    } else if (typeof value === 'object') {
+      formattedValue = JSON.stringify(value, null, 2);
+    }
+    
+    // Format key menjadi lebih readable
+    const formattedKey = key
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, str => str.toUpperCase())
+      .trim();
+    
+    content += `${formattedKey}: ${formattedValue}\n`;
+  });
+  
+  content += `\n${'='.repeat(50)}\n`;
+  content += `End of Report\n`;
+  content += `${'='.repeat(50)}\n`;
+  
+  // Download file
+  downloadTextFile(content, filename);
+}

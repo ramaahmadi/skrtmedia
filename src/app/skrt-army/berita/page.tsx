@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ConfirmDialog from '@/components/ConfirmDialog';
-import { exportBeritaToText } from '@/lib/exportToText';
+import { exportSingleItemToText } from '@/lib/exportToText';
 
 interface EventNews {
   id: string;
@@ -156,20 +156,12 @@ export default function BeritaPage() {
               Kelola berita acara dan pengumuman organisasi
             </p>
           </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => exportBeritaToText(eventNews)}
-              className="rounded-lg border border-gray-300 px-6 py-3 font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
-            >
-              📄 Export Text
-            </button>
-            <button
-              onClick={() => setShowModal(true)}
-              className="rounded-lg bg-primary px-6 py-3 font-medium text-white transition hover:bg-primary/90"
-            >
-              + Tambah Berita
-            </button>
-          </div>
+          <button
+            onClick={() => setShowModal(true)}
+            className="rounded-lg bg-primary px-6 py-3 font-medium text-white transition hover:bg-primary/90"
+          >
+            + Tambah Berita
+          </button>
         </div>
 
         {/* Stats */}
@@ -233,12 +225,21 @@ export default function BeritaPage() {
                       {news.content}
                     </p>
                   </div>
-                  <button
-                    onClick={() => handleDeleteNews(news.id)}
-                    className="ml-4 rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
-                  >
-                    🗑️
-                  </button>
+                  <div className="flex gap-2 ml-4">
+                    <button
+                      onClick={() => exportSingleItemToText(news, 'Berita & Pengumuman', `berita-${news.title}`)}
+                      className="rounded-lg p-2 text-gray-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20"
+                      title="Export"
+                    >
+                      📄
+                    </button>
+                    <button
+                      onClick={() => handleDeleteNews(news.id)}
+                      className="rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                    >
+                      🗑️
+                    </button>
+                  </div>
                 </div>
               </div>
             ))

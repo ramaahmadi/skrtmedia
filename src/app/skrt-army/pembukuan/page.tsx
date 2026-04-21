@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ConfirmDialog from '@/components/ConfirmDialog';
-import { exportPembukuanToText } from '@/lib/exportToText';
+import { exportSingleItemToText } from '@/lib/exportToText';
 
 interface FinancialRecord {
   id: string;
@@ -176,20 +176,12 @@ export default function PembukuanPage() {
               Kelola pemasukan dan pengeluaran organisasi
             </p>
           </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => exportPembukuanToText(financialRecords)}
-              className="rounded-lg border border-gray-300 px-6 py-3 font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
-            >
-              📄 Export Text
-            </button>
-            <button
-              onClick={() => setShowModal(true)}
-              className="rounded-lg bg-primary px-6 py-3 font-medium text-white transition hover:bg-primary/90 shadow-btn hover:shadow-btn-hover"
-            >
-              + Tambah Transaksi
-            </button>
-          </div>
+          <button
+            onClick={() => setShowModal(true)}
+            className="rounded-lg bg-primary px-6 py-3 font-medium text-white transition hover:bg-primary/90 shadow-btn hover:shadow-btn-hover"
+          >
+            + Tambah Transaksi
+          </button>
         </div>
 
         {/* Summary Cards */}
@@ -273,6 +265,9 @@ export default function PembukuanPage() {
                     <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                       Aksi
                     </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      Export
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-gray-dark divide-y divide-gray-200 dark:divide-gray-700">
@@ -311,6 +306,15 @@ export default function PembukuanPage() {
                           title="Hapus"
                         >
                           🗑️
+                        </button>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <button
+                          onClick={() => exportSingleItemToText(record, 'Data Transaksi', `transaksi-${record.date}-${record.category}`)}
+                          className="text-gray-400 hover:text-blue-600 transition"
+                          title="Export"
+                        >
+                          📄
                         </button>
                       </td>
                     </tr>
