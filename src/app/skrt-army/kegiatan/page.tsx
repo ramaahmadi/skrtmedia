@@ -1,14 +1,42 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Component } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Activity, ACTIVITIES_STORAGE_KEY, autoUpdateActivityStatus } from '@/lib/types';
+import { Activity, autoUpdateActivityStatus } from '@/lib/types';
 import ConfirmDialog from '@/components/ConfirmDialog';
 
-export default function KegiatanPage() {
+// Error boundary to catch client-side errors
+class ErrorBoundary extends Component<
+  { children: React.ReactNode; fallback: React.ReactNode },
+  { hasError: boolean; error: Error | null }
+> {
+  constructor(props: { children: React.ReactNode; fallback: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('Error caught by boundary:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
+
+function KegiatanPageContent() {
   const router = useRouter();
   const [activities, setActivities] = useState<Activity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
@@ -44,14 +72,25 @@ export default function KegiatanPage() {
 
   const loadActivities = async () => {
     try {
+      setLoading(true);
       const response = await fetch('/api/kegiatan');
       const data = await response.json();
       
       // Auto-update status based on date
-      const updatedActivities = autoUpdateActivityStatus(data);
+      let updatedActivities = data;
+      try {
+        updatedActivities = autoUpdateActivityStatus(data);
+      } catch (statusError) {
+        console.error('Error updating activity status:', statusError);
+        // If status update fails, use data as-is
+        updatedActivities = data;
+      }
       setActivities(updatedActivities);
     } catch (error) {
       console.error('Error loading activities:', error);
+      setError('Gagal memuat kegiatan. Silakan refresh halaman.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -148,73 +187,54 @@ export default function KegiatanPage() {
     setIsSubmitting(true);
 
     try {
-      const existingActivities = JSON.parse(localStorage.getItem(ACTIVITIES_STORAGE_KEY) || '[]');
-      
+      const activityData = {
+        id: isEditing && editingId ? editingId : Date.now().toString(),
+        title: activityForm.title,
+        description: activityForm.description,
+        date: activityForm.date,
+        time: activityForm.time,
+        locations: activityForm.locations.filter(l => l.trim()),
+        mapEmbed: activityForm.mapEmbed || undefined,
+        status: activityForm.status,
+        featured: activityForm.featured,
+        contact_person: activityForm.contact_person || undefined,
+        contact_phone: activityForm.contact_phone || undefined,
+        max_participants: activityForm.max_participants ? parseInt(activityForm.max_participants) : undefined,
+        registration_link: activityForm.registration_link || undefined,
+        ticket_price: activityForm.ticket_price ? parseInt(activityForm.ticket_price) : undefined,
+        category: activityForm.category || undefined,
+        // UI customization fields
+        hero_title: activityForm.hero_title || undefined,
+        hero_subtitle: activityForm.hero_subtitle || undefined,
+        hero_quote: activityForm.hero_quote || undefined,
+        about_section: {
+          background: activityForm.about_background || undefined,
+          goals: activityForm.about_goals ? activityForm.about_goals.split('\n').filter(g => g.trim()) : undefined
+        }
+      };
+
       if (isEditing && editingId) {
-        // Update existing activity
-        const updatedActivities = existingActivities.map((activity: Activity) => {
-          if (activity.id === editingId) {
-            return {
-              ...activity,
-              title: activityForm.title,
-              description: activityForm.description,
-              date: activityForm.date,
-              time: activityForm.time,
-              locations: activityForm.locations.filter(l => l.trim()),
-              mapEmbed: activityForm.mapEmbed || undefined,
-              status: activityForm.status,
-              featured: activityForm.featured,
-              contact_person: activityForm.contact_person || undefined,
-              contact_phone: activityForm.contact_phone || undefined,
-              max_participants: activityForm.max_participants ? parseInt(activityForm.max_participants) : undefined,
-              registration_link: activityForm.registration_link || undefined,
-              ticket_price: activityForm.ticket_price ? parseInt(activityForm.ticket_price) : undefined,
-              category: activityForm.category || undefined,
-              // UI customization fields
-              hero_title: activityForm.hero_title || undefined,
-              hero_subtitle: activityForm.hero_subtitle || undefined,
-              hero_quote: activityForm.hero_quote || undefined,
-              about_section: {
-                background: activityForm.about_background || undefined,
-                goals: activityForm.about_goals ? activityForm.about_goals.split('\n').filter(g => g.trim()) : undefined
-              }
-            };
-          }
-          return activity;
+        // Update existing activity via API
+        const response = await fetch('/api/kegiatan', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(activityData)
         });
-        localStorage.setItem(ACTIVITIES_STORAGE_KEY, JSON.stringify(updatedActivities));
-        setActivities(updatedActivities);
+
+        if (response.ok) {
+          await loadActivities();
+        }
       } else {
-        // Create new activity
-        const newId = Date.now().toString();
-        const activity: Activity = {
-          id: newId,
-          title: activityForm.title,
-          description: activityForm.description,
-          date: activityForm.date,
-          time: activityForm.time,
-          locations: activityForm.locations.filter(l => l.trim()),
-          mapEmbed: activityForm.mapEmbed || undefined,
-          status: activityForm.status,
-          featured: activityForm.featured,
-          contact_person: activityForm.contact_person || undefined,
-          contact_phone: activityForm.contact_phone || undefined,
-          max_participants: activityForm.max_participants ? parseInt(activityForm.max_participants) : undefined,
-          registration_link: activityForm.registration_link || `/kegiatan/${newId}`,
-          ticket_price: activityForm.ticket_price ? parseInt(activityForm.ticket_price) : undefined,
-          category: activityForm.category || undefined,
-          // UI customization fields
-          hero_title: activityForm.hero_title || undefined,
-          hero_subtitle: activityForm.hero_subtitle || undefined,
-          hero_quote: activityForm.hero_quote || undefined,
-          about_section: {
-            background: activityForm.about_background || undefined,
-            goals: activityForm.about_goals ? activityForm.about_goals.split('\n').filter(g => g.trim()) : undefined
-          }
-        };
-        const updatedActivities = [activity, ...existingActivities];
-        localStorage.setItem(ACTIVITIES_STORAGE_KEY, JSON.stringify(updatedActivities));
-        setActivities(updatedActivities);
+        // Create new activity via API
+        const response = await fetch('/api/kegiatan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(activityData)
+        });
+
+        if (response.ok) {
+          await loadActivities();
+        }
       }
       
       handleCloseModal();
@@ -299,6 +319,32 @@ export default function KegiatanPage() {
 
   const sortedActivities = [...activities].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#FCFCFC] dark:bg-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto"></div>
+          <p className="text-gray-600 dark:text-gray-400">Memuat kegiatan...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#FCFCFC] dark:bg-black flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
+          <button
+            onClick={loadActivities}
+            className="rounded-lg bg-primary px-6 py-2 text-white hover:bg-primary/90"
+          >
+            Coba Lagi
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FCFCFC] dark:bg-black">
@@ -427,7 +473,7 @@ export default function KegiatanPage() {
                           </div>
                         )}
                         <div className="flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                          <span className="flex items-center gap-1">📍 {activity.locations.join(', ')}</span>
+                          <span className="flex items-center gap-1">📍 {Array.isArray(activity.locations) ? activity.locations.join(', ') : activity.locations || ''}</span>
                           {activity.max_participants !== undefined && (
                             <span className="flex items-center gap-1">👥 {activity.max_participants === 0 ? 'Unlimited' : activity.max_participants}</span>
                           )}
@@ -840,5 +886,27 @@ export default function KegiatanPage() {
         />
       </div>
     </div>
+  );
+}
+
+export default function KegiatanPage() {
+  return (
+    <ErrorBoundary
+      fallback={
+        <div className="min-h-screen bg-[#FCFCFC] dark:bg-black flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-red-600 dark:text-red-400 mb-4">Terjadi kesalahan. Silakan refresh halaman.</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="rounded-lg bg-primary px-6 py-2 text-white hover:bg-primary/90"
+            >
+              Refresh
+            </button>
+          </div>
+        </div>
+      }
+    >
+      <KegiatanPageContent />
+    </ErrorBoundary>
   );
 }

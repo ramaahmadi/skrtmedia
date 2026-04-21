@@ -9,29 +9,30 @@ export default function KegiatanPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load activities from localStorage
-    const savedActivities = localStorage.getItem(ACTIVITIES_STORAGE_KEY);
-    if (savedActivities) {
-      let activities = JSON.parse(savedActivities);
-      // Auto-update status based on date
-      activities = autoUpdateActivityStatus(activities);
-      localStorage.setItem(ACTIVITIES_STORAGE_KEY, JSON.stringify(activities));
-      setActivities(activities);
-    }
-    setLoading(false);
-
-    // Listen for localStorage changes (sync across tabs/pages)
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === ACTIVITIES_STORAGE_KEY && e.newValue) {
-        setActivities(JSON.parse(e.newValue));
+    // Load activities from API
+    const loadActivities = async () => {
+      try {
+        const response = await fetch('/api/kegiatan');
+        const data = await response.json();
+        // Auto-update status based on date
+        let updatedActivities = data;
+        try {
+          updatedActivities = autoUpdateActivityStatus(data);
+        } catch (statusError) {
+          console.error('Error updating activity status:', statusError);
+          // If status update fails, use data as-is
+          updatedActivities = data;
+        }
+        setActivities(updatedActivities);
+      } catch (error) {
+        console.error('Error loading activities:', error);
+        setActivities([]);
+      } finally {
+        setLoading(false);
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
+    loadActivities();
   }, []);
 
   if (loading) {

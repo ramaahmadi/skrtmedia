@@ -7,8 +7,10 @@ const ArmyHeader = () => {
   const router = useRouter();
 
   const handleLogout = () => {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user_data');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_data');
+    }
     router.push('/signin');
   };
 
