@@ -29,7 +29,6 @@ export default function NotulensiPage() {
 
   useEffect(() => {
     loadMeetingNotes();
-    loadAnggota();
   }, []);
 
   const loadMeetingNotes = async () => {
@@ -42,17 +41,7 @@ export default function NotulensiPage() {
   };
 
   const loadAnggota = async () => {
-    try {
-      const response = await fetch('/api/anggota');
-      const data = await response.json();
-      setAnggotaList(data);
-    } catch (error) {
-      console.error('Error loading anggota:', error);
-    }
-  };
-
-  const handleMeetingChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setMeetingForm({
+    try eetingForm({
       ...meetingForm,
       [e.target.name]: e.target.value
     });
