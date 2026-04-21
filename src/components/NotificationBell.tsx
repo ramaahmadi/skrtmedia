@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { requestNotificationPermission, showNotification, checkNotificationPermission } from '@/lib/notifications';
 
 interface Notification {
   id: string;
@@ -14,8 +15,11 @@ export default function NotificationBell() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [previousUnreadCount, setPreviousUnreadCount] = useState(0);
 
   useEffect(() => {
+    // Request notification permission on mount
+    requestNotificationPermission();
     loadNotifications();
     // Poll for new notifications every 30 seconds
     const interval = setInterval(loadNotifications, 30000);
@@ -29,7 +33,20 @@ export default function NotificationBell() {
         const response = await fetch(`/api/notifications?anggotaId=${user.id}`);
         const data = await response.json();
         setNotifications(data);
-        setUnreadCount(data.filter((n: Notification) => !n.is_read).length);
+        const newUnreadCount = data.filter((n: Notification) => !n.is_read).length;
+        setUnreadCount(newUnreadCount);
+
+        // Show browser notification if new unread notifications arrived
+        if (newUnreadCount > previousUnreadCount && previousUnreadCount > 0) {
+          const latestNotification = data.find((n: Notification) => !n.is_read);
+          if (latestNotification) {
+            showNotification(
+              latestNotification.title,
+              latestNotification.message
+            );
+          }
+        }
+        setPreviousUnreadCount(newUnreadCount);
       }
     } catch (error) {
       console.error('Error loading notifications:', error);
@@ -49,11 +66,19 @@ export default function NotificationBell() {
     }
   };
 
+  const handleRequestPermission = async () => {
+    const permission = await requestNotificationPermission();
+    if (permission === 'granted') {
+      showNotification('Notifikasi Aktif', 'Anda akan menerima notifikasi dari SKRT Army');
+    }
+  };
+
   return (
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+        title="Notifikasi"
       >
         <svg
           className="w-6 h-6 text-gray-600 dark:text-gray-300"
@@ -74,6 +99,20 @@ export default function NotificationBell() {
           </span>
         )}
       </button>
+
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-96 overflow-y-auto">
+          <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+            <h3 className="font-semibold text-gray-900 dark:text-white">Notifikasi</h3>
+            {checkNotificationPermission() === 'default' && (
+              <button
+                onClick={handleRequestPermission}
+                className="text-xs bg-primary text-white px-2 py-1 rounded hover:bg-primary/90"
+              >
+                Aktifkan Notifikasi
+              </button>
+            )}
+          </div>
 
       {isOpen && (
         <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-96 overflow-y-auto">
