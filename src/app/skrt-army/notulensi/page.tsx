@@ -13,9 +13,17 @@ interface MeetingNote {
   createdBy: string;
 }
 
+interface Anggota {
+  id: string;
+  name: string;
+  phone: string;
+  position?: string;
+}
+
 export default function NotulensiPage() {
   const router = useRouter();
   const [meetingNotes, setMeetingNotes] = useState<MeetingNote[]>([]);
+  const [anggotaList, setAnggotaList] = useState<Anggota[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
@@ -25,10 +33,12 @@ export default function NotulensiPage() {
     title: '',
     content: ''
   });
+  const [selectedAnggotaIds, setSelectedAnggotaIds] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     loadMeetingNotes();
+    loadAnggota();
   }, []);
 
   const loadMeetingNotes = async () => {
@@ -38,6 +48,16 @@ export default function NotulensiPage() {
       setMeetingNotes(data);
     } catch (error) {
       console.error('Error loading meeting notes:', error);
+    }
+  };
+
+  const loadAnggota = async () => {
+    try {
+      const response = await fetch('/api/anggota');
+      const data = await response.json();
+      setAnggotaList(data);
+    } catch (error) {
+      console.error('Error loading anggota:', error);
     }
   };
 
@@ -68,8 +88,28 @@ export default function NotulensiPage() {
       });
 
       if (response.ok) {
+        const createdNote = await response.json();
+
+        // Send notifications to selected anggota
+        if (selectedAnggotaIds.length > 0) {
+          for (const anggotaId of selectedAnggotaIds) {
+            await fetch('/api/notulensi/send-notification', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                notulensiId: createdNote.id,
+                anggotaId: anggotaId,
+                title: meetingForm.title,
+                date: meetingForm.date,
+                createdBy: user.name || 'Admin'
+              })
+            });
+          }
+        }
+
         await loadMeetingNotes();
         setMeetingForm({ date: '', title: '', content: '' });
+        setSelectedAnggotaIds([]);
         setShowModal(false);
       }
     } catch (error) {
@@ -282,6 +322,42 @@ export default function NotulensiPage() {
                     className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                     required
                   />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Kirim Notifikasi ke Anggota
+                  </label>
+                  <div className="max-h-40 overflow-y-auto rounded-lg border border-gray-300 p-3 dark:border-gray-600 dark:bg-gray-700">
+                    {anggotaList.length === 0 ? (
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Memuat anggota...</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {anggotaList.map((anggota) => (
+                          <label key={anggota.id} className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={selectedAnggotaIds.includes(anggota.id)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedAnggotaIds([...selectedAnggotaIds, anggota.id]);
+                                } else {
+                                  setSelectedAnggotaIds(selectedAnggotaIds.filter(id => id !== anggota.id));
+                                }
+                              }}
+                              className="rounded border-gray-300 text-primary focus:ring-primary dark:border-gray-600"
+                            />
+                            <span className="text-sm text-gray-700 dark:text-gray-300">
+                              {anggota.name} ({anggota.phone})
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    {selectedAnggotaIds.length} anggota dipilih
+                  </p>
                 </div>
 
                 <div className="flex gap-3">
