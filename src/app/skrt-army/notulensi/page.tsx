@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ConfirmDialog from '@/components/ConfirmDialog';
-import { exportSingleItemToText } from '@/lib/exportToText';
+import ShareDialog from '@/components/ShareDialog';
 
 interface MeetingNote {
   id: string;
@@ -27,6 +27,8 @@ export default function NotulensiPage() {
     content: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<MeetingNote | null>(null);
 
   useEffect(() => {
     loadMeetingNotes();
@@ -204,7 +206,10 @@ export default function NotulensiPage() {
                   </div>
                   <div className="flex gap-2">
                     <button
-                      onClick={() => exportSingleItemToText(note, 'Notulensi Rapat', `notulensi-${note.title}`)}
+                      onClick={() => {
+                        setSelectedItem(note);
+                        setShowShareDialog(true);
+                      }}
                       className="rounded-lg p-2 text-gray-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20"
                       title="Export"
                     >
@@ -320,6 +325,17 @@ export default function NotulensiPage() {
           message="Apakah Anda yakin ingin menghapus notulensi ini?"
           onConfirm={confirmDeleteMeeting}
           onCancel={cancelDeleteMeeting}
+        />
+        
+        <ShareDialog
+          isOpen={showShareDialog}
+          onClose={() => {
+            setShowShareDialog(false);
+            setSelectedItem(null);
+          }}
+          item={selectedItem}
+          title="Notulensi Rapat"
+          itemName={selectedItem ? `notulensi-${selectedItem.title}` : 'notulensi'}
         />
       </div>
     </div>

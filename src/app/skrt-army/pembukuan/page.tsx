@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ConfirmDialog from '@/components/ConfirmDialog';
-import { exportSingleItemToText } from '@/lib/exportToText';
+import ShareDialog from '@/components/ShareDialog';
 
 interface FinancialRecord {
   id: string;
@@ -33,6 +33,8 @@ export default function PembukuanPage() {
   const [sortColumn, setSortColumn] = useState<keyof FinancialRecord>('date');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [errorMessage, setErrorMessage] = useState('');
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<FinancialRecord | null>(null);
 
   useEffect(() => {
     loadFinancialRecords();
@@ -310,7 +312,10 @@ export default function PembukuanPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         <button
-                          onClick={() => exportSingleItemToText(record, 'Data Transaksi', `transaksi-${record.date}-${record.category}`)}
+                          onClick={() => {
+                            setSelectedItem(record);
+                            setShowShareDialog(true);
+                          }}
                           className="text-gray-400 hover:text-blue-600 transition"
                           title="Export"
                         >
@@ -448,6 +453,17 @@ export default function PembukuanPage() {
           message="Apakah Anda yakin ingin menghapus catatan ini?"
           onConfirm={confirmDeleteFinancial}
           onCancel={cancelDeleteFinancial}
+        />
+        
+        <ShareDialog
+          isOpen={showShareDialog}
+          onClose={() => {
+            setShowShareDialog(false);
+            setSelectedItem(null);
+          }}
+          item={selectedItem}
+          title="Data Transaksi"
+          itemName={selectedItem ? `transaksi-${selectedItem.date}-${selectedItem.category}` : 'transaksi'}
         />
       </div>
     </div>

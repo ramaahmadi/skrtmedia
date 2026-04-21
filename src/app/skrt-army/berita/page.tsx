@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ConfirmDialog from '@/components/ConfirmDialog';
-import { exportSingleItemToText } from '@/lib/exportToText';
+import ShareDialog from '@/components/ShareDialog';
 
 interface EventNews {
   id: string;
@@ -28,6 +28,8 @@ export default function BeritaPage() {
     category: 'kegiatan'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<EventNews | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
@@ -227,7 +229,10 @@ export default function BeritaPage() {
                   </div>
                   <div className="flex gap-2 ml-4">
                     <button
-                      onClick={() => exportSingleItemToText(news, 'Berita & Pengumuman', `berita-${news.title}`)}
+                      onClick={() => {
+                        setSelectedItem(news);
+                        setShowShareDialog(true);
+                      }}
                       className="rounded-lg p-2 text-gray-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20"
                       title="Export"
                     >
@@ -342,6 +347,17 @@ export default function BeritaPage() {
           message="Apakah Anda yakin ingin menghapus berita ini?"
           onConfirm={confirmDeleteNews}
           onCancel={cancelDeleteNews}
+        />
+        
+        <ShareDialog
+          isOpen={showShareDialog}
+          onClose={() => {
+            setShowShareDialog(false);
+            setSelectedItem(null);
+          }}
+          item={selectedItem}
+          title="Berita & Pengumuman"
+          itemName={selectedItem ? `berita-${selectedItem.title}` : 'berita'}
         />
       </div>
     </div>

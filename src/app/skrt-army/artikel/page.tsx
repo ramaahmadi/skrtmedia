@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ConfirmDialog from '@/components/ConfirmDialog';
-import { exportSingleItemToText } from '@/lib/exportToText';
+import ShareDialog from '@/components/ShareDialog';
 
 interface Article {
   id: string;
@@ -28,6 +28,8 @@ export default function ArtikelPage() {
     images: [] as string[]
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<Article | null>(null);
 
   useEffect(() => {
     loadArticles();
@@ -247,7 +249,10 @@ export default function ArtikelPage() {
                     </p>
                     <div className="flex gap-2">
                       <button
-                        onClick={() => exportSingleItemToText(article, 'Artikel', `artikel-${article.title}`)}
+                        onClick={() => {
+                          setSelectedItem(article);
+                          setShowShareDialog(true);
+                        }}
                         className="rounded-lg p-2 text-gray-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20"
                         title="Export"
                       >
@@ -379,6 +384,17 @@ export default function ArtikelPage() {
           message="Apakah Anda yakin ingin menghapus artikel ini?"
           onConfirm={confirmDeleteArticle}
           onCancel={cancelDeleteArticle}
+        />
+        
+        <ShareDialog
+          isOpen={showShareDialog}
+          onClose={() => {
+            setShowShareDialog(false);
+            setSelectedItem(null);
+          }}
+          item={selectedItem}
+          title="Artikel"
+          itemName={selectedItem ? `artikel-${selectedItem.title}` : 'artikel'}
         />
       </div>
     </div>

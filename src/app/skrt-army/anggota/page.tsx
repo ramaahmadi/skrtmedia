@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ConfirmDialog from '@/components/ConfirmDialog';
-import { exportSingleItemToText } from '@/lib/exportToText';
+import ShareDialog from '@/components/ShareDialog';
 
 interface Member {
   id: string;
@@ -34,6 +34,8 @@ export default function AnggotaPage() {
     phone: ''
   });
   const [errorMessage, setErrorMessage] = useState('');
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<Member | null>(null);
 
   useEffect(() => {
     loadMembers();
@@ -359,7 +361,10 @@ export default function AnggotaPage() {
                       </button>
                     )}
                     <button
-                      onClick={() => exportSingleItemToText(member, 'Data Anggota', `anggota-${member.name}`)}
+                      onClick={() => {
+                        setSelectedItem(member);
+                        setShowShareDialog(true);
+                      }}
                       className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                     >
                       📄 Export
@@ -538,6 +543,17 @@ export default function AnggotaPage() {
           message="Apakah Anda yakin ingin menghapus anggota ini?"
           onConfirm={confirmDeleteMember}
           onCancel={cancelDeleteMember}
+        />
+        
+        <ShareDialog
+          isOpen={showShareDialog}
+          onClose={() => {
+            setShowShareDialog(false);
+            setSelectedItem(null);
+          }}
+          item={selectedItem}
+          title="Data Anggota"
+          itemName={selectedItem ? `anggota-${selectedItem.name}` : 'anggota'}
         />
       </div>
     </div>
