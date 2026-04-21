@@ -29,6 +29,10 @@ function generateSlug(title: string, date?: string): string {
 
 // Transform database record to match TypeScript interface
 function transformToActivity(record: any): Activity {
+  // Handle sponsors - could be array of {name, logo} or array of URLs
+  const sponsors = record.sponsors ? (Array.isArray(record.sponsors) ? record.sponsors : []) : [];
+  const mediaPartners = record.media_partners ? (Array.isArray(record.media_partners) ? record.media_partners : []) : [];
+
   return {
     id: record.slug || record.id || '', // Use slug as ID for routing
     title: record.title || '',
@@ -52,8 +56,8 @@ function transformToActivity(record: any): Activity {
     max_participants: record.max_participants || 0,
     contact_person: record.contact_person || undefined,
     contact_phone: record.contact_phone || undefined,
-    sponsors: record.sponsors || undefined,
-    media_partners: record.media_partners || undefined
+    sponsors: sponsors,
+    media_partners: mediaPartners
   };
 }
 

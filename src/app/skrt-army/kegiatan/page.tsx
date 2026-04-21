@@ -63,9 +63,9 @@ function KegiatanPageContent() {
     hero_quote: '',
     about_background: '',
     about_goals: '',
-    // Sponsor fields
-    sponsors: '',
-    media_partners: ''
+    // Sponsor fields (file uploads)
+    sponsors: [] as File[],
+    media_partners: [] as File[]
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -179,9 +179,9 @@ function KegiatanPageContent() {
       hero_quote: activity.hero_quote || '',
       about_background: activity.about_section?.background || '',
       about_goals: activity.about_section?.goals?.join('\n') || '',
-      // Sponsor fields
-      sponsors: activity.sponsors ? activity.sponsors.map(s => `${s.name}|${s.logo}`).join('\n') : '',
-      media_partners: activity.media_partners ? activity.media_partners.map(s => `${s.name}|${s.logo}`).join('\n') : ''
+      // Sponsor fields - reset to empty array when editing (user needs to re-upload)
+      sponsors: [],
+      media_partners: []
     });
     setEditingId(activity.id);
     setIsEditing(true);
@@ -193,6 +193,36 @@ function KegiatanPageContent() {
     setIsSubmitting(true);
 
     try {
+      // Upload sponsor images
+      const sponsorUrls: string[] = [];
+      for (const file of activityForm.sponsors) {
+        const formData = new FormData();
+        formData.append('file', file);
+        const uploadResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        });
+        if (uploadResponse.ok) {
+          const uploadData = await uploadResponse.json();
+          sponsorUrls.push(uploadData.url);
+        }
+      }
+
+      // Upload media partner images
+      const mediaPartnerUrls: string[] = [];
+      for (const file of activityForm.media_partners) {
+        const formData = new FormData();
+        formData.append('file', file);
+        const uploadResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData
+        });
+        if (uploadResponse.ok) {
+          const uploadData = await uploadResponse.json();
+          mediaPartnerUrls.push(uploadData.url);
+        }
+      }
+
       const activityData = {
         id: isEditing && editingId ? editingId : Date.now().toString(),
         title: activityForm.title,
@@ -218,14 +248,8 @@ function KegiatanPageContent() {
           goals: activityForm.about_goals ? activityForm.about_goals.split('\n').filter(g => g.trim()) : undefined
         },
         // Sponsor fields
-        sponsors: activityForm.sponsors ? activityForm.sponsors.split('\n').filter(s => s.trim()).map(s => {
-          const [name, logo] = s.split('|');
-          return { name: name || '', logo: logo || '' };
-        }) : undefined,
-        media_partners: activityForm.media_partners ? activityForm.media_partners.split('\n').filter(s => s.trim()).map(s => {
-          const [name, logo] = s.split('|');
-          return { name: name || '', logo: logo || '' };
-        }) : undefined
+        sponsors: sponsorUrls.length > 0 ? sponsorUrls.map(url => ({ name: '', logo: url })) : undefined,
+        media_partners: mediaPartnerUrls.length > 0 ? mediaPartnerUrls.map(url => ({ name: '', logo: url })) : undefined
       };
 
       if (isEditing && editingId) {
@@ -332,9 +356,9 @@ function KegiatanPageContent() {
       hero_quote: '',
       about_background: '',
       about_goals: '',
-      // Sponsor fields
-      sponsors: '',
-      media_partners: ''
+      // Sponsor fields (file uploads)
+      sponsors: [],
+      media_partners: []
     });
   };
 
@@ -883,35 +907,89 @@ function KegiatanPageContent() {
 
                   <div className="mt-4">
                     <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Sponsor (Opsional - format: nama|url-logo, satu per baris)
+                      Sponsor Logo (Opsional - tanpa batas maksimal)
                     </label>
-                    <textarea
-                      name="sponsors"
-                      value={activityForm.sponsors}
-                      onChange={handleActivityChange}
-                      placeholder="Sponsor 1|https://example.com/logo1.png&#10;Sponsor 2|https://example.com/logo2.png"
-                      rows={3}
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files || []);
+                        setActivityForm(prev => ({ ...prev, sponsors: files }));
+                      }}
                       className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                     />
+                    {activityForm.sponsors.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {activityForm.sponsors.map((file, index) => (
+                          <div key={index} className="relative">
+                            <img
+                              src={URL.createObjectURL(file)}
+                              alt={file.name}
+                              className="h-16 w-16 object-cover rounded-lg"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActivityForm(prev => ({
+                                  ...prev,
+                                  sponsors: prev.sponsors.filter((_, i) => i !== index)
+                                }));
+                              }}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center hover:bg-red-600"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                      Format: nama|url-logo. Satu sponsor per baris.
+                      Upload logo sponsor. Bisa upload banyak logo sekaligus.
                     </p>
                   </div>
 
                   <div className="mt-4">
                     <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Media Partner (Opsional - format: nama|url-logo, satu per baris)
+                      Media Partner Logo (Opsional - tanpa batas maksimal)
                     </label>
-                    <textarea
-                      name="media_partners"
-                      value={activityForm.media_partners}
-                      onChange={handleActivityChange}
-                      placeholder="Media Partner 1|https://example.com/logo1.png&#10;Media Partner 2|https://example.com/logo2.png"
-                      rows={3}
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files || []);
+                        setActivityForm(prev => ({ ...prev, media_partners: files }));
+                      }}
                       className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                     />
+                    {activityForm.media_partners.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {activityForm.media_partners.map((file, index) => (
+                          <div key={index} className="relative">
+                            <img
+                              src={URL.createObjectURL(file)}
+                              alt={file.name}
+                              className="h-16 w-16 object-cover rounded-lg"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActivityForm(prev => ({
+                                  ...prev,
+                                  media_partners: prev.media_partners.filter((_, i) => i !== index)
+                                }));
+                              }}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center hover:bg-red-600"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                      Format: nama|url-logo. Satu media partner per baris.
+                      Upload logo media partner. Bisa upload banyak logo sekaligus.
                     </p>
                   </div>
                 </div>
