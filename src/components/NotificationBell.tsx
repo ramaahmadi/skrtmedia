@@ -113,12 +113,6 @@ export default function NotificationBell() {
               </button>
             )}
           </div>
-
-      {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-96 overflow-y-auto">
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="font-semibold text-gray-900 dark:text-white">Notifikasi</h3>
-          </div>
           {notifications.length === 0 ? (
             <div className="p-4 text-center text-gray-500 dark:text-gray-400">
               Tidak ada notifikasi
