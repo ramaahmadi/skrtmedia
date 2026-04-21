@@ -16,13 +16,21 @@ export async function sendWhatsAppNotification(
   phoneNumbers?: string[]
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    console.log('=== WhatsApp Notification Debug ===');
+    console.log('Config token:', config.token ? config.token.substring(0, 10) + '...' : 'Not set');
+    console.log('Config uid:', config.uid);
+    console.log('Phone numbers provided:', phoneNumbers);
+    console.log('Message:', message);
+
     let phonesToSend: string[] = [];
 
     if (phoneNumbers && phoneNumbers.length > 0) {
       // Use provided phone numbers
       phonesToSend = phoneNumbers;
+      console.log('Using provided phone numbers:', phonesToSend);
     } else {
       // Fetch all anggota phone numbers (fallback to original behavior)
+      console.log('Fetching all anggota phone numbers...');
       const { data: anggota, error } = await supabase
         .from('skrt_anggota')
         .select('phone')
@@ -39,31 +47,44 @@ export async function sendWhatsAppNotification(
       }
 
       phonesToSend = anggota.map((member) => member.phone);
+      console.log('Fetched anggota phones:', phonesToSend);
+    }
+
+    if (phonesToSend.length === 0) {
+      console.log('No phone numbers to send to');
+      return { success: true };
     }
 
     // Send WhatsApp message to each phone number
+    console.log('Starting to send messages to', phonesToSend.length, 'phone numbers');
     const results = await Promise.allSettled(
       phonesToSend.map(async (phone) => {
         // Convert Indonesian phone format (08xx) to international format (628xx)
         const formattedPhone = phone.startsWith('0') ? '62' + phone.slice(1) : phone;
+        console.log(`Sending to ${phone} -> formatted: ${formattedPhone}`);
 
-        const response = await fetch(
-          `https://www.waboxapp.com/api/send/${config.token}`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              uid: config.uid,
-              to: formattedPhone,
-              text: message,
-            }),
-          }
-        );
+        const apiUrl = `https://www.waboxapp.com/api/send/${config.token}`;
+        console.log('API URL:', apiUrl);
 
+        const requestBody = {
+          uid: config.uid,
+          to: formattedPhone,
+          text: message,
+        };
+        console.log('Request body:', JSON.stringify(requestBody, null, 2));
+
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody),
+        });
+
+        console.log('Response status:', response.status);
         const data = await response.json();
-        
+        console.log('Response data:', JSON.stringify(data, null, 2));
+
         if (!response.ok) {
           console.error(`Failed to send WhatsApp to ${formattedPhone}:`, data);
           throw new Error(data.error || 'Failed to send message');
@@ -77,18 +98,20 @@ export async function sendWhatsAppNotification(
     const failures = results.filter((r) => r.status === 'rejected');
     if (failures.length > 0) {
       console.error(`${failures.length} messages failed to send`);
-      return { 
-        success: true, 
-        error: `${failures.length} out of ${results.length} messages failed` 
+      return {
+        success: true,
+        error: `${failures.length} out of ${results.length} messages failed`
       };
     }
 
+    console.log('=== WhatsApp Notification Complete ===');
     return { success: true };
   } catch (error) {
     console.error('Error sending WhatsApp notification:', error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack');
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
     };
   }
 }
