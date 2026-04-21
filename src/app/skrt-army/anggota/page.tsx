@@ -165,7 +165,17 @@ export default function AnggotaPage() {
   };
 
   const canEditMember = (member: Member) => {
-    return isAdminUser() || isCurrentUser(member.id);
+    // Admin bisa edit semua anggota
+    // Anggota biasa hanya bisa edit diri sendiri
+    return isAdminUser();
+  };
+
+  const canDeleteMember = (member: Member) => {
+    // Admin bisa hapus semua anggota kecuali diri sendiri
+    // Anggota biasa tidak bisa hapus siapapun
+    if (!isAdminUser()) return false;
+    if (isCurrentUser(member.id)) return false;
+    return true;
   };
 
   const handleToggleAdmin = async (id: string) => {
@@ -348,7 +358,7 @@ export default function AnggotaPage() {
                         ✏️ Edit
                       </button>
                     )}
-                    {isAdminUser() && (
+                    {isAdminUser() && !isCurrentUser(member.id) && (
                       <button
                         onClick={() => handleToggleAdmin(member.id)}
                         className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
@@ -356,7 +366,7 @@ export default function AnggotaPage() {
                         {member.is_admin ? 'Hapus Admin' : 'Jadikan Admin'}
                       </button>
                     )}
-                    {canEditMember(member) && (
+                    {canDeleteMember(member) && (
                       <button
                         onClick={() => handleDeleteMember(member.id)}
                         className="flex-1 rounded-lg border border-red-300 px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50 dark:border-red-600 dark:text-red-300 dark:hover:bg-red-900/20"

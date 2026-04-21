@@ -22,23 +22,40 @@ export default function ArticleDetailPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const articleId = params.id as string;
-    
-    // Load articles from localStorage
-    const savedArticles = localStorage.getItem('skrt_articles');
-    if (savedArticles) {
-      const articles = JSON.parse(savedArticles);
-      const foundArticle = articles.find((a: Article) => a.id === articleId);
-      if (foundArticle) {
-        setArticle(foundArticle);
-      } else {
-        // Article not found, redirect to blog page
+    const loadArticle = async () => {
+      const articleId = params.id as string;
+      
+      try {
+        // Fetch all articles from API
+        const response = await fetch('/api/artikel');
+        const data = await response.json();
+        
+        // Find the specific article
+        const foundArticle = data.find((item: any) => item.id === articleId);
+        if (foundArticle) {
+          // Transform API data to match the expected structure
+          setArticle({
+            id: foundArticle.id,
+            title: foundArticle.title,
+            paragraph: foundArticle.paragraph,
+            image: foundArticle.images && foundArticle.images.length > 0 ? foundArticle.images[0] : '/images/blog/blog-01.jpg',
+            author: foundArticle.author || 'SKRT Team',
+            designation: foundArticle.role || 'Member',
+            tags: ['Artikel'],
+            publishDate: foundArticle.publish_date || foundArticle.publishDate || new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+          });
+        } else {
+          // Article not found, redirect to blog page
+          router.push('/blog');
+        }
+      } catch (error) {
+        console.error('Error loading article:', error);
         router.push('/blog');
+      } finally {
+        setLoading(false);
       }
-    } else {
-      router.push('/blog');
-    }
-    setLoading(false);
+    };
+    loadArticle();
   }, [params.id, router]);
 
   if (loading) {

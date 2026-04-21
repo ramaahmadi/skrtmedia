@@ -20,12 +20,30 @@ const Blog = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load articles from localStorage
-    const savedArticles = localStorage.getItem('skrt_articles');
-    if (savedArticles) {
-      setArticles(JSON.parse(savedArticles));
-    }
-    setLoading(false);
+    // Load articles from API to synchronize with SKRT Army
+    const loadArticles = async () => {
+      try {
+        const response = await fetch('/api/artikel');
+        const data = await response.json();
+        // Transform API data to match the expected structure
+        const transformedArticles = data.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          paragraph: item.paragraph,
+          image: item.images && item.images.length > 0 ? item.images[0] : '/images/blog/blog-01.jpg',
+          author: item.author || 'SKRT Team',
+          designation: item.role || 'Member',
+          tags: ['Artikel'],
+          publishDate: item.publish_date || item.publishDate || new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+        }));
+        setArticles(transformedArticles);
+      } catch (error) {
+        console.error('Error loading articles:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadArticles();
   }, []);
 
   if (loading) {
