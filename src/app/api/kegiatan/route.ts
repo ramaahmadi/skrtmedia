@@ -16,11 +16,10 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Function to generate slug from hero_title (or title) and year
-function generateSlug(title: string, heroTitle?: string, date?: string): string {
+// Function to generate slug from hero_title and year only
+function generateSlug(heroTitle: string, date?: string): string {
   const year = date ? new Date(date).getFullYear() : new Date().getFullYear();
-  const slugBase = heroTitle || title;
-  return `${slugBase}-${year}`
+  return `${heroTitle}-${year}`
     .toLowerCase()
     .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
     .replace(/\s+/g, '-') // Replace spaces with hyphens
@@ -91,8 +90,8 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    // Generate slug from hero_title (or title) and year
-    const slug = generateSlug(body.title, body.hero_title, body.date);
+    // Generate slug from hero_title and year only
+    const slug = body.hero_title ? generateSlug(body.hero_title, body.date) : null;
 
     // Transform form data to database format
     const dbRecord = {
@@ -136,8 +135,8 @@ export async function PUT(request: Request) {
     const body = await request.json();
     const { id, ...formData } = body;
 
-    // Generate new slug if title or hero_title changed
-    const slug = formData.title ? generateSlug(formData.title, formData.hero_title, formData.date) : id;
+    // Generate new slug from hero_title and year only
+    const slug = formData.hero_title ? generateSlug(formData.hero_title, formData.date) : id;
 
     // Transform form data to database format
     const dbRecord = {

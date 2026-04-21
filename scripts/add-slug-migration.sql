@@ -65,18 +65,18 @@ BEGIN
     END IF;
 END $$;
 
--- Generate slugs for existing records (hero_title + year format, fallback to title)
+-- Generate slugs for existing records (hero_title + year format only)
 UPDATE skrt_kegiatan
 SET slug = LOWER(
     REGEXP_REPLACE(
         REGEXP_REPLACE(
-            COALESCE(hero_title, title) || '-' || EXTRACT(YEAR FROM TO_DATE(date, 'YYYY-MM-DD')),
+            hero_title || '-' || EXTRACT(YEAR FROM TO_DATE(date, 'YYYY-MM-DD')),
             '[^a-zA-Z0-9\s-]', '', 'g'
         ),
         '\s+', '-', 'g'
     )
 )
-WHERE slug IS NULL OR slug = '';
+WHERE (slug IS NULL OR slug = '') AND hero_title IS NOT NULL AND hero_title != '';
 
 -- Add unique constraint on slug
 DO $$
