@@ -16,9 +16,10 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Function to generate slug from title
-function generateSlug(title: string): string {
-  return title
+// Function to generate slug from title and year
+function generateSlug(title: string, date?: string): string {
+  const year = date ? new Date(date).getFullYear() : new Date().getFullYear();
+  return `${title}-${year}`
     .toLowerCase()
     .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
     .replace(/\s+/g, '-') // Replace spaces with hyphens
@@ -83,8 +84,8 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    // Generate slug from title
-    const slug = generateSlug(body.title);
+    // Generate slug from title and year
+    const slug = generateSlug(body.title, body.date);
 
     // Transform form data to database format
     const dbRecord = {
@@ -127,7 +128,7 @@ export async function PUT(request: Request) {
     const { id, ...formData } = body;
 
     // Generate new slug if title changed
-    const slug = formData.title ? generateSlug(formData.title) : id;
+    const slug = formData.title ? generateSlug(formData.title, formData.date) : id;
 
     // Transform form data to database format
     const dbRecord = {

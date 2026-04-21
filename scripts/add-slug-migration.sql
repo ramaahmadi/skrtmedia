@@ -51,11 +51,14 @@ BEGIN
     END IF;
 END $$;
 
--- Generate slugs for existing records
+-- Generate slugs for existing records (title + year format)
 UPDATE skrt_kegiatan
 SET slug = LOWER(
     REGEXP_REPLACE(
-        REGEXP_REPLACE(title, '[^a-zA-Z0-9\s-]', '', 'g'),
+        REGEXP_REPLACE(
+            title || '-' || EXTRACT(YEAR FROM TO_DATE(date, 'YYYY-MM-DD')),
+            '[^a-zA-Z0-9\s-]', '', 'g'
+        ),
         '\s+', '-', 'g'
     )
 )
