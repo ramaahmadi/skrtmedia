@@ -51,7 +51,9 @@ function transformToActivity(record: any): Activity {
     ticket_price: record.ticket_price || 0,
     max_participants: record.max_participants || 0,
     contact_person: record.contact_person || undefined,
-    contact_phone: record.contact_phone || undefined
+    contact_phone: record.contact_phone || undefined,
+    sponsors: record.sponsors || undefined,
+    media_partners: record.media_partners || undefined
   };
 }
 
@@ -105,7 +107,9 @@ export async function POST(request: Request) {
       ticket_price: body.ticket_price || 0,
       max_participants: body.max_participants || 0,
       contact_person: body.contact_person || null,
-      contact_phone: body.contact_phone || null
+      contact_phone: body.contact_phone || null,
+      sponsors: body.sponsors || null,
+      media_partners: body.media_partners || null
     };
 
     const { data, error } = await supabase
@@ -148,7 +152,9 @@ export async function PUT(request: Request) {
       ticket_price: formData.ticket_price || 0,
       max_participants: formData.max_participants || 0,
       contact_person: formData.contact_person || null,
-      contact_phone: formData.contact_phone || null
+      contact_phone: formData.contact_phone || null,
+      sponsors: formData.sponsors || null,
+      media_partners: formData.media_partners || null
     };
 
     // Update by slug (since we're using slug as ID)

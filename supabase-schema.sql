@@ -47,6 +47,8 @@ CREATE TABLE IF NOT EXISTS skrt_kegiatan (
   max_participants INTEGER DEFAULT 0,
   contact_person TEXT,
   contact_phone TEXT,
+  sponsors JSONB,
+  media_partners JSONB,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

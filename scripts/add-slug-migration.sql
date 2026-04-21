@@ -49,6 +49,20 @@ BEGIN
     ) THEN
         ALTER TABLE skrt_kegiatan ADD COLUMN contact_phone TEXT;
     END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'skrt_kegiatan' AND column_name = 'sponsors'
+    ) THEN
+        ALTER TABLE skrt_kegiatan ADD COLUMN sponsors JSONB;
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'skrt_kegiatan' AND column_name = 'media_partners'
+    ) THEN
+        ALTER TABLE skrt_kegiatan ADD COLUMN media_partners JSONB;
+    END IF;
 END $$;
 
 -- Generate slugs for existing records (title + year format)

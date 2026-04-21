@@ -62,7 +62,10 @@ function KegiatanPageContent() {
     hero_subtitle: '',
     hero_quote: '',
     about_background: '',
-    about_goals: ''
+    about_goals: '',
+    // Sponsor fields
+    sponsors: '',
+    media_partners: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -175,7 +178,10 @@ function KegiatanPageContent() {
       hero_subtitle: activity.hero_subtitle || '',
       hero_quote: activity.hero_quote || '',
       about_background: activity.about_section?.background || '',
-      about_goals: activity.about_section?.goals?.join('\n') || ''
+      about_goals: activity.about_section?.goals?.join('\n') || '',
+      // Sponsor fields
+      sponsors: activity.sponsors ? activity.sponsors.map(s => `${s.name}|${s.logo}`).join('\n') : '',
+      media_partners: activity.media_partners ? activity.media_partners.map(s => `${s.name}|${s.logo}`).join('\n') : ''
     });
     setEditingId(activity.id);
     setIsEditing(true);
@@ -210,7 +216,16 @@ function KegiatanPageContent() {
         about_section: {
           background: activityForm.about_background || undefined,
           goals: activityForm.about_goals ? activityForm.about_goals.split('\n').filter(g => g.trim()) : undefined
-        }
+        },
+        // Sponsor fields
+        sponsors: activityForm.sponsors ? activityForm.sponsors.split('\n').filter(s => s.trim()).map(s => {
+          const [name, logo] = s.split('|');
+          return { name: name || '', logo: logo || '' };
+        }) : undefined,
+        media_partners: activityForm.media_partners ? activityForm.media_partners.split('\n').filter(s => s.trim()).map(s => {
+          const [name, logo] = s.split('|');
+          return { name: name || '', logo: logo || '' };
+        }) : undefined
       };
 
       if (isEditing && editingId) {
@@ -296,14 +311,14 @@ function KegiatanPageContent() {
     setShowModal(false);
     setIsEditing(false);
     setEditingId(null);
-    setActivityForm({ 
-      title: '', 
-      description: '', 
-      date: '', 
+    setActivityForm({
+      title: '',
+      description: '',
+      date: '',
       time: '',
-      locations: [''], 
-      mapEmbed: '', 
-      status: 'upcoming', 
+      locations: [''],
+      mapEmbed: '',
+      status: 'upcoming',
       featured: false,
       contact_person: '',
       contact_phone: '',
@@ -316,7 +331,10 @@ function KegiatanPageContent() {
       hero_subtitle: '',
       hero_quote: '',
       about_background: '',
-      about_goals: ''
+      about_goals: '',
+      // Sponsor fields
+      sponsors: '',
+      media_partners: ''
     });
   };
 
@@ -857,6 +875,45 @@ function KegiatanPageContent() {
                       Jadikan Event Utama
                     </span>
                   </label>
+                </div>
+
+                {/* Sponsor Section */}
+                <div className="border-t border-gray-200 pt-4 mt-4">
+                  <h3 className="text-lg font-semibold text-dark dark:text-white mb-4">Sponsor & Media Partner</h3>
+
+                  <div className="mt-4">
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Sponsor (Opsional - format: nama|url-logo, satu per baris)
+                    </label>
+                    <textarea
+                      name="sponsors"
+                      value={activityForm.sponsors}
+                      onChange={handleActivityChange}
+                      placeholder="Sponsor 1|https://example.com/logo1.png&#10;Sponsor 2|https://example.com/logo2.png"
+                      rows={3}
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    />
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                      Format: nama|url-logo. Satu sponsor per baris.
+                    </p>
+                  </div>
+
+                  <div className="mt-4">
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Media Partner (Opsional - format: nama|url-logo, satu per baris)
+                    </label>
+                    <textarea
+                      name="media_partners"
+                      value={activityForm.media_partners}
+                      onChange={handleActivityChange}
+                      placeholder="Media Partner 1|https://example.com/logo1.png&#10;Media Partner 2|https://example.com/logo2.png"
+                      rows={3}
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    />
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                      Format: nama|url-logo. Satu media partner per baris.
+                    </p>
+                  </div>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
