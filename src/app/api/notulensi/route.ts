@@ -64,7 +64,7 @@ export async function POST(request: Request) {
 
     console.log('Successfully created notulensi:', data[0]);
 
-    // Send WhatsApp notification to selected anggota (fire-and-forget)
+    // Send WhatsApp notification to selected anggota (temporarily awaited for debugging)
     const waboxappToken = process.env.WABOXAPP_TOKEN;
     const waboxappUid = process.env.WABOXAPP_UID;
     const selectedPhones = body.selectedPhones; // Array of phone numbers
@@ -76,19 +76,20 @@ export async function POST(request: Request) {
         body.createdBy
       );
       
-      // Send notification asynchronously without awaiting
-      sendWhatsAppNotification(
-        message,
-        {
-          token: waboxappToken,
-          uid: waboxappUid
-        },
-        selectedPhones
-      ).then(result => {
-        console.log('WhatsApp notification result:', result);
-      }).catch(error => {
+      // Temporarily await to see response logs
+      try {
+        const notificationResult = await sendWhatsAppNotification(
+          message,
+          {
+            token: waboxappToken,
+            uid: waboxappUid
+          },
+          selectedPhones
+        );
+        console.log('WhatsApp notification result:', notificationResult);
+      } catch (error) {
         console.error('WhatsApp notification error:', error);
-      });
+      }
     } else {
       console.warn('Waboxapp credentials not configured, skipping WhatsApp notification');
     }
