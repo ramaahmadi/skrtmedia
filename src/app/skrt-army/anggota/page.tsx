@@ -357,14 +357,6 @@ export default function AnggotaPage() {
                         ✏️ Edit
                       </button>
                     )}
-                    {!isCurrentUser(member.id) && (
-                      <button
-                        onClick={() => handleToggleAdmin(member.id)}
-                        className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
-                      >
-                        {member.is_admin ? 'Hapus Admin' : 'Jadikan Admin'}
-                      </button>
-                    )}
                     {canDeleteMember(member) && (
                       <button
                         onClick={() => handleDeleteMember(member.id)}
