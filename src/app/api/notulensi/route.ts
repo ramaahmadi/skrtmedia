@@ -44,9 +44,17 @@ export async function POST(request: Request) {
     const body = await request.json();
     console.log('Creating notulensi with data:', JSON.stringify(body, null, 2));
     
+    // Transform camelCase to snake_case for database
+    const dbData = {
+      date: body.date,
+      title: body.title,
+      content: body.content,
+      created_by: body.createdBy
+    };
+    
     const { data, error } = await supabase
       .from('skrt_notulensi')
-      .insert([body])
+      .insert([dbData])
       .select();
 
     if (error) {
