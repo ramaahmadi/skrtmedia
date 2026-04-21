@@ -54,9 +54,21 @@ export async function POST(request: Request) {
     const body = await request.json();
     console.log('Creating anggota with data:', JSON.stringify(body, null, 2));
     
+    // Transform camelCase to snake_case for database
+    const dbData = {
+      name: body.name,
+      phone: body.phone,
+      position: body.position || null,
+      email: body.email || null,
+      join_date: body.joinDate || null,
+      is_admin: body.is_admin || false
+    };
+    
+    console.log('Transformed data for database:', JSON.stringify(dbData, null, 2));
+    
     const { data, error } = await supabase
       .from('skrt_anggota')
-      .insert([body])
+      .insert([dbData])
       .select();
 
     if (error) {
@@ -80,9 +92,21 @@ export async function PUT(request: Request) {
     const { id, ...updateData } = body;
     console.log('Updating anggota with id:', id, 'data:', JSON.stringify(updateData, null, 2));
     
+    // Transform camelCase to snake_case for database
+    const dbUpdateData = {
+      name: updateData.name,
+      phone: updateData.phone,
+      position: updateData.position || null,
+      email: updateData.email || null,
+      join_date: updateData.joinDate || null,
+      is_admin: updateData.is_admin || false
+    };
+    
+    console.log('Transformed data for database:', JSON.stringify(dbUpdateData, null, 2));
+    
     const { data, error } = await supabase
       .from('skrt_anggota')
-      .update(updateData)
+      .update(dbUpdateData)
       .eq('id', id)
       .select();
 
