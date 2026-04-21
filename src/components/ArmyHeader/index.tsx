@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import NotificationBell from '@/components/NotificationBell';
 
 const ArmyHeader = () => {
   const router = useRouter();
@@ -27,6 +28,7 @@ const ArmyHeader = () => {
             </Link>
           </div>
           <div className="flex items-center space-x-4">
+            <NotificationBell />
             <Link
               href="/"
               className="px-4 py-2 text-sm font-medium text-dark hover:text-primary dark:text-white dark:hover:text-primary transition"
