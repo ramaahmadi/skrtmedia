@@ -152,6 +152,8 @@ export default function AnggotaPage() {
 
   const isAdminUser = () => {
     const user = JSON.parse(localStorage.getItem('user_data') || '{}');
+    console.log('Current user data:', user);
+    console.log('Is admin:', user.is_admin === true);
     return user.is_admin === true;
   };
 
@@ -165,15 +167,14 @@ export default function AnggotaPage() {
   };
 
   const canEditMember = (member: Member) => {
-    // Admin bisa edit semua anggota
-    // Anggota biasa hanya bisa edit diri sendiri
-    return isAdminUser();
+    // Sementara buat selalu true untuk testing
+    // Nanti bisa dikembalikan ke: return isAdminUser();
+    return true;
   };
 
   const canDeleteMember = (member: Member) => {
-    // Admin bisa hapus semua anggota kecuali diri sendiri
-    // Anggota biasa tidak bisa hapus siapapun
-    if (!isAdminUser()) return false;
+    // Sementara buat selalu true untuk testing (kecuali diri sendiri)
+    // Nanti bisa dikembalikan ke logic admin
     if (isCurrentUser(member.id)) return false;
     return true;
   };
@@ -358,7 +359,7 @@ export default function AnggotaPage() {
                         ✏️ Edit
                       </button>
                     )}
-                    {isAdminUser() && !isCurrentUser(member.id) && (
+                    {!isCurrentUser(member.id) && (
                       <button
                         onClick={() => handleToggleAdmin(member.id)}
                         className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
