@@ -31,6 +31,7 @@ export default function PembukuanPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sortColumn, setSortColumn] = useState<keyof FinancialRecord>('date');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     loadFinancialRecords();
@@ -40,9 +41,18 @@ export default function PembukuanPage() {
     try {
       const response = await fetch('/api/pembukuan');
       const data = await response.json();
-      setFinancialRecords(data);
+      
+      // Check if response is an error object
+      if (data.error) {
+        console.error('Error loading financial records:', data.error, data.details);
+        setFinancialRecords([]);
+        return;
+      }
+      
+      setFinancialRecords(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error loading financial records:', error);
+      setFinancialRecords([]);
     }
   };
 
@@ -78,9 +88,14 @@ export default function PembukuanPage() {
         await loadFinancialRecords();
         setFinancialForm({ date: '', type: 'income', category: '', amount: '', description: '' });
         setShowModal(false);
+        setErrorMessage('');
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Gagal menambah transaksi');
       }
     } catch (error) {
       console.error('Error creating financial record:', error);
+      setErrorMessage('Gagal menambah transaksi. Silakan coba lagi.');
     } finally {
       setIsSubmitting(false);
     }
@@ -314,6 +329,11 @@ export default function PembukuanPage() {
               </div>
               
               <form onSubmit={handleSubmitFinancial} className="space-y-4">
+                {errorMessage && (
+                  <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+                    {errorMessage}
+                  </div>
+                )}
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Tanggal

@@ -12,7 +12,7 @@ interface Member {
   position: string;
   email: string;
   joinDate: string;
-  isAdmin: boolean;
+  is_admin: boolean;
 }
 
 export default function AnggotaPage() {
@@ -32,6 +32,7 @@ export default function AnggotaPage() {
     name: '',
     phone: ''
   });
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     loadMembers();
@@ -41,17 +42,25 @@ export default function AnggotaPage() {
     try {
       const response = await fetch('/api/anggota');
       const data = await response.json();
-      setMembers(data);
+      
+      // Check if response is an error object
+      if (data.error) {
+        console.error('Error loading members:', data.error, data.details);
+        setMembers([]);
+        return;
+      }
+      
+      setMembers(Array.isArray(data) ? data : []);
       
       // If no members, initialize with admin user
-      if (data.length === 0) {
+      if (Array.isArray(data) && data.length === 0) {
         const adminMember = {
           name: 'RAMA',
           phone: '082122451622',
           position: 'Admin',
           email: '082122451622@skrtmedia.com',
           joinDate: new Date().toLocaleDateString('id-ID'),
-          isAdmin: true
+          is_admin: true
         };
         const response = await fetch('/api/anggota', {
           method: 'POST',
@@ -87,7 +96,7 @@ export default function AnggotaPage() {
         position: '',
         email: '',
         joinDate: new Date().toLocaleDateString('id-ID'),
-        isAdmin: false
+        is_admin: false
       };
 
       const response = await fetch('/api/anggota', {
@@ -100,9 +109,14 @@ export default function AnggotaPage() {
         await loadMembers();
         setMemberForm({ name: '', phone: '' });
         setShowModal(false);
+        setErrorMessage('');
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Gagal menambah anggota');
       }
     } catch (error) {
       console.error('Error creating member:', error);
+      setErrorMessage('Gagal menambah anggota. Silakan coba lagi.');
     } finally {
       setIsSubmitting(false);
     }
@@ -138,7 +152,7 @@ export default function AnggotaPage() {
 
   const isAdminUser = () => {
     const user = JSON.parse(localStorage.getItem('user_data') || '{}');
-    return user.isAdmin === true;
+    return user.is_admin === true;
   };
 
   const handleToggleAdmin = async (id: string) => {
@@ -155,7 +169,7 @@ export default function AnggotaPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id: id,
-          isAdmin: !member.isAdmin
+          is_admin: !member.is_admin
         })
       });
 
@@ -207,9 +221,14 @@ export default function AnggotaPage() {
         await loadMembers();
         setShowEditModal(false);
         setEditingMember(null);
+        setErrorMessage('');
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Gagal mengupdate anggota');
       }
     } catch (error) {
       console.error('Error updating member:', error);
+      setErrorMessage('Gagal mengupdate anggota. Silakan coba lagi.');
     } finally {
       setIsSubmitting(false);
     }
@@ -251,11 +270,11 @@ export default function AnggotaPage() {
           </div>
           <div className="rounded-lg bg-white p-4 shadow-sm dark:bg-gray-dark">
             <p className="text-sm text-gray-600 dark:text-gray-400">Admin</p>
-            <p className="text-2xl font-bold text-primary">{members.filter(m => m.isAdmin).length}</p>
+            <p className="text-2xl font-bold text-primary">{members.filter(m => m.is_admin).length}</p>
           </div>
           <div className="rounded-lg bg-white p-4 shadow-sm dark:bg-gray-dark">
             <p className="text-sm text-gray-600 dark:text-gray-400">Anggota Biasa</p>
-            <p className="text-2xl font-bold text-primary">{members.filter(m => !m.isAdmin).length}</p>
+            <p className="text-2xl font-bold text-primary">{members.filter(m => !m.is_admin).length}</p>
           </div>
         </div>
 
@@ -280,14 +299,14 @@ export default function AnggotaPage() {
           ) : (
             members.map((member) => (
               <div key={member.id} className={`rounded-lg bg-white shadow-sm dark:bg-gray-dark overflow-hidden ${
-                member.isAdmin ? 'border-2 border-primary/30 dark:border-primary/50' : ''
+                member.is_admin ? 'border-2 border-primary/30 dark:border-primary/50' : ''
               }`}>
-                <div className={`p-6 ${member.isAdmin ? 'bg-gradient-to-br from-primary/10 to-primary/20 dark:from-primary/20 dark:to-primary/30' : ''}`}>
+                <div className={`p-6 ${member.is_admin ? 'bg-gradient-to-br from-primary/10 to-primary/20 dark:from-primary/20 dark:to-primary/30' : ''}`}>
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/80 text-2xl text-white">
                       {member.name.charAt(0).toUpperCase()}
                     </div>
-                    {member.isAdmin && (
+                    {member.is_admin && (
                       <span className="rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary dark:bg-primary/20 dark:text-primary">
                         👑 Admin
                       </span>
@@ -321,7 +340,7 @@ export default function AnggotaPage() {
                         onClick={() => handleToggleAdmin(member.id)}
                         className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                       >
-                        {member.isAdmin ? 'Hapus Admin' : 'Jadikan Admin'}
+                        {member.is_admin ? 'Hapus Admin' : 'Jadikan Admin'}
                       </button>
                     )}
                     {isAdminUser() && (
@@ -356,6 +375,11 @@ export default function AnggotaPage() {
               </div>
               
               <form onSubmit={handleSubmitMember} className="space-y-4">
+                {errorMessage && (
+                  <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+                    {errorMessage}
+                  </div>
+                )}
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Nama Lengkap
@@ -427,6 +451,11 @@ export default function AnggotaPage() {
               </div>
               
               <form onSubmit={handleUpdateMember} className="space-y-4">
+                {errorMessage && (
+                  <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+                    {errorMessage}
+                  </div>
+                )}
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Nama Lengkap

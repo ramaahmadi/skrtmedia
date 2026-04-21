@@ -1,8 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
 import { Activity } from '@/lib/types';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+console.log('Supabase URL:', supabaseUrl);
+console.log('Supabase Key:', supabaseKey ? 'Set' : 'Not set');
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Missing Supabase environment variables');
+  console.error('NEXT_PUBLIC_SUPABASE_URL:', supabaseUrl);
+  console.error('NEXT_PUBLIC_SUPABASE_ANON_KEY:', supabaseKey ? 'Set' : 'Not set');
+  throw new Error('Missing Supabase environment variables');
+}
+
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Transform database record to match TypeScript interface
@@ -30,19 +41,26 @@ function transformToActivity(record: any): Activity {
 
 export async function GET() {
   try {
+    console.log('Fetching kegiatan from Supabase...');
     const { data, error } = await supabase
       .from('skrt_kegiatan')
       .select('*')
       .order('date', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase error:', JSON.stringify(error, null, 2));
+      throw error;
+    }
 
+    console.log('Successfully fetched kegiatan:', data?.length || 0, 'records');
     // Transform data to match TypeScript interface
     const transformedData = (data || []).map(transformToActivity);
     return Response.json(transformedData);
   } catch (error) {
     console.error('Error fetching kegiatan:', error);
-    return Response.json([], { status: 200 });
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorDetails = error && typeof error === 'object' && 'message' in error ? JSON.stringify(error) : errorMessage;
+    return Response.json({ error: 'Failed to fetch kegiatan', details: errorDetails }, { status: 500 });
   }
 }
 

@@ -27,6 +27,7 @@ export default function BeritaPage() {
     category: 'kegiatan'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     loadEventNews();
@@ -36,9 +37,18 @@ export default function BeritaPage() {
     try {
       const response = await fetch('/api/berita');
       const data = await response.json();
-      setEventNews(data);
+      
+      // Check if response is an error object
+      if (data.error) {
+        console.error('Error loading event news:', data.error, data.details);
+        setEventNews([]);
+        return;
+      }
+      
+      setEventNews(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error loading event news:', error);
+      setEventNews([]);
     }
   };
 
@@ -74,9 +84,14 @@ export default function BeritaPage() {
         await loadEventNews();
         setFormData({ title: '', content: '', category: 'kegiatan' });
         setShowModal(false);
+        setErrorMessage('');
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Gagal menambah berita');
       }
     } catch (error) {
       console.error('Error creating news:', error);
+      setErrorMessage('Gagal menambah berita. Silakan coba lagi.');
     } finally {
       setIsSubmitting(false);
     }
@@ -238,6 +253,11 @@ export default function BeritaPage() {
               </div>
               
               <form onSubmit={handleSubmitNews} className="space-y-4">
+                {errorMessage && (
+                  <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+                    {errorMessage}
+                  </div>
+                )}
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Kategori
