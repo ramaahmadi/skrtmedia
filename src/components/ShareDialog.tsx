@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { exportSingleItemToText, exportSingleItemToExcel, exportSingleItemToPDF } from '@/lib/exportToText';
+import { exportSingleItemToText, exportSingleItemToExcel, exportSingleItemToPDF, exportMultipleItemsToText, exportMultipleItemsToExcel, exportMultipleItemsToPDF } from '@/lib/exportToText';
 
 interface ShareDialogProps {
   isOpen: boolean;
@@ -20,26 +20,40 @@ export default function ShareDialog({ isOpen, onClose, item, title, itemName, fo
     let content = `${title.toUpperCase()}\n`;
     content += `${'='.repeat(50)}\n\n`;
     
-    Object.keys(item).forEach(key => {
-      const value = item[key];
-      let formattedValue = value;
-      
-      if (value === null || value === undefined) {
-        formattedValue = '-';
-      } else if (typeof value === 'boolean') {
-        formattedValue = value ? 'Ya' : 'Tidak';
-      } else if (Array.isArray(value)) {
-        formattedValue = value.length > 0 ? value.join(', ') : '-';
-      } else if (typeof value === 'object') {
-        formattedValue = JSON.stringify(value, null, 2);
+    const items = Array.isArray(item) ? item : [item];
+    
+    items.forEach((dataItem, index) => {
+      if (items.length > 1) {
+        content += `${'-'.repeat(40)}\n`;
+        content += `Data #${index + 1}\n`;
+        content += `${'-'.repeat(40)}\n`;
       }
       
-      const formattedKey = key
-        .replace(/([A-Z])/g, ' $1')
-        .replace(/^./, str => str.toUpperCase())
-        .trim();
+      Object.keys(dataItem).forEach(key => {
+        const value = dataItem[key];
+        let formattedValue = value;
+        
+        if (value === null || value === undefined) {
+          formattedValue = '-';
+        } else if (typeof value === 'boolean') {
+          formattedValue = value ? 'Ya' : 'Tidak';
+        } else if (Array.isArray(value)) {
+          formattedValue = value.length > 0 ? value.join(', ') : '-';
+        } else if (typeof value === 'object') {
+          formattedValue = JSON.stringify(value, null, 2);
+        }
+        
+        const formattedKey = key
+          .replace(/([A-Z])/g, ' $1')
+          .replace(/^./, str => str.toUpperCase())
+          .trim();
+        
+        content += `${formattedKey}: ${formattedValue}\n`;
+      });
       
-      content += `${formattedKey}: ${formattedValue}\n`;
+      if (items.length > 1) {
+        content += '\n';
+      }
     });
     
     return content;
@@ -62,15 +76,30 @@ export default function ShareDialog({ isOpen, onClose, item, title, itemName, fo
   };
 
   const handleDownload = () => {
+    const items = Array.isArray(item) ? item : [item];
+    const isMultiple = items.length > 1;
+    
     switch (format) {
       case 'excel':
-        exportSingleItemToExcel(item, title, itemName);
+        if (isMultiple) {
+          exportMultipleItemsToExcel(items, title, itemName);
+        } else {
+          exportSingleItemToExcel(item, title, itemName);
+        }
         break;
       case 'pdf':
-        exportSingleItemToPDF(item, title, itemName);
+        if (isMultiple) {
+          exportMultipleItemsToPDF(items, title, itemName);
+        } else {
+          exportSingleItemToPDF(item, title, itemName);
+        }
         break;
       case 'text':
-        exportSingleItemToText(item, title, itemName);
+        if (isMultiple) {
+          exportMultipleItemsToText(items, title, itemName);
+        } else {
+          exportSingleItemToText(item, title, itemName);
+        }
         break;
     }
     onClose();
@@ -108,6 +137,7 @@ export default function ShareDialog({ isOpen, onClose, item, title, itemName, fo
         
         <p className="text-gray-600 dark:text-gray-400 mb-6">
           Format: {getFormatLabel()}
+          {Array.isArray(item) && ` (${item.length} data)`}
         </p>
         
         <div className="space-y-3">

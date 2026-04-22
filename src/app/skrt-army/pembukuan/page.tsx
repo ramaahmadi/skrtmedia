@@ -35,9 +35,12 @@ export default function PembukuanPage() {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [errorMessage, setErrorMessage] = useState('');
   const [showShareDialog, setShowShareDialog] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<FinancialRecord | null>(null);
+  const [selectedItem, setSelectedItem] = useState<FinancialRecord | FinancialRecord[] | null>(null);
   const [showFormatDialog, setShowFormatDialog] = useState(false);
   const [selectedFormat, setSelectedFormat] = useState<'excel' | 'pdf' | 'text'>('text');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [showCategoryFilter, setShowCategoryFilter] = useState(false);
 
   useEffect(() => {
     loadFinancialRecords();
@@ -144,7 +147,24 @@ export default function PembukuanPage() {
     }
   };
 
-  const sortedRecords = [...financialRecords].sort((a, b) => {
+  const filteredRecords = financialRecords.filter(record => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      record.date.toLowerCase().includes(query) ||
+      record.type.toLowerCase().includes(query) ||
+      record.category.toLowerCase().includes(query) ||
+      record.description.toLowerCase().includes(query) ||
+      record.amount.toString().includes(query) ||
+      record.created_by.toLowerCase().includes(query)
+    );
+  });
+
+  const categoryFilteredRecords = selectedCategory 
+    ? filteredRecords.filter(r => r.category === selectedCategory)
+    : filteredRecords;
+
+  const sortedRecords = [...categoryFilteredRecords].sort((a, b) => {
     let aValue = a[sortColumn];
     let bValue = b[sortColumn];
 
@@ -157,6 +177,8 @@ export default function PembukuanPage() {
     if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
     return 0;
   });
+
+  const categories = [...new Set(financialRecords.map(r => r.category))];
 
   const totalIncome = financialRecords.filter(r => r.type === 'income').reduce((sum, r) => sum + r.amount, 0);
   const totalExpense = financialRecords.filter(r => r.type === 'expense').reduce((sum, r) => sum + r.amount, 0);
@@ -220,22 +242,59 @@ export default function PembukuanPage() {
           </div>
         </div>
 
+        {/* Search and Filter */}
+        <div className="mb-6 grid gap-4 md:grid-cols-2">
+          <div>
+            <input
+              type="text"
+              placeholder="Cari transaksi (tanggal, jenis, kategori, deskripsi, jumlah, pembuat)..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-primary focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+          <div className="flex gap-2">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="flex-1 rounded-lg border border-gray-300 px-4 py-3 focus:border-primary focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+            >
+              <option value="">Semua Kategori</option>
+              {categories.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+            {selectedCategory && (
+              <button
+                onClick={() => {
+                  setSelectedItem(categoryFilteredRecords);
+                  setShowFormatDialog(true);
+                }}
+                className="rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition hover:bg-blue-700"
+                title="Export kategori ini"
+              >
+                📄 Export Kategori
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Transaction Table */}
         <div className="rounded-lg bg-white shadow-sm dark:bg-gray-dark overflow-hidden">
           <div className="p-6 border-b border-gray-200 dark:border-gray-700">
             <h2 className="text-xl font-bold text-dark dark:text-white">
-              Riwayat Transaksi
+              Riwayat Transaksi {sortedRecords.length !== financialRecords.length && `(${sortedRecords.length} dari ${financialRecords.length})`}
             </h2>
           </div>
           
-          {financialRecords.length === 0 ? (
+          {sortedRecords.length === 0 ? (
             <div className="p-12 text-center">
               <span className="text-6xl">💸</span>
               <h3 className="mt-4 text-xl font-semibold text-dark dark:text-white">
                 Belum ada transaksi
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Mulai dengan mencatat transaksi pertama
+                {searchQuery || selectedCategory ? 'Tidak ada transaksi yang cocok dengan filter' : 'Mulai dengan mencatat transaksi pertama'}
               </p>
               <button
                 onClick={() => setShowModal(true)}
@@ -463,10 +522,11 @@ export default function PembukuanPage() {
           onClose={() => {
             setShowShareDialog(false);
             setSelectedItem(null);
+            setSelectedCategory('');
           }}
           item={selectedItem}
-          title="Data Transaksi"
-          itemName={selectedItem ? `transaksi-${selectedItem.date}-${selectedItem.category}` : 'transaksi'}
+          title={Array.isArray(selectedItem) ? `Data Transaksi - ${selectedItem[0]?.category}` : 'Data Transaksi'}
+          itemName={Array.isArray(selectedItem) ? `kategori-${selectedItem[0]?.category}-${selectedItem.length}transaksi` : (selectedItem ? `transaksi-${selectedItem.date}-${selectedItem.category}` : 'transaksi')}
           format={selectedFormat}
         />
         

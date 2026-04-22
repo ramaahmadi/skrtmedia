@@ -48,7 +48,7 @@ export async function POST(request: Request) {
       date: body.date,
       title: body.title,
       content: body.content,
-      created_by: body.createdBy
+      created_by: body.created_by
     };
     
     const { data, error } = await supabase
