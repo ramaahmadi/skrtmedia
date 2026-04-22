@@ -23,6 +23,8 @@ export default function PembukuanPage() {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [financialForm, setFinancialForm] = useState({
     date: '',
     type: 'income' as 'income' | 'expense',
@@ -72,6 +74,19 @@ export default function PembukuanPage() {
     });
   };
 
+  const handleEditFinancial = (record: FinancialRecord) => {
+    setFinancialForm({
+      date: record.date,
+      type: record.type,
+      category: record.category,
+      amount: record.amount.toString(),
+      description: record.description
+    });
+    setEditingId(record.id);
+    setIsEditing(true);
+    setShowModal(true);
+  };
+
   const handleSubmitFinancial = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -79,6 +94,7 @@ export default function PembukuanPage() {
     try {
       const user = JSON.parse(localStorage.getItem('user_data') || '{}');
       const record = {
+        id: isEditing && editingId ? editingId : undefined,
         date: financialForm.date,
         type: financialForm.type,
         category: financialForm.category,
@@ -87,24 +103,35 @@ export default function PembukuanPage() {
         created_by: user.name || 'Admin'
       };
 
-      const response = await fetch('/api/pembukuan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(record)
-      });
+      let response;
+      if (isEditing && editingId) {
+        response = await fetch('/api/pembukuan', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(record)
+        });
+      } else {
+        response = await fetch('/api/pembukuan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(record)
+        });
+      }
 
       if (response.ok) {
         await loadFinancialRecords();
         setFinancialForm({ date: '', type: 'income', category: '', amount: '', description: '' });
         setShowModal(false);
+        setIsEditing(false);
+        setEditingId(null);
         setErrorMessage('');
       } else {
         const errorData = await response.json();
-        setErrorMessage(errorData.error || 'Gagal menambah transaksi');
+        setErrorMessage(errorData.error || 'Gagal menyimpan transaksi');
       }
     } catch (error) {
-      console.error('Error creating financial record:', error);
-      setErrorMessage('Gagal menambah transaksi. Silakan coba lagi.');
+      console.error('Error saving financial record:', error);
+      setErrorMessage('Gagal menyimpan transaksi. Silakan coba lagi.');
     } finally {
       setIsSubmitting(false);
     }
@@ -136,6 +163,14 @@ export default function PembukuanPage() {
   const cancelDeleteFinancial = () => {
     setShowDeleteDialog(false);
     setItemToDelete(null);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setIsEditing(false);
+    setEditingId(null);
+    setFinancialForm({ date: '', type: 'income', category: '', amount: '', description: '' });
+    setErrorMessage('');
   };
 
   const handleSort = (column: keyof FinancialRecord) => {
@@ -365,6 +400,13 @@ export default function PembukuanPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         <button
+                          onClick={() => handleEditFinancial(record)}
+                          className="text-gray-400 hover:text-blue-600 transition mr-2"
+                          title="Edit"
+                        >
+                          ✏️
+                        </button>
+                        <button
                           onClick={() => handleDeleteFinancial(record.id)}
                           className="text-gray-400 hover:text-red-600 transition"
                           title="Hapus"
@@ -398,10 +440,10 @@ export default function PembukuanPage() {
             <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl dark:bg-gray-dark">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-xl font-bold text-dark dark:text-white">
-                  Tambah Transaksi Baru
+                  {isEditing ? 'Edit Transaksi' : 'Tambah Transaksi Baru'}
                 </h2>
                 <button
-                  onClick={() => setShowModal(false)}
+                  onClick={handleCloseModal}
                   className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 >
                   ✕
@@ -491,7 +533,7 @@ export default function PembukuanPage() {
                 <div className="flex gap-3">
                   <button
                     type="button"
-                    onClick={() => setShowModal(false)}
+                    onClick={handleCloseModal}
                     className="flex-1 rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                   >
                     Batal
@@ -501,7 +543,7 @@ export default function PembukuanPage() {
                     disabled={isSubmitting}
                     className="flex-1 rounded-lg bg-primary px-4 py-2 font-medium text-white transition hover:bg-primary/90 disabled:opacity-50 shadow-btn hover:shadow-btn-hover"
                   >
-                    {isSubmitting ? 'Menyimpan...' : 'Simpan'}
+                    {isSubmitting ? 'Menyimpan...' : (isEditing ? 'Update' : 'Simpan')}
                   </button>
                 </div>
               </form>

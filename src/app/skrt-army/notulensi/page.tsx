@@ -21,6 +21,8 @@ export default function NotulensiPage() {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [meetingForm, setMeetingForm] = useState({
     date: '',
@@ -53,6 +55,17 @@ export default function NotulensiPage() {
     });
   };
 
+  const handleEditMeeting = (note: MeetingNote) => {
+    setMeetingForm({
+      date: note.date,
+      title: note.title,
+      content: note.content
+    });
+    setEditingId(note.id);
+    setIsEditing(true);
+    setShowModal(true);
+  };
+
   const handleSubmitMeeting = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -60,25 +73,37 @@ export default function NotulensiPage() {
     try {
       const user = JSON.parse(localStorage.getItem('user_data') || '{}');
       const note = {
+        id: isEditing && editingId ? editingId : undefined,
         date: meetingForm.date,
         title: meetingForm.title,
         content: meetingForm.content,
         created_by: user.name || 'Admin'
       };
 
-      const response = await fetch('/api/notulensi', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(note)
-      });
+      let response;
+      if (isEditing && editingId) {
+        response = await fetch('/api/notulensi', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(note)
+        });
+      } else {
+        response = await fetch('/api/notulensi', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(note)
+        });
+      }
 
       if (response.ok) {
         await loadMeetingNotes();
         setMeetingForm({ date: '', title: '', content: '' });
         setShowModal(false);
+        setIsEditing(false);
+        setEditingId(null);
       }
     } catch (error) {
-      console.error('Error creating meeting note:', error);
+      console.error('Error saving meeting note:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -110,6 +135,13 @@ export default function NotulensiPage() {
   const cancelDeleteMeeting = () => {
     setShowDeleteDialog(false);
     setItemToDelete(null);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setIsEditing(false);
+    setEditingId(null);
+    setMeetingForm({ date: '', title: '', content: '' });
   };
 
   const filteredNotes = meetingNotes.filter(note =>
@@ -209,6 +241,13 @@ export default function NotulensiPage() {
                   </div>
                   <div className="flex gap-2">
                     <button
+                      onClick={() => handleEditMeeting(note)}
+                      className="rounded-lg p-2 text-gray-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20"
+                      title="Edit"
+                    >
+                      ✏️
+                    </button>
+                    <button
                       onClick={() => {
                         setSelectedItem(note);
                         setShowFormatDialog(true);
@@ -246,10 +285,10 @@ export default function NotulensiPage() {
               className="w-full max-w-2xl rounded-lg bg-white p-6 shadow-xl dark:bg-gray-dark max-h-[90vh] overflow-y-auto">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-xl font-bold text-dark dark:text-white">
-                  Tambah Notulensi Baru
+                  {isEditing ? 'Edit Notulensi' : 'Tambah Notulensi Baru'}
                 </h2>
                 <button
-                  onClick={() => setShowModal(false)}
+                  onClick={handleCloseModal}
                   className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 >
                   ✕
@@ -304,7 +343,7 @@ export default function NotulensiPage() {
                 <div className="flex gap-3">
                   <button
                     type="button"
-                    onClick={() => setShowModal(false)}
+                    onClick={handleCloseModal}
                     className="flex-1 rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                   >
                     Batal
@@ -314,7 +353,7 @@ export default function NotulensiPage() {
                     disabled={isSubmitting}
                     className="flex-1 rounded-lg bg-primary px-4 py-2 font-medium text-white transition hover:bg-primary/90 disabled:opacity-50 shadow-btn hover:shadow-btn-hover"
                   >
-                    {isSubmitting ? 'Menyimpan...' : 'Simpan'}
+                    {isSubmitting ? 'Menyimpan...' : (isEditing ? 'Update' : 'Simpan')}
                   </button>
                 </div>
               </form>

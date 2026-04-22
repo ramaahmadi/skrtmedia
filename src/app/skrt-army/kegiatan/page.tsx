@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Component } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Activity, autoUpdateActivityStatus } from '@/lib/types';
+import { Activity, autoUpdateActivityStatus, getAutoStatus } from '@/lib/types';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import ShareDialog from '@/components/ShareDialog';
 import ExportFormatDialog from '@/components/ExportFormatDialog';
@@ -51,7 +51,6 @@ function KegiatanPageContent() {
     time: '',
     locations: [''],
     mapEmbed: '',
-    status: 'upcoming' as 'upcoming' | 'ongoing' | 'completed',
     featured: false,
     contact_person: '',
     contact_phone: '',
@@ -171,7 +170,6 @@ function KegiatanPageContent() {
       time: activity.time || '',
       locations: activity.locations || [''],
       mapEmbed: activity.mapEmbed || '',
-      status: activity.status,
       featured: activity.featured || false,
       contact_person: activity.contact_person || '',
       contact_phone: activity.contact_phone || '',
@@ -237,7 +235,7 @@ function KegiatanPageContent() {
         time: activityForm.time,
         locations: activityForm.locations.filter(l => l.trim()),
         mapEmbed: activityForm.mapEmbed || undefined,
-        status: activityForm.status,
+        status: getAutoStatus(activityForm.date),
         featured: activityForm.featured,
         contact_person: activityForm.contact_person || undefined,
         contact_phone: activityForm.contact_phone || undefined,
@@ -321,21 +319,6 @@ function KegiatanPageContent() {
     setItemToDelete(null);
   };
 
-  const handleUpdateStatus = async (id: string, status: 'upcoming' | 'ongoing' | 'completed') => {
-    try {
-      const response = await fetch('/api/kegiatan', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, status })
-      });
-
-      if (response.ok) {
-        await loadActivities();
-      }
-    } catch (error) {
-      console.error('Error updating status:', error);
-    }
-  };
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -348,7 +331,6 @@ function KegiatanPageContent() {
       time: '',
       locations: [''],
       mapEmbed: '',
-      status: 'upcoming',
       featured: false,
       contact_person: '',
       contact_phone: '',
@@ -539,15 +521,6 @@ function KegiatanPageContent() {
                         </div>
                       </div>
                       <div className="flex flex-row sm:flex-col gap-2 ml-2 sm:ml-4">
-                        <select
-                          value={activity.status}
-                          onChange={(e) => handleUpdateStatus(activity.id, e.target.value as 'upcoming' | 'ongoing' | 'completed')}
-                          className="rounded-lg border border-gray-300 px-2 py-1 text-xs sm:text-sm focus:border-primary focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                        >
-                          <option value="upcoming">Akan Datang</option>
-                          <option value="ongoing">Berlangsung</option>
-                          <option value="completed">Selesai</option>
-                        </select>
                         <button
                           onClick={() => handleEditActivity(activity)}
                           className="rounded-lg p-2 text-gray-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20"
@@ -886,21 +859,6 @@ function KegiatanPageContent() {
                   </div>
                 </div>
 
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Status
-                  </label>
-                  <select
-                    name="status"
-                    value={activityForm.status}
-                    onChange={handleActivityChange}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-                  >
-                    <option value="upcoming">Akan Datang</option>
-                    <option value="ongoing">Sedang Berlangsung</option>
-                    <option value="completed">Selesai</option>
-                  </select>
-                </div>
 
                 <div>
                   <label className="flex items-center space-x-2">

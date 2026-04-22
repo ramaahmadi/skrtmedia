@@ -23,6 +23,8 @@ export default function ArtikelPage() {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [articleForm, setArticleForm] = useState({
     title: '',
     paragraph: '',
@@ -88,6 +90,17 @@ export default function ArtikelPage() {
     }));
   };
 
+  const handleEditArticle = (article: Article) => {
+    setArticleForm({
+      title: article.title,
+      paragraph: article.paragraph,
+      images: article.images
+    });
+    setEditingId(article.id);
+    setIsEditing(true);
+    setShowModal(true);
+  };
+
   const handleSubmitArticle = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -95,6 +108,7 @@ export default function ArtikelPage() {
     try {
       const user = JSON.parse(localStorage.getItem('user_data') || '{}');
       const article = {
+        id: isEditing && editingId ? editingId : undefined,
         title: articleForm.title,
         paragraph: articleForm.paragraph,
         images: articleForm.images,
@@ -103,19 +117,30 @@ export default function ArtikelPage() {
         publishDate: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
       };
 
-      const response = await fetch('/api/artikel', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(article)
-      });
+      let response;
+      if (isEditing && editingId) {
+        response = await fetch('/api/artikel', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(article)
+        });
+      } else {
+        response = await fetch('/api/artikel', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(article)
+        });
+      }
 
       if (response.ok) {
         await loadArticles();
         setArticleForm({ title: '', paragraph: '', images: [] });
         setShowModal(false);
+        setIsEditing(false);
+        setEditingId(null);
       }
     } catch (error) {
-      console.error('Gagal menambahkan artikel:', error);
+      console.error('Gagal menyimpan artikel:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -147,6 +172,13 @@ export default function ArtikelPage() {
   const cancelDeleteArticle = () => {
     setShowDeleteDialog(false);
     setItemToDelete(null);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setIsEditing(false);
+    setEditingId(null);
+    setArticleForm({ title: '', paragraph: '', images: [] });
   };
 
   return (
@@ -252,6 +284,13 @@ export default function ArtikelPage() {
                     </p>
                     <div className="flex gap-2">
                       <button
+                        onClick={() => handleEditArticle(article)}
+                        className="rounded-lg p-2 text-gray-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20"
+                        title="Edit"
+                      >
+                        ✏️
+                      </button>
+                      <button
                         onClick={() => {
                           setSelectedItem(article);
                           setShowFormatDialog(true);
@@ -282,10 +321,10 @@ export default function ArtikelPage() {
               className="w-full max-w-2xl rounded-lg bg-white p-6 shadow-xl dark:bg-gray-dark max-h-[90vh] overflow-y-auto">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-xl font-bold text-dark dark:text-white">
-                  Tambah Artikel Baru
+                  {isEditing ? 'Edit Artikel' : 'Tambah Artikel Baru'}
                 </h2>
                 <button
-                  onClick={() => setShowModal(false)}
+                  onClick={handleCloseModal}
                   className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 >
                   ✕
@@ -363,7 +402,7 @@ export default function ArtikelPage() {
                 <div className="flex gap-3">
                   <button
                     type="button"
-                    onClick={() => setShowModal(false)}
+                    onClick={handleCloseModal}
                     className="flex-1 rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                   >
                     Batal
@@ -373,7 +412,7 @@ export default function ArtikelPage() {
                     disabled={isSubmitting}
                     className="flex-1 rounded-lg bg-primary px-4 py-2 font-medium text-white transition hover:bg-primary/90 disabled:opacity-50 shadow-btn hover:shadow-btn-hover"
                   >
-                    {isSubmitting ? 'Menyimpan...' : 'Simpan'}
+                    {isSubmitting ? 'Menyimpan...' : (isEditing ? 'Update' : 'Simpan')}
                   </button>
                 </div>
               </form>

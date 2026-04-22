@@ -23,6 +23,8 @@ export default function BeritaPage() {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -65,6 +67,17 @@ export default function BeritaPage() {
     });
   };
 
+  const handleEditNews = (news: EventNews) => {
+    setFormData({
+      title: news.title,
+      content: news.content,
+      category: news.category
+    });
+    setEditingId(news.id);
+    setIsEditing(true);
+    setShowModal(true);
+  };
+
   const handleSubmitNews = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -72,6 +85,7 @@ export default function BeritaPage() {
     try {
       const user = JSON.parse(localStorage.getItem('user_data') || '{}');
       const newsItem = {
+        id: isEditing && editingId ? editingId : undefined,
         title: formData.title,
         content: formData.content,
         category: formData.category,
@@ -80,24 +94,35 @@ export default function BeritaPage() {
         role: user.role || 'member'
       };
 
-      const response = await fetch('/api/berita', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newsItem)
-      });
+      let response;
+      if (isEditing && editingId) {
+        response = await fetch('/api/berita', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newsItem)
+        });
+      } else {
+        response = await fetch('/api/berita', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newsItem)
+        });
+      }
 
       if (response.ok) {
         await loadEventNews();
         setFormData({ title: '', content: '', category: 'kegiatan' });
         setShowModal(false);
+        setIsEditing(false);
+        setEditingId(null);
         setErrorMessage('');
       } else {
         const errorData = await response.json();
-        setErrorMessage(errorData.error || 'Gagal menambah berita');
+        setErrorMessage(errorData.error || 'Gagal menyimpan berita');
       }
     } catch (error) {
-      console.error('Error creating news:', error);
-      setErrorMessage('Gagal menambah berita. Silakan coba lagi.');
+      console.error('Error saving news:', error);
+      setErrorMessage('Gagal menyimpan berita. Silakan coba lagi.');
     } finally {
       setIsSubmitting(false);
     }
@@ -129,6 +154,14 @@ export default function BeritaPage() {
   const cancelDeleteNews = () => {
     setShowDeleteDialog(false);
     setItemToDelete(null);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setIsEditing(false);
+    setEditingId(null);
+    setFormData({ title: '', content: '', category: 'kegiatan' });
+    setErrorMessage('');
   };
 
   const getCategoryColor = (category: string) => {
@@ -230,7 +263,14 @@ export default function BeritaPage() {
                       {news.content}
                     </p>
                   </div>
-                  <div className="flex gap-2 ml-4">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEditNews(news)}
+                      className="rounded-lg p-2 text-gray-400 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/20"
+                      title="Edit"
+                    >
+                      ✏️
+                    </button>
                     <button
                       onClick={() => {
                         setSelectedItem(news);
@@ -260,10 +300,10 @@ export default function BeritaPage() {
             <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl dark:bg-gray-dark">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-xl font-bold text-dark dark:text-white">
-                  Tambah Berita Baru
+                  {isEditing ? 'Edit Berita' : 'Tambah Berita Baru'}
                 </h2>
                 <button
-                  onClick={() => setShowModal(false)}
+                  onClick={handleCloseModal}
                   className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 >
                   ✕
@@ -326,7 +366,7 @@ export default function BeritaPage() {
                 <div className="flex gap-3">
                   <button
                     type="button"
-                    onClick={() => setShowModal(false)}
+                    onClick={handleCloseModal}
                     className="flex-1 rounded-lg border border-gray-300 px-4 py-2 font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
                   >
                     Batal
@@ -336,7 +376,7 @@ export default function BeritaPage() {
                     disabled={isSubmitting}
                     className="flex-1 rounded-lg bg-primary px-4 py-2 font-medium text-white transition hover:bg-primary/90 disabled:opacity-50 shadow-btn hover:shadow-btn-hover"
                   >
-                    {isSubmitting ? 'Menyimpan...' : 'Simpan'}
+                    {isSubmitting ? 'Menyimpan...' : (isEditing ? 'Update' : 'Simpan')}
                   </button>
                 </div>
               </form>
