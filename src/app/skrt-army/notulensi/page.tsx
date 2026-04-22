@@ -12,7 +12,7 @@ interface MeetingNote {
   date: string;
   title: string;
   content: string;
-  createdBy: string;
+  created_by: string;
 }
 
 export default function NotulensiPage() {
@@ -63,7 +63,7 @@ export default function NotulensiPage() {
         date: meetingForm.date,
         title: meetingForm.title,
         content: meetingForm.content,
-        createdBy: user.name || 'Admin'
+        created_by: user.name || 'Admin'
       };
 
       const response = await fetch('/api/notulensi', {
@@ -232,7 +232,7 @@ export default function NotulensiPage() {
                 </p>
                 
                 <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                  <span>Oleh: {note.createdBy}</span>
+                  <span>Oleh: {note.created_by}</span>
                 </div>
               </div>
             ))

@@ -14,7 +14,7 @@ interface FinancialRecord {
   category: string;
   amount: number;
   description: string;
-  createdBy: string;
+  created_by: string;
 }
 
 export default function PembukuanPage() {
@@ -81,7 +81,7 @@ export default function PembukuanPage() {
         category: financialForm.category,
         amount: parseFloat(financialForm.amount),
         description: financialForm.description,
-        createdBy: user.name || 'Admin'
+        created_by: user.name || 'Admin'
       };
 
       const response = await fetch('/api/pembukuan', {
@@ -302,7 +302,7 @@ export default function PembukuanPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
-                        {record.createdBy}
+                        {record.created_by}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         <button
