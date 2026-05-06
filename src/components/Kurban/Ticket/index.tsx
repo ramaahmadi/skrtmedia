@@ -8,9 +8,9 @@ import Footer from "@/components/Kurban/Footer";
 import RegistrationForm from "./RegistrationForm";
 import DonationModal from "./DonationModal";
 import SuccessModal from "./SuccessModal";
-import { createClient } from "@/utils/supabase/client";
+// Supabase connection removed
 
-const supabase = createClient();
+// Supabase connection removed
 
 interface FormState {
   name: string;
@@ -108,11 +108,9 @@ const Ticket = () => {
     };
 
     try {
-      const { data, error } = await supabase.from("kurban_tickets").insert([payload]).select().single();
-      
-      if (error) throw error;
-
-      setSuccessTicket({ ticket_number: ticketNumber, data });
+      // Supabase connection removed - simulate successful registration
+      const mockData = { id: Date.now(), ...payload };
+      setSuccessTicket({ ticket_number: ticketNumber, data: mockData });
       setShowDonationDialog(false);
       setShowForm(false);
       setToast({ type: "success", message: "Pendaftaran berhasil!" });

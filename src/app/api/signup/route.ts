@@ -1,6 +1,4 @@
-import { createClient } from '@/utils/supabase/server'
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
 
 export async function POST(request: Request) {
   try {
@@ -13,31 +11,11 @@ export async function POST(request: Request) {
       )
     }
 
-    const supabase = await createClient(cookies())
-    
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          name,
-          phone,
-          role
-        }
-      }
-    })
-
-    if (error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      )
-    }
-
+    // Supabase authentication removed - return mock response
     return NextResponse.json({ 
       success: true,
-      user: data.user,
-      message: 'User created successfully' 
+      user: { id: Date.now(), email, name, phone, role },
+      message: 'User created successfully (mock)' 
     })
 
   } catch (error) {

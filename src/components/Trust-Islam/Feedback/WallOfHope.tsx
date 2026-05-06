@@ -3,16 +3,11 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { createClient } from "@supabase/supabase-js";
 import { 
   Heart, Sparkles, Users, Instagram, MessageCircle, 
   Check, Home
 } from "lucide-react";
 import Link from "next/link";
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 type StickyNote = {
   id: number;
@@ -44,14 +39,16 @@ export default function WallOfHopePage() {
 
   const fetchPublicNotes = async () => {
     try {
-      const { data } = await supabase
-        .from("feedback")
-        .select("id, sticky_content, name, created_at")
-        .not("sticky_content", "eq", "")
-        .order("created_at", { ascending: false })
-        .limit(20);
-      
-      if (data) setPublicNotes(data);
+      // Supabase connection removed - using mock data
+      const mockData: StickyNote[] = [
+        { id: 1, sticky_content: "Ingin lebih dekat dengan Allah", name: "Anonim", created_at: new Date().toISOString() },
+        { id: 2, sticky_content: "Cari teman diskusi agama", name: "Anonim", created_at: new Date().toISOString() },
+        { id: 3, sticky_content: "Pengen ikut kajian lagi", name: "Anonim", created_at: new Date().toISOString() },
+        { id: 4, sticky_content: "Ingin konsisten ibadah", name: "Anonim", created_at: new Date().toISOString() },
+        { id: 5, sticky_content: "Cari solusi masalah hati", name: "Anonim", created_at: new Date().toISOString() },
+        { id: 6, sticky_content: "Butuh lingkungan positif", name: "Anonim", created_at: new Date().toISOString() },
+      ];
+      setPublicNotes(mockData);
     } catch (error) {
       console.error("Error fetching notes:", error);
     } finally {

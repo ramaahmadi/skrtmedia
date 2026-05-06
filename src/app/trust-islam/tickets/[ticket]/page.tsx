@@ -1,9 +1,7 @@
 // app/trust-islam/tickets/[ticket]/page.tsx
 import React from "react";
 import TicketCard from "@/components/Trust-Islam/Ticket/TicketCard";
-import { createClient } from "@/utils/supabase/server";
-import { notFound } from "next/navigation";
-import { cookies } from "next/headers";
+// Supabase connection removed
 import TicketActionsClient from "@/components/Trust-Islam/Ticket/TicketActionsClient";
 import { FaWhatsapp } from "react-icons/fa";
 import { Metadata } from "next";
@@ -34,25 +32,36 @@ export default async function TicketConfirmationPage({ params }: Props) {
   const { ticket } = await params;
   const ticketNumber = ticket;
 
-  // server-side supabase client
-  const supabase = await createClient(cookies());
+  // Supabase connection removed - return mock data
+  const mockTicketData = {
+    id: ticketNumber,
+    ticket_number: ticketNumber,
+    name: "Mock User",
+    email: "mock@example.com",
+    phone: "08123456789",
+    donation_amount: 50000,
+    donation_bank: "Bank Jago",
+    created_at: new Date().toISOString(),
+    is_used: false,
+    ticket_type: "General",
+    gender: "male",
+    sex: "male",
+    jenis_kelamin: "male",
+    nama: "Mock User",
+    price: 50000,
+    qr_code_url: `/api/qrcode/${ticketNumber}`,
+    events: {
+      name: "Trust Islam",
+      event_name: "Trust Islam",
+      date: "2024-01-01",
+      event_date: "2024-01-01",
+      time: "19:00",
+      event_time: "19:00",
+      location: "Jakarta"
+    }
+  };
 
-  const { data: ticketRow, error } = await supabase
-    .from("tickets")
-    .select("*, events(*)")
-    .eq("ticket_number", ticketNumber)
-    .maybeSingle();
-
-  if (error) {
-    console.error("Supabase fetch error:", error);
-    return notFound();
-  }
-
-  if (!ticketRow) {
-    return notFound();
-  }
-
-  // mapping ke shape TicketCard
+  const ticketRow = mockTicketData;
   const ev = ticketRow.events ?? null;
   const ticketData = {
     id: ticketRow.ticket_number ?? String(ticketRow.id ?? ticketNumber),

@@ -1,30 +1,13 @@
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-console.log('Supabase URL:', supabaseUrl);
-console.log('Supabase Key:', supabaseKey ? 'Set' : 'Not set');
-
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing Supabase environment variables');
-  console.error('NEXT_PUBLIC_SUPABASE_URL:', supabaseUrl);
-  console.error('NEXT_PUBLIC_SUPABASE_ANON_KEY:', supabaseKey ? 'Set' : 'Not set');
-  throw new Error('Missing Supabase environment variables');
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Supabase connection removed
 
 export async function GET() {
   try {
-    const { data, error } = await supabase
-      .from('skrt_pembukuan')
-      .select('*')
-      .order('date', { ascending: false });
-
-    if (error) throw error;
-
-    return Response.json(data);
+    // Supabase connection removed - return mock data
+    const mockData = [
+      { id: 1, date: '2024-01-01', description: 'Mock pembukuan 1', amount: 100000 },
+      { id: 2, date: '2024-01-02', description: 'Mock pembukuan 2', amount: 200000 },
+    ];
+    return Response.json(mockData);
   } catch (error) {
     console.error('Error fetching pembukuan:', error);
     return Response.json({ error: 'Failed to fetch pembukuan' }, { status: 500 });
@@ -35,14 +18,9 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     
-    const { data, error } = await supabase
-      .from('skrt_pembukuan')
-      .insert([body])
-      .select();
-
-    if (error) throw error;
-
-    return Response.json(data[0]);
+    // Supabase connection removed - return mock response
+    const mockResponse = { id: Date.now(), ...body };
+    return Response.json(mockResponse);
   } catch (error) {
     console.error('Error creating pembukuan:', error);
     return Response.json({ error: 'Failed to create pembukuan' }, { status: 500 });
@@ -54,15 +32,9 @@ export async function PUT(request: Request) {
     const body = await request.json();
     const { id, ...updateData } = body;
     
-    const { data, error } = await supabase
-      .from('skrt_pembukuan')
-      .update(updateData)
-      .eq('id', id)
-      .select();
-
-    if (error) throw error;
-
-    return Response.json(data[0]);
+    // Supabase connection removed - return mock response
+    const mockResponse = { id, ...updateData, updated: true };
+    return Response.json(mockResponse);
   } catch (error) {
     console.error('Error updating pembukuan:', error);
     return Response.json({ error: 'Failed to update pembukuan' }, { status: 500 });
@@ -78,14 +50,8 @@ export async function DELETE(request: Request) {
       return Response.json({ error: 'ID is required' }, { status: 400 });
     }
 
-    const { error } = await supabase
-      .from('skrt_pembukuan')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw error;
-
-    return Response.json({ success: true });
+    // Supabase connection removed - return mock response
+    return Response.json({ success: true, deletedId: id });
   } catch (error) {
     console.error('Error deleting pembukuan:', error);
     return Response.json({ error: 'Failed to delete pembukuan' }, { status: 500 });

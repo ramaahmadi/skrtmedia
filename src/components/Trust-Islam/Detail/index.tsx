@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { TabItem, Tabs } from "flowbite-react";
 import { HiLocationMarker, HiAdjustments, HiClipboardList, HiUsers } from "react-icons/hi";
 import { MdDashboard } from "react-icons/md";
-import { createClient } from "src/utils/supabase/client";
+// Supabase connection removed
 
 // Komponen yang sudah dipisah
 import Toast from '../../Toast';
@@ -18,7 +18,7 @@ import RundownTab from "./TabItem/RundownTab";
 import RulesTab from "./TabItem/RulesTab";
 import LocationTab from "./TabItem/LocationTab";
 
-const supabase = createClient();
+// Supabase connection removed
 
 const Detail: React.FC = () => {
   // State management
@@ -130,11 +130,9 @@ const Detail: React.FC = () => {
     };
 
     try {
-      const { data, error } = await supabase.from("tickets").insert([payload]).select().single();
-      
-      if (error) throw error;
-
-      setSuccessTicket({ ticket_number: ticketNumber, data });
+      // Supabase connection removed - simulate successful registration
+      const mockData = { id: Date.now(), ...payload };
+      setSuccessTicket({ ticket_number: ticketNumber, data: mockData });
       setShowDonationDialog(false);
       setShowForm(false);
       setToast({ type: "success", message: "Pendaftaran berhasil!" });

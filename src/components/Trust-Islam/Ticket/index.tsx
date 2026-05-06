@@ -6,11 +6,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FaHome, FaSearch, FaTicketAlt, FaArrowLeft, FaWhatsapp, FaCopy, FaBars, FaEye } from "react-icons/fa";
 import TicketCard from "@/components/Trust-Islam/Ticket/TicketCard";
-import { createClient } from "@/utils/supabase/client";
+// Supabase connection removed
 import Footer from "@/components/Trust-Islam/Footer";
 import Header from "@/components/Trust-Islam/Header";
 
-const supabase = createClient();
+// Supabase connection removed
 
 type DBTicketRow = any;
 
@@ -65,19 +65,31 @@ const TicketsPage: React.FC = () => {
     setNotFound(false);
 
     try {
-      const res = await supabase
-        .from("tickets")
-        .select("*, events(*)")
-        .ilike("ticket_number", q)
-        .maybeSingle();
+      // Supabase connection removed - simulate ticket search
+      const mockRes = {
+        data: {
+          id: Date.now(),
+          ticket_number: q,
+          name: "Mock User",
+          email: "mock@example.com",
+          phone: "08123456789",
+          events: {
+            name: "Trust Islam",
+            date: "2024-01-01",
+            time: "19:00",
+            location: "Jakarta"
+          }
+        },
+        error: null
+      };
 
-      if (res.error) {
-        console.error("Supabase error:", res.error);
+      if (mockRes.error) {
+        console.error("Error:", mockRes.error);
         setError("Terjadi kesalahan saat mengambil data. Silakan coba lagi.");
         return;
       }
 
-      const row = res.data;
+      const row = mockRes.data;
       if (!row) {
         setNotFound(true);
         return;

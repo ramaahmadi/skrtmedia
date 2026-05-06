@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { createClient } from "@supabase/supabase-js";
 import { 
   ChevronLeft, ChevronRight, Send, Camera, Users, 
   BookOpen, Coffee, Instagram, MessageCircle, Heart,
@@ -13,10 +12,7 @@ import {
 } from "lucide-react";
 import { FaPray } from "react-icons/fa";
 
-// --- Setup Supabase ---
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Supabase connection removed
 
 // --- Tipe Data ---
 type FeedbackData = {
@@ -75,14 +71,13 @@ export default function TrustIslamFeedback() {
   }, []);
 
   const fetchPublicNotes = async () => {
-    const { data } = await supabase
-      .from("feedback")
-      .select("id, sticky_content, name, created_at")
-      .not("sticky_content", "eq", "")
-      .order("created_at", { ascending: false })
-      .limit(12);
-    
-    if (data) setPublicNotes(data);
+    // Supabase connection removed - using mock data
+    const mockData: StickyNote[] = [
+      { id: 1, sticky_content: "Ingin lebih dekat dengan Allah", name: "Anonim", created_at: new Date().toISOString() },
+      { id: 2, sticky_content: "Cari teman diskusi agama", name: "Anonim", created_at: new Date().toISOString() },
+      { id: 3, sticky_content: "Pengen ikut kajian lagi", name: "Anonim", created_at: new Date().toISOString() },
+    ];
+    setPublicNotes(mockData);
   };
 
   // --- Logic Navigasi ---
@@ -112,28 +107,18 @@ export default function TrustIslamFeedback() {
     setLoading(true);
     
     try {
-      // 1. Simpan data user ke Supabase
-      const { data, error } = await supabase
-        .from("feedback")
-        .insert([{
-          emoji_rating: formData.emoji_rating,
-          best_moment: formData.best_moment,
-          relevance_score: formData.relevance_score,
-          sticky_content: formData.sticky_content,
-          name: formData.name || "Anonim",
-          rating_overall: formData.rating_overall,
-        }])
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      if (data) {
-        setResponseId(data.id);
-        
-        // 2. Ambil data sticky notes orang lain untuk ditampilkan di Wall
-        await fetchPublicNotes();
-      }
+      // Supabase connection removed - simulate save
+      const mockId = Date.now();
+      setResponseId(mockId);
+      
+      // Add to local notes
+      const newNote: StickyNote = {
+        id: mockId,
+        sticky_content: formData.sticky_content,
+        name: formData.name || "Anonim",
+        created_at: new Date().toISOString()
+      };
+      setPublicNotes(prev => [newNote, ...prev.slice(0, 11)]);
       
       setLoading(false);
       handleNext();
@@ -172,29 +157,12 @@ export default function TrustIslamFeedback() {
   //   }
   // };
   const handleSubmitCriticism = async () => {
-    if (!responseId) {
-      alert("Error: Data tidak ditemukan. Silakan mulai dari awal.");
-      return;
-    }
-
+    // Supabase connection removed - simulate update
     setLoading(true);
     
     try {
-      // Gunakan upsert untuk update atau create
-      const { data, error } = await supabase
-        .from("feedback")
-        .upsert({
-          id: responseId, // Pastikan ID ada
-          criticism: formData.criticism,
-          suggestion: formData.suggestion,
-          rating_overall: formData.rating_overall,
-          updated_at: new Date().toISOString() // Tambahkan timestamp
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      
+      // Simulate update operation
+      await new Promise(resolve => setTimeout(resolve, 500));
       setLoading(false);
       handleNext();
     } catch (error) {
@@ -208,47 +176,23 @@ export default function TrustIslamFeedback() {
   const handleInstagramClickSkrt = async () => {
     window.open("https://instagram.com/skrtmedia.id", "_blank");
     setInstagramSkrtFollowed(true);
-    
-    if (responseId) {
-      await supabase
-        .from("feedback")
-        .update({ instagram_followed: true })
-        .eq("id", responseId);
-    }
+    // Supabase connection removed
   };
   const handleInstagramClickOdoj = async () => {
     window.open("https://instagram.com/odojkarawang", "_blank");
     setInstagramOdojFollowed(true);
-    
-    if (responseId) {
-      await supabase
-        .from("feedback")
-        .update({ instagram_followed: true })
-        .eq("id", responseId);
-    }
+    // Supabase connection removed
   };
   const handleInstagramClickHm = async () => {
     window.open("https://instagram.com/hallomuslimahid", "_blank");
     setInstagramHmFollowed(true);
-    
-    if (responseId) {
-      await supabase
-        .from("feedback")
-        .update({ instagram_followed: true })
-        .eq("id", responseId);
-    }
+    // Supabase connection removed
   };
 
   const handleContactClick = async () => {
     window.open("https://wa.me/6289647011970", "_blank");
     setContactInterest(true);
-    
-    if (responseId) {
-      await supabase
-        .from("feedback")
-        .update({ contact_interest: true })
-        .eq("id", responseId);
-    }
+    // Supabase connection removed
   };
 
   // --- Interaktivitas Tambahan ---

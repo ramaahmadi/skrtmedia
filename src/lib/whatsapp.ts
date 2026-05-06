@@ -1,9 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-const supabase = createClient(supabaseUrl!, supabaseKey!);
+// Supabase connection removed
 
 interface WhatsAppConfig {
   accountSid: string;
@@ -30,25 +25,9 @@ export async function sendWhatsAppNotification(
       phonesToSend = phoneNumbers;
       console.log('Using provided phone numbers:', phonesToSend);
     } else {
-      // Fetch all anggota phone numbers (fallback to original behavior)
-      console.log('Fetching all anggota phone numbers...');
-      const { data: anggota, error } = await supabase
-        .from('skrt_anggota')
-        .select('phone')
-        .not('phone', 'is', null);
-
-      if (error) {
-        console.error('Error fetching anggota:', error);
-        return { success: false, error: 'Failed to fetch anggota data' };
-      }
-
-      if (!anggota || anggota.length === 0) {
-        console.log('No anggota found to notify');
-        return { success: true };
-      }
-
-      phonesToSend = anggota.map((member) => member.phone);
-      console.log('Fetched anggota phones:', phonesToSend);
+      // Supabase connection removed - no fallback to fetch anggota
+      console.log('No phone numbers provided and Supabase is not available');
+      return { success: true };
     }
 
     if (phonesToSend.length === 0) {
