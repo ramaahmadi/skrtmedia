@@ -1,4 +1,68 @@
 {
-  "data": [],
-  "lastUpdated": "2026-05-06T06:49:14.749Z"
+  "data": [
+    {
+      "id": "5801a6e0-3dff-46b0-9394-642309d9224c",
+      "title": "Pelaksanaan Ibadah Qurban dan Distribusi Daging kepada Masyarakat",
+      "description": "Kegiatan qurban merupakan rangkaian ibadah tahunan yang dilaksanakan pada Hari Raya Idul Adha. Kegiatan ini meliputi proses pengumpulan dana atau hewan qurban, penyembelihan sesuai syariat Islam, hingga pendistribusian daging kepada masyarakat yang berhak menerima.\nPelaksanaan kegiatan ini biasanya melibatkan panitia khusus yang bertugas memastikan seluruh proses berjalan tertib, higienis, dan sesuai ketentuan agama.",
+      "date": "2026-05-27",
+      "time": "08:00",
+      "locations": [
+        "-6.324292408273558, 107.3008274518581"
+      ],
+      "status": "upcoming",
+      "featured": false,
+      "hero_title": "Qurban",
+      "hero_subtitle": "“Menebar Kepedulian, Menguatkan Kebersamaan melalui Ibadah Qurban”",
+      "hero_quote": "Berkurban bukan hanya tentang menyembelih hewan, tetapi tentang menyembelih ego dan menumbuhkan keikhlasan dalam berbagi.",
+      "about_section": {
+        "background": "Ibadah qurban memiliki nilai spiritual dan sosial yang tinggi dalam kehidupan umat Islam. Selain sebagai bentuk ketaatan kepada Allah SWT, qurban juga menjadi sarana untuk berbagi kepada sesama, khususnya masyarakat yang membutuhkan.\nDi lingkungan masyarakat, kegiatan ini juga mempererat tali silaturahmi, meningkatkan rasa kepedulian sosial, serta menumbuhkan semangat gotong royong antar warga.",
+        "goals": [
+          "1. Menjalankan ibadah qurban sebagai bentuk ketaatan kepada Allah SWT.",
+          "2. Meningkatkan kepedulian sosial terhadap masyarakat yang membutuhkan.",
+          "3. Mempererat hubungan silaturahmi antar warga.",
+          "4. Menumbuhkan semangat kebersamaan dan gotong royong.",
+          "5. Menyalurkan daging qurban secara merata dan tepat sasaran."
+        ]
+      },
+      "registration_link": "https://qurbanbarengskrt2026.vercel.app/",
+      "ticket_price": 2000000,
+      "max_participants": 0,
+      "contact_person": "Admin SKRT",
+      "contact_phone": 81234567890,
+      "sponsors": [],
+      "media_partners": []
+    },
+    {
+      "id": "f54c9402-4af7-43ba-aee8-88cde0ab7575",
+      "title": "Trust Islam - Temukan Kembali Arahmu",
+      "description": "Di tengah arus informasi yang tak terbendung, mudah sekali kita merasa bingung dan kehilangan pegangan. Kami hadir untuk menciptakan sebuah ruang jeda—sebuah jembatan untuk terhubung kembali dengan nilai-nilai yang memberi ketenangan dan tujuan hidup.",
+      "date": "2025-06-15",
+      "time": "16:00",
+      "locations": [
+        "Resto dan Cafe Wardes"
+      ],
+      "status": "completed",
+      "featured": false,
+      "hero_title": "TRUST ISLAM",
+      "hero_subtitle": "Saat logika dan perasaan seolah tak sejalan, ke mana kita harus menaruh percaya?",
+      "hero_quote": "Bukan dunia yang salah, mungkin kita yang lupa arah.",
+      "about_section": {
+        "background": "Di era digital yang penuh distraksi, banyak dari kita yang merasa semakin tahu banyak, semakin bingung. Muncul krisis kepercayaan, bukan hanya pada orang lain, tapi juga pada nilai-nilai yang seharusnya kita pegang.",
+        "goals": [
+          "Menemukan Solusi Praktis",
+          "Memperkuat Pegangan Hidup",
+          "Menjawab Keraguan",
+          "Membangun Silaturahmi"
+        ]
+      },
+      "registration_link": null,
+      "ticket_price": 0,
+      "max_participants": 0,
+      "contact_person": null,
+      "contact_phone": null,
+      "sponsors": [],
+      "media_partners": []
+    }
+  ],
+  "lastUpdated": "2026-05-06T07:31:14.253Z"
 }

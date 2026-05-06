@@ -1,0 +1,82 @@
+{
+  "data": [
+    {
+      "id": "0f35f54a-a030-421d-abb0-b3afb93aaef0",
+      "name": "IYUS",
+      "phone": 85891214875,
+      "position": null,
+      "email": null,
+      "join_date": "21/4/2026",
+      "is_admin": false,
+      "created_at": "2026-04-21 06:45:09.778203+00",
+      "updated_at": "2026-04-21 06:45:09.778203+00"
+    },
+    {
+      "id": "4266db20-0312-4a44-8f65-473d349370f8",
+      "name": "JAY",
+      "phone": 895336899152,
+      "position": null,
+      "email": null,
+      "join_date": "21/4/2026",
+      "is_admin": false,
+      "created_at": "2026-04-21 06:47:59.215831+00",
+      "updated_at": "2026-04-21 06:47:59.215831+00"
+    },
+    {
+      "id": "70c7aece-5999-4ec7-ac32-eafb927382ca",
+      "name": "DENTA",
+      "phone": 895338683425,
+      "position": null,
+      "email": null,
+      "join_date": "21/4/2026",
+      "is_admin": false,
+      "created_at": "2026-04-21 06:46:17.154895+00",
+      "updated_at": "2026-04-21 06:46:17.154895+00"
+    },
+    {
+      "id": "9c151bab-4f39-4e93-be52-8313c13531ff",
+      "name": "ADI",
+      "phone": 89647011970,
+      "position": null,
+      "email": null,
+      "join_date": "21/4/2026",
+      "is_admin": true,
+      "created_at": "2026-04-21 02:09:14.998473+00",
+      "updated_at": "2026-04-21 03:44:37.70985+00"
+    },
+    {
+      "id": "b833f327-25bf-43d9-be29-df926eb2b425",
+      "name": "DAFFA",
+      "phone": 81383933683,
+      "position": null,
+      "email": null,
+      "join_date": "21/4/2026",
+      "is_admin": false,
+      "created_at": "2026-04-21 06:45:28.300393+00",
+      "updated_at": "2026-04-21 06:45:28.300393+00"
+    },
+    {
+      "id": "ebd47d25-0b88-4ff5-836a-5ac16ce210cf",
+      "name": "FACHRI",
+      "phone": 881011411120,
+      "position": null,
+      "email": null,
+      "join_date": "21/4/2026",
+      "is_admin": false,
+      "created_at": "2026-04-21 06:46:50.689824+00",
+      "updated_at": "2026-04-21 06:46:50.689824+00"
+    },
+    {
+      "id": "ec20beaf-ec46-4e49-bec8-07fc226ab012",
+      "name": "RAMA",
+      "phone": 82122451622,
+      "position": null,
+      "email": null,
+      "join_date": null,
+      "is_admin": true,
+      "created_at": "2026-04-20 22:56:59.407061+00",
+      "updated_at": "2026-04-21 03:44:05.929149+00"
+    }
+  ],
+  "lastUpdated": "2026-05-06T07:31:14.243Z"
+}

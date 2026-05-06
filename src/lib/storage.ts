@@ -139,6 +139,8 @@ export class FileStorage<T> {
 let kegiatanStorage: FileStorage<any> | null = null;
 let anggotaStorage: FileStorage<any> | null = null;
 let artikelStorage: FileStorage<any> | null = null;
+let beritaStorage: FileStorage<any> | null = null;
+let notulensiStorage: FileStorage<any> | null = null;
 
 // Get storage instances
 export function getKegiatanStorage(): FileStorage<any> {
@@ -160,4 +162,18 @@ export function getArtikelStorage(): FileStorage<any> {
     artikelStorage = new FileStorage<any>('artikel');
   }
   return artikelStorage;
+}
+
+export function getBeritaStorage(): FileStorage<any> {
+  if (!beritaStorage) {
+    beritaStorage = new FileStorage<any>('berita');
+  }
+  return beritaStorage;
+}
+
+export function getNotulensiStorage(): FileStorage<any> {
+  if (!notulensiStorage) {
+    notulensiStorage = new FileStorage<any>('notulensi');
+  }
+  return notulensiStorage;
 }
