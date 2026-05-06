@@ -80,7 +80,7 @@ const prayerRequests = [
   {
     id: 2,
     name: "Siti Aminah",
-    request: "Doakan kelancaran usaha bisnis saya",
+    request: "Doakan Kelancaran usaha bisnis saya",
     timestamp: "2024-01-15 11:15",
     status: "pending"
   }
