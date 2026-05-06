@@ -1,0 +1,24 @@
+{
+  "data": [
+    {
+      "id": "test-file-storage-2024",
+      "title": "Test File Storage",
+      "description": "Testing persistence",
+      "date": "2024-12-01",
+      "time": "",
+      "locations": [
+        "Test Location"
+      ],
+      "status": "upcoming",
+      "featured": false,
+      "about_section": {
+        "goals": []
+      },
+      "ticket_price": 0,
+      "max_participants": 0,
+      "sponsors": [],
+      "media_partners": []
+    }
+  ],
+  "lastUpdated": "2026-05-06T06:16:02.845Z"
+}
