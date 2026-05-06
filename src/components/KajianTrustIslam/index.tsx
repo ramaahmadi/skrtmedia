@@ -8,7 +8,7 @@ import {
   BookOpen, Coffee, Instagram, MessageCircle, Heart,
   Mic, MessageSquare, PenTool, Lightbulb, Mail, Check,
   Star, AlertCircle, ThumbsUp, HelpCircle,
-  Sparkles, ArrowRight, Sun, Moon, Cloud
+  Sparkles, ArrowRight, Sun, Moon, Cloud, Target
 } from "lucide-react";
 import { FaPray } from "react-icons/fa";
 
@@ -127,7 +127,7 @@ export default function KajianTrustIslam() {
               <h4 className="font-bold mb-2">Contoh Caption:</h4>
               <p className="text-sm bg-gray-100 p-4 rounded-md">
                 Punya banyak pertanyaan tapi bingung harus percaya sama siapa? Ngerasa ada yang salah tapi nggak
-                tahu apa? Mungkin ini bukan sekadar <em>trust issue</em> biasa. Yuk, kita bedah dan temukan jawabannya
+                tahu apa? Mungkin ini bukan sekadar <em>trust issue</em> Biasa. Yuk, kita bedah dan temukan jawabannya
                 bersama di <strong>KAJIAN TRUST <span className="line-through decoration-2 decoration-[#0EA5E9]">ISSUE</span> ISLAM</strong>.
               </p>
             </div>
@@ -275,7 +275,8 @@ export default function KajianTrustIslam() {
                 </div>
               </div>
             </div>
-          );
+          </div>
+        );
 
       default:
         return null;
@@ -332,7 +333,7 @@ export default function KajianTrustIslam() {
               </Link>
             </nav>
           </div>
-        </div>
+        </header>
 
         {/* Mobile Navigation */}
         <AnimatePresence>
