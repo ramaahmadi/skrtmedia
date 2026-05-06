@@ -22,7 +22,7 @@ export default function RootLayout({
 }) {
   const pathname = usePathname();
   // Trust-Islam, SKRT Army, Kurban, and Qurban Registration pages render their own custom header/footer.
-  const showGlobalChrome = !pathname?.startsWith("/trust-islam") && !pathname?.startsWith("/skrt-army") && !pathname?.startsWith("/kurban") && !pathname?.startsWith("/qurban-registration");
+  const showGlobalChrome = !pathname?.startsWith("/trust-islam") && !pathname?.startsWith("/skrt-army") && !pathname?.startsWith("/kurban") && !pathname?.startsWith("/qurban_registration");
 
   return (
     <html suppressHydrationWarning lang="en" className={`${inter.className} ${caveat.variable}`}>
