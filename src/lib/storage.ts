@@ -14,9 +14,8 @@ export class FileStorage<T> {
   private lastLoaded: string = '';
 
   constructor(fileName: string) {
-    // Use /tmp directory for production (Vercel), public/data for development
-    const isProduction = process.env.NODE_ENV === 'production';
-    const dataDir = isProduction ? '/tmp' : path.join(process.cwd(), 'public', 'data');
+    // Always use public/data directory for both development and production
+    const dataDir = path.join(process.cwd(), 'public', 'data');
     this.filePath = path.join(dataDir, `${fileName}.json`);
   }
 
