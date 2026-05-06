@@ -21,8 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  // Trust-Islam, SKRT Army, and Kurban pages render their own custom header/footer.
-  const showGlobalChrome = !pathname?.startsWith("/trust-islam") && !pathname?.startsWith("/skrt-army") && !pathname?.startsWith("/kurban");
+  // Trust-Islam, SKRT Army, Kurban, and Qurban Registration pages render their own custom header/footer.
+  const showGlobalChrome = !pathname?.startsWith("/trust-islam") && !pathname?.startsWith("/skrt-army") && !pathname?.startsWith("/kurban") && !pathname?.startsWith("/qurban-registration");
 
   return (
     <html suppressHydrationWarning lang="en" className={`${inter.className} ${caveat.variable}`}>
