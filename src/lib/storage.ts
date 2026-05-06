@@ -14,8 +14,10 @@ export class FileStorage<T> {
   private lastLoaded: string = '';
 
   constructor(fileName: string) {
-    // Simpan file di public/data agar bisa diakses
-    this.filePath = path.join(process.cwd(), 'public', 'data', `${fileName}.json`);
+    // Use /tmp directory for production (Vercel), public/data for development
+    const isProduction = process.env.NODE_ENV === 'production';
+    const dataDir = isProduction ? '/tmp' : path.join(process.cwd(), 'public', 'data');
+    this.filePath = path.join(dataDir, `${fileName}.json`);
   }
 
   // Load data dari file
@@ -64,14 +66,18 @@ export class FileStorage<T> {
         lastUpdated: new Date().toISOString()
       };
 
-      // Write to file
-      await fs.writeFile(this.filePath, JSON.stringify(storageData, null, 2));
-      this.data = data;
+      // Write to file with atomic operation
+      const tempPath = `${this.filePath}.tmp`;
+      await fs.writeFile(tempPath, JSON.stringify(storageData, null, 2));
+      await fs.rename(tempPath, this.filePath);
       
+      this.data = data;
       console.log(`Saved ${data.length} items to ${this.filePath}`);
     } catch (error) {
       console.error(`Error saving data to ${this.filePath}:`, error);
-      throw error;
+      // Fallback to memory-only if file write fails
+      this.data = data;
+      console.log('Fallback: Data kept in memory only');
     }
   }
 

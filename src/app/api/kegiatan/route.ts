@@ -108,17 +108,24 @@ export async function DELETE(request: Request) {
       return Response.json({ error: 'ID is required' }, { status: 400 });
     }
 
+    console.log('Attempting to delete activity with ID:', id);
+    
     // Hapus dari file storage
     const success = await kegiatanStorage.delete(id);
     
     if (!success) {
+      console.log('Activity not found for deletion:', id);
       return Response.json({ error: 'Activity not found' }, { status: 404 });
     }
 
-    console.log('Activity deleted and removed from file:', id);
+    console.log('Activity deleted successfully:', id);
     return Response.json({ success: true });
   } catch (error) {
     console.error('Error deleting kegiatan:', error);
-    return Response.json({ error: 'Failed to delete kegiatan' }, { status: 500 });
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack');
+    return Response.json({ 
+      error: 'Failed to delete kegiatan', 
+      details: error instanceof Error ? error.message : 'Unknown error' 
+    }, { status: 500 });
   }
 }
