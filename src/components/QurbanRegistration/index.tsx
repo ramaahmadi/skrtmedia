@@ -57,44 +57,48 @@ export default function QurbanRegistration() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-slate-50">
       {/* Left Sidebar - Green Background */}
-      <div className="w-full lg:w-1/2 bg-gradient-to-br from-green-600 to-green-700 text-white p-6 lg:p-12 flex flex-col justify-between">
+      <div className="w-full lg:w-1/2 bg-gradient-to-br from-slate-950 via-emerald-900 to-emerald-700 text-white p-6 lg:p-12 flex flex-col justify-between">
         <div>
           <div className="mb-6 lg:mb-8">
-            <h1 className="text-2xl lg:text-3xl font-bold mb-2">Qurban Bersama SKRT</h1>
+            <div className="inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-sm">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-emerald-200">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                  <path d="M12 5l7 7-7 7" />
+                </svg>
+              </div>
+              <span>QurbanConnect</span>
+            </div>
           </div>
           
           <div className="mb-8 lg:mb-12">
-            <h2 className="text-2xl lg:text-4xl font-bold mb-4">Kami Menerima & Menyalurkan Hewan Qurban.</h2>
-            <p className="text-base lg:text-lg text-green-100 leading-relaxed">
-              Qurban Bersama SKRT hadir untuk mempermudah ibadah qurban dan distribusi daging kepada yang membutuhkan.
+            <h2 className="text-3xl lg:text-5xl font-bold tracking-tight leading-tight mb-4">
+              Sempurnakan <span className="text-emerald-200">Ibadah Anda.</span>
+            </h2>
+            <p className="text-base lg:text-lg text-slate-200 leading-relaxed max-w-xl">
+              Penyaluran hewan qurban dan donasi menjadi lebih mudah, transparan, dan tepat sasaran bersama kami.
             </p>
           </div>
           
-          <div className="space-y-3 lg:space-y-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 lg:w-12 lg:h-12 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+          <div className="space-y-4 lg:space-y-5">
+            <div className="flex items-start gap-3 rounded-3xl border border-white/15 bg-white/10 p-4 shadow-sm">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-200/20 text-emerald-100">
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7" /></svg>
               </div>
               <div>
-                <h3 className="font-semibold text-base lg:text-lg">Amanah & Terpercaya</h3>
-                <p className="text-green-100 text-sm lg:text-base">Distribusi terjamin dan transparan</p>
+                <h3 className="font-semibold text-base lg:text-lg text-white">Amanah & Terpercaya</h3>
+                <p className="text-slate-200 text-sm lg:text-base">Distribusi terjamin dan transparan.</p>
               </div>
             </div>
             
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 lg:w-12 lg:h-12 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
+            <div className="flex items-start gap-3 rounded-3xl border border-white/15 bg-white/10 p-4 shadow-sm">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-200/20 text-emerald-100">
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
               </div>
               <div>
-                <h3 className="font-semibold text-base lg:text-lg">Distribusi Pelosok Negeri</h3>
-                <p className="text-green-100 text-sm lg:text-base">Menjangkau daerah terpencil</p>
+                <h3 className="font-semibold text-base lg:text-lg text-white">Distribusi Pelosok Negeri</h3>
+                <p className="text-slate-200 text-sm lg:text-base">Menjangkau daerah terpencil.</p>
               </div>
             </div>
           </div>
@@ -111,26 +115,26 @@ export default function QurbanRegistration() {
       </div>
 
       {/* Right Section - Form */}
-      <div className="w-full lg:w-1/2 bg-white p-6 lg:p-12 relative">
-        <div className="max-w-md mx-auto">
+      <div className="w-full lg:w-1/2 p-6 lg:p-12 min-h-screen flex items-center justify-center">
+        <div className="w-full max-w-xl rounded-[40px] bg-white p-6 lg:p-8 shadow-[0_40px_120px_-40px_rgba(15,23,42,0.35)] border border-slate-200">
           {/* Tabs */}
-          <div className="flex border-b border-gray-200 mb-6 lg:mb-8">
+          <div className="inline-flex gap-2 rounded-full bg-slate-100 p-1 mb-6 lg:mb-8">
             <button
               onClick={() => setActiveTab('registration')}
-              className={`pb-3 lg:pb-4 px-1 font-semibold text-base lg:text-lg ${
+              className={`rounded-full px-5 py-2 text-sm lg:text-base font-semibold transition ${
                 activeTab === 'registration'
-                  ? 'text-green-600 border-b-2 border-green-600'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-white text-slate-950 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-700'
               }`}
             >
               Pendaftaran Qurban
             </button>
             <button
               onClick={() => setActiveTab('donation')}
-              className={`pb-3 lg:pb-4 px-1 font-semibold text-base lg:text-lg ml-6 lg:ml-8 ${
+              className={`rounded-full px-5 py-2 text-sm lg:text-base font-semibold transition ${
                 activeTab === 'donation'
-                  ? 'text-green-600 border-b-2 border-green-600'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-white text-slate-950 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-700'
               }`}
             >
               Infaq & Donasi
@@ -196,125 +200,101 @@ export default function QurbanRegistration() {
                 <div className="space-y-3">
                   <div
                     onClick={() => setSelectedAnimal('kelasC')}
-                    className={`border-2 rounded-lg p-3 lg:p-4 cursor-pointer transition-all ${
+                    className={`rounded-3xl p-4 cursor-pointer transition-all ${
                       selectedAnimal === 'kelasC'
-                        ? 'border-green-500 bg-green-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border border-emerald-600 bg-emerald-50'
+                        : 'border border-slate-200 bg-slate-50 hover:border-slate-300'
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <div className={`w-4 h-4 lg:w-5 lg:h-5 rounded-full border-2 mr-3 flex-shrink-0 ${
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`flex h-10 w-10 items-center justify-center rounded-2xl border-2 ${
                           selectedAnimal === 'kelasC'
-                            ? 'border-green-500 bg-green-500'
-                            : 'border-gray-300'
+                            ? 'border-emerald-600 bg-emerald-600 text-white'
+                            : 'border-slate-200 bg-slate-100 text-slate-500'
                         }`}>
-                          {selectedAnimal === 'kelasC' ? (
-                            <svg className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
-                            </svg>
-                          ) : (
-                            <svg className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-gray-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <rect x="4" y="4" width="16" height="16" strokeWidth={2} />
-                            </svg>
-                          )}
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={selectedAnimal === 'kelasC' ? 3 : 2} d="M9 5l7 7-7 7" />
+                          </svg>
                         </div>
                         <span className="font-medium text-base lg:text-lg">Domba Kelas C</span>
                       </div>
-                      <span className="text-gray-600 text-sm lg:text-base">Rp 2.600.000 (± 23kg)</span>
+                      <span className="text-slate-500 text-sm lg:text-base">Rp 2.600.000 (± 23kg)</span>
                     </div>
                   </div>
 
                   <div
                     onClick={() => setSelectedAnimal('kelasB')}
-                    className={`border-2 rounded-lg p-3 lg:p-4 cursor-pointer transition-all ${
+                    className={`rounded-3xl p-4 cursor-pointer transition-all ${
                       selectedAnimal === 'kelasB'
-                        ? 'border-green-500 bg-green-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border border-emerald-600 bg-emerald-50'
+                        : 'border border-slate-200 bg-slate-50 hover:border-slate-300'
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <div className={`w-4 h-4 lg:w-5 lg:h-5 rounded-full border-2 mr-3 flex-shrink-0 ${
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`flex h-10 w-10 items-center justify-center rounded-2xl border-2 ${
                           selectedAnimal === 'kelasB'
-                            ? 'border-green-500 bg-green-500'
-                            : 'border-gray-300'
+                            ? 'border-emerald-600 bg-emerald-600 text-white'
+                            : 'border-slate-200 bg-slate-100 text-slate-500'
                         }`}>
-                          {selectedAnimal === 'kelasB' ? (
-                            <svg className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
-                            </svg>
-                          ) : (
-                            <svg className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-gray-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <rect x="4" y="4" width="16" height="16" strokeWidth={2} />
-                            </svg>
-                          )}
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={selectedAnimal === 'kelasB' ? 3 : 2} d="M9 5l7 7-7 7" />
+                          </svg>
                         </div>
                         <span className="font-medium text-base lg:text-lg">Domba Kelas B</span>
                       </div>
-                      <span className="text-gray-600 text-sm lg:text-base">Rp 3.000.000 (± 28kg)</span>
+                      <span className="text-slate-500 text-sm lg:text-base">Rp 3.000.000 (± 28kg)</span>
                     </div>
                   </div>
 
                   <div
                     onClick={() => setSelectedAnimal('kelasA')}
-                    className={`border-2 rounded-lg p-3 lg:p-4 cursor-pointer transition-all ${
+                    className={`rounded-3xl p-4 cursor-pointer transition-all ${
                       selectedAnimal === 'kelasA'
-                        ? 'border-green-500 bg-green-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border border-emerald-600 bg-emerald-50'
+                        : 'border border-slate-200 bg-slate-50 hover:border-slate-300'
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <div className={`w-4 h-4 lg:w-5 lg:h-5 rounded-full border-2 mr-3 flex-shrink-0 ${
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`flex h-10 w-10 items-center justify-center rounded-2xl border-2 ${
                           selectedAnimal === 'kelasA'
-                            ? 'border-green-500 bg-green-500'
-                            : 'border-gray-300'
+                            ? 'border-emerald-600 bg-emerald-600 text-white'
+                            : 'border-slate-200 bg-slate-100 text-slate-500'
                         }`}>
-                          {selectedAnimal === 'kelasA' ? (
-                            <svg className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
-                            </svg>
-                          ) : (
-                            <svg className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-gray-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <rect x="4" y="4" width="16" height="16" strokeWidth={2} />
-                            </svg>
-                          )}
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={selectedAnimal === 'kelasA' ? 3 : 2} d="M9 5l7 7-7 7" />
+                          </svg>
                         </div>
                         <span className="font-medium text-base lg:text-lg">Domba Kelas A</span>
                       </div>
-                      <span className="text-gray-600 text-sm lg:text-base">Rp 3.400.000 (± 33kg)</span>
+                      <span className="text-slate-500 text-sm lg:text-base">Rp 3.400.000 (± 33kg)</span>
                     </div>
                   </div>
 
                   <div
                     onClick={() => setSelectedAnimal('istimewa')}
-                    className={`border-2 rounded-lg p-3 lg:p-4 cursor-pointer transition-all ${
+                    className={`rounded-3xl p-4 cursor-pointer transition-all ${
                       selectedAnimal === 'istimewa'
-                        ? 'border-green-500 bg-green-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border border-emerald-600 bg-emerald-50'
+                        : 'border border-slate-200 bg-slate-50 hover:border-slate-300'
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <div className={`w-4 h-4 lg:w-5 lg:h-5 rounded-full border-2 mr-3 flex-shrink-0 ${
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`flex h-10 w-10 items-center justify-center rounded-2xl border-2 ${
                           selectedAnimal === 'istimewa'
-                            ? 'border-green-500 bg-green-500'
-                            : 'border-gray-300'
+                            ? 'border-emerald-600 bg-emerald-600 text-white'
+                            : 'border-slate-200 bg-slate-100 text-slate-500'
                         }`}>
-                          {selectedAnimal === 'istimewa' ? (
-                            <svg className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
-                            </svg>
-                          ) : (
-                            <svg className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-gray-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <rect x="4" y="4" width="16" height="16" strokeWidth={2} />
-                            </svg>
-                          )}
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={selectedAnimal === 'istimewa' ? 3 : 2} d="M9 5l7 7-7 7" />
+                          </svg>
                         </div>
                         <span className="font-medium text-base lg:text-lg">Domba Istimewa</span>
                       </div>
-                      <span className="text-gray-600 text-sm lg:text-base">Rp 5.800.000 (± 55kg)</span>
+                      <span className="text-slate-500 text-sm lg:text-base">Rp 5.800.000 (± 55kg)</span>
                     </div>
                   </div>
                 </div>
@@ -337,7 +317,7 @@ export default function QurbanRegistration() {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full bg-blue-900 text-white py-3 lg:py-4 px-6 rounded-lg font-semibold text-base lg:text-lg hover:bg-blue-800 transition-colors flex items-center justify-center space-x-2"
+                className="w-full bg-slate-950 text-white py-4 px-6 rounded-3xl font-semibold text-base lg:text-lg hover:bg-slate-800 transition-colors flex items-center justify-center space-x-2 shadow-lg"
               >
                 <span>Konfirmasi & Lanjut ke WhatsApp</span>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -347,102 +327,125 @@ export default function QurbanRegistration() {
             </form>
           ) : (
             <div className="space-y-6">
-              {/* Salurkan Kebaikan Section */}
-              <div className="text-center mb-8">
-                <div className="flex justify-center mb-4">
-                  <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-                    <svg className="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                    </svg>
-                  </div>
-                </div>
-                <h3 className="text-xl lg:text-2xl font-bold mb-3">Salurkan Kebaikan</h3>
-                <p className="text-gray-600 text-sm lg:text-base max-w-md mx-auto">
-                  Donasi Anda akan kami gunakan untuk keperluan operasional dan memperluas manfaat qurban bagi lebih banyak penerima.
+              <div className="rounded-[32px] border border-slate-200 bg-slate-50 p-6 shadow-sm">
+                <h3 className="text-xl lg:text-2xl font-semibold mb-2">Salurkan Kebaikan</h3>
+                <p className="text-slate-600 text-sm lg:text-base max-w-2xl">
+                  Donasi Anda akan kami gunakan untuk operasional dan memperluas manfaat qurban kepada lebih banyak penerima.
                 </p>
               </div>
 
-              {/* Bank Transfer Section */}
-              <div className="bg-gray-900 text-white rounded-xl p-6 mb-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-lg font-semibold">BANK MANDIRI</h4>
-                  <div className="flex space-x-2">
-                    <button className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                      </svg>
-                    </button>
-                    <button className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.032 4.026a9.001 9.001 0 01-7.432 0m9.032-4.026A9.001 9.001 0 0112 3c-4.474 0-8.268 3.12-9.032 7.326m0 0A9.001 9.001 0 0012 21c4.474 0 8.268-3.12 9.032-7.326" />
-                      </svg>
-                    </button>
+              <div className="grid gap-6 lg:grid-cols-2">
+                <div className="rounded-[32px] bg-slate-950 text-white p-6 shadow-lg">
+                  <div className="flex items-center justify-between mb-6 gap-4">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-emerald-300">Bank Mandiri</p>
+                      <h4 className="mt-3 text-2xl font-semibold">Transfer Bank</h4>
+                    </div>
+                    <div className="rounded-full bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-200">
+                      Rekening
+                    </div>
+                  </div>
+                  <div className="space-y-4 text-sm text-slate-200">
+                    <div className="rounded-3xl bg-white/5 p-4">
+                      <p className="text-xs uppercase tracking-[0.2em] text-emerald-200">No. Rekening</p>
+                      <p className="mt-2 text-lg font-semibold tracking-tight">1730020561313</p>
+                    </div>
+                    <div className="rounded-3xl bg-white/5 p-4">
+                      <p className="text-xs uppercase tracking-[0.2em] text-emerald-200">Atas Nama</p>
+                      <p className="mt-2 text-lg font-semibold tracking-tight">Denta Herdiansyah</p>
+                    </div>
+                    <div className="rounded-3xl bg-white/5 p-4">
+                      <p className="text-xs uppercase tracking-[0.2em] text-emerald-200">Kontak</p>
+                      <p className="mt-2 text-lg font-semibold tracking-tight">0895-3386-83425 (Denta)</p>
+                    </div>
                   </div>
                 </div>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between py-2 border-b border-gray-800">
-                    <span className="text-gray-400">No. Rekening</span>
-                    <span className="font-mono text-lg">1730020561313</span>
+
+                <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+                  <h4 className="text-lg font-semibold mb-4">Informasi Tambahan</h4>
+                  <div className="space-y-4 text-sm text-slate-600">
+                    <div className="rounded-3xl bg-slate-50 p-4">
+                      <p className="font-semibold">Denta</p>
+                      <p className="mt-1 text-sm text-slate-500">0895-3386-83425</p>
+                    </div>
+                    <div className="rounded-3xl bg-slate-50 p-4">
+                      <p className="font-semibold">Hilmy</p>
+                      <p className="mt-1 text-sm text-slate-500">0896-0340-5077</p>
+                    </div>
+                    <div className="rounded-3xl bg-slate-50 p-4">
+                      <p className="font-semibold">Dana</p>
+                      <p className="mt-1 text-sm text-slate-500">0853538683425 (a.n. Denta Herdiansyah)</p>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between py-2 border-b border-gray-800">
-                    <span className="text-gray-400">A.N.</span>
-                    <span>Denta Herdiansyah</span>
-                  </div>
-                  <div className="flex items-center justify-between py-2">
-                    <span className="text-gray-400">Kontak</span>
-                    <span className="text-sm lg:text-base">0895-3386-83425 (Denta)</span>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
-                <h4 className="text-lg font-semibold mb-3">Informasi Tambahan</h4>
-                <div className="space-y-2 text-sm text-gray-700">
-                  <p>0895-3386-83425 (Denta)</p>
-                  <p>0896-0340-5077 (Hilmy)</p>
-                  <p>Dana: 0853538683425 (a.n. Denta Herdiansyah)</p>
                 </div>
               </div>
 
-              {/* QRIS Section */}
-              <div className="border border-gray-200 rounded-xl overflow-hidden">
+              <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
                 <button
                   onClick={() => setIsQrisOpen(!isQrisOpen)}
-                  className="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                  className="w-full flex items-center justify-between rounded-3xl bg-slate-100 px-5 py-4 text-left text-slate-900 transition hover:bg-slate-200"
                 >
-                  <h4 className="text-lg font-semibold text-gray-900">Bayar Praktis via QRIS</h4>
-                  <svg 
-                    className={`w-6 h-6 text-green-600 transition-transform duration-200 ${
+                  <div>
+                    <p className="text-sm font-semibold">Bayar Praktis via QRIS</p>
+                    <p className="text-sm text-slate-500">Scan QR Code untuk pembayaran</p>
+                  </div>
+                  <svg
+                    className={`w-6 h-6 shrink-0 text-emerald-600 transition-transform duration-200 ${
                       isQrisOpen ? 'rotate-180' : ''
-                    }`} 
-                    fill="none" 
-                    stroke="currentColor" 
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                
                 {isQrisOpen && (
-                  <div className="px-6 pb-6 border-t border-gray-200">
-                    <div className="bg-gray-100 rounded-lg p-8 text-center mt-4">
-                      <div className="w-32 h-32 bg-gray-300 mx-auto mb-4 rounded-lg flex items-center justify-center">
-                        <svg className="w-16 h-16 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm8-2v8h8V3h-8zm6 6h-4V5h4v4zM3 21h8v-8H3v8zm2-6h4v4H5v-4z"/>
-                        </svg>
-                      </div>
-                      <p className="text-gray-600 text-sm">Scan QR Code untuk pembayaran</p>
-                      <div className="mt-4 space-y-2">
-                        <p className="text-xs text-gray-500">Atau scan kode QR berikut:</p>
-                        <div className="bg-white p-2 rounded border border-gray-300">
-                          <div className="w-24 h-24 bg-gray-200 mx-auto rounded"></div>
-                        </div>
-                      </div>
+                  <div className="mt-5 rounded-3xl bg-slate-50 p-6 text-center">
+                    <div className="mx-auto mb-4 inline-flex h-32 w-32 items-center justify-center rounded-3xl bg-white shadow-sm">
+                      <div className="h-24 w-24 rounded-2xl bg-slate-200" />
                     </div>
+                    <p className="text-sm text-slate-600">Atau scan kode QR berikut untuk pembayaran cepat.</p>
                   </div>
                 )}
               </div>
 
-              {/* Confirm Button */}
+              <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
+                <h4 className="text-lg font-semibold mb-4">Cara Transfer</h4>
+                <div className="space-y-4">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-3xl border border-yellow-400 bg-yellow-50 p-4">
+                      <p className="text-2xl font-bold text-yellow-600">01</p>
+                      <p className="text-sm text-slate-600">Buka aplikasi m-Banking kamu</p>
+                    </div>
+                    <div className="rounded-3xl border border-yellow-400 bg-yellow-50 p-4">
+                      <p className="text-2xl font-bold text-yellow-600">02</p>
+                      <p className="text-sm text-slate-600">Pilih menu Transfer</p>
+                    </div>
+                    <div className="rounded-3xl border border-yellow-400 bg-yellow-50 p-4">
+                      <p className="text-2xl font-bold text-yellow-600">03</p>
+                      <p className="text-sm text-slate-600">Masukkan no. rek 1730020561313</p>
+                    </div>
+                    <div className="rounded-3xl border border-yellow-400 bg-yellow-50 p-4">
+                      <p className="text-2xl font-bold text-yellow-600">04</p>
+                      <p className="text-sm text-slate-600">Tambahkan kode 001 di akhir nominal</p>
+                    </div>
+                    <div className="rounded-3xl border border-yellow-400 bg-yellow-50 p-4">
+                      <p className="text-2xl font-bold text-yellow-600">05</p>
+                      <p className="text-sm text-slate-600">Contoh: Rp 500.001</p>
+                    </div>
+                    <div className="rounded-3xl border border-yellow-400 bg-yellow-50 p-4">
+                      <p className="text-2xl font-bold text-yellow-600">06</p>
+                      <p className="text-sm text-slate-600">Kirim bukti transfer ke nomor CP</p>
+                    </div>
+                  </div>
+                  <div className="rounded-3xl bg-slate-950 p-4 text-white">
+                    <p className="text-sm">Jika transfer berhasil, segera konfirmasi dengan mengirim bukti transfer ke nomor:</p>
+                    <p className="mt-3 text-base font-semibold">0895-3386-83425 (Denta) | 0896-0340-5077 (Hilmy)</p>
+                  </div>
+                </div>
+              </div>
+
               <button
                 onClick={() => {
                   const message = `*Konfirmasi Donasi Qurban Bersama SKRT*%0A%0A` +
@@ -452,7 +455,7 @@ export default function QurbanRegistration() {
                   const whatsappUrl = `https://wa.me/62895338683425?text=${message}`;
                   window.open(whatsappUrl, '_blank');
                 }}
-                className="w-full bg-green-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
+                className="w-full bg-slate-950 text-white py-4 px-6 rounded-3xl font-semibold text-lg hover:bg-slate-800 transition-colors flex items-center justify-center space-x-2 shadow-lg"
               >
                 <span>Konfirmasi Donasi via WhatsApp</span>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
