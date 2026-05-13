@@ -4,13 +4,28 @@ import { useState } from 'react';
 
 export default function QurbanRegistration() {
   const [activeTab, setActiveTab] = useState<'registration' | 'donation'>('registration');
-  const [selectedAnimal, setSelectedAnimal] = useState<'kambing' | 'domba'>('kambing');
+  const [selectedAnimal, setSelectedAnimal] = useState<'kelasC' | 'kelasB' | 'kelasA' | 'istimewa'>('kelasC');
   const [isQrisOpen, setIsQrisOpen] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     whatsapp: '',
     notes: ''
   });
+
+  const getAnimalLabel = (value: typeof selectedAnimal) => {
+    switch (value) {
+      case 'kelasC':
+        return 'Domba Kelas C (Rp 2.600.000, bobot ± 23kg)';
+      case 'kelasB':
+        return 'Domba Kelas B (Rp 3.000.000, bobot ± 28kg)';
+      case 'kelasA':
+        return 'Domba Kelas A (Rp 3.400.000, bobot ± 33kg)';
+      case 'istimewa':
+        return 'Domba Istimewa (Rp 5.800.000, bobot ± 55kg)';
+      default:
+        return '';
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,26 +34,25 @@ export default function QurbanRegistration() {
     let message = '';
     
     if (activeTab === 'registration') {
-      message = `*Pendaftaran Qurban QurbanConnect*%0A%0A` +
+      message = `*Pendaftaran Qurban Bersama SKRT*%0A%0A` +
         `*Detail Pendaftar:*%0A` +
         `Nama: ${formData.fullName}%0A` +
         `WhatsApp: ${formData.whatsapp}%0A%0A` +
         `*Pilihan Hewan Qurban:*%0A` +
-        `${selectedAnimal === 'kambing' ? 'Kambing' : 'Domba'}%0A` +
-        `Harga: ${selectedAnimal === 'kambing' ? 'Mulai Rp 2.5 Juta' : 'Mulai Rp 3.0 Juta'}%0A%0A` +
+        `${getAnimalLabel(selectedAnimal)}%0A%0A` +
         `*Catatan:*%0A${formData.notes || 'Tidak ada'}`;
     } else {
-      message = `*Donasi QurbanConnect*%0A%0A` +
+      message = `*Donasi Qurban Bersama SKRT*%0A%0A` +
         `*Detail Donatur:*%0A` +
         `Nama: ${formData.fullName}%0A` +
         `WhatsApp: ${formData.whatsapp}%0A%0A` +
         `*Jenis Donasi:*%0A` +
-        `${selectedAnimal === 'kambing' ? 'Donasi Umum' : 'Donasi Pendidikan'}%0A%0A` +
+        `Donasi Qurban Umum%0A%0A` +
         `*Catatan:*%0A${formData.notes || 'Tidak ada'}`;
     }
     
     // Open WhatsApp with pre-filled message
-    const whatsappUrl = `https://wa.me/628123456789?text=${message}`;
+    const whatsappUrl = `https://wa.me/62895338683425?text=${message}`;
     window.open(whatsappUrl, '_blank');
   };
 
@@ -48,13 +62,13 @@ export default function QurbanRegistration() {
       <div className="w-full lg:w-1/2 bg-gradient-to-br from-green-600 to-green-700 text-white p-6 lg:p-12 flex flex-col justify-between">
         <div>
           <div className="mb-6 lg:mb-8">
-            <h1 className="text-2xl lg:text-3xl font-bold mb-2">QurbanConnect</h1>
+            <h1 className="text-2xl lg:text-3xl font-bold mb-2">Qurban Bersama SKRT</h1>
           </div>
           
           <div className="mb-8 lg:mb-12">
-            <h2 className="text-2xl lg:text-4xl font-bold mb-4">Sempurnakan Ibadah Anda.</h2>
+            <h2 className="text-2xl lg:text-4xl font-bold mb-4">Kami Menerima & Menyalurkan Hewan Qurban.</h2>
             <p className="text-base lg:text-lg text-green-100 leading-relaxed">
-              Penyaluran hewan qurban dan donasi menjadi lebih mudah, transparan, dan tepat sasaran bersama kami.
+              Qurban Bersama SKRT hadir untuk mempermudah ibadah qurban dan distribusi daging kepada yang membutuhkan.
             </p>
           </div>
           
@@ -181,9 +195,9 @@ export default function QurbanRegistration() {
                 
                 <div className="space-y-3">
                   <div
-                    onClick={() => setSelectedAnimal('kambing')}
+                    onClick={() => setSelectedAnimal('kelasC')}
                     className={`border-2 rounded-lg p-3 lg:p-4 cursor-pointer transition-all ${
-                      selectedAnimal === 'kambing'
+                      selectedAnimal === 'kelasC'
                         ? 'border-green-500 bg-green-50'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
@@ -191,11 +205,11 @@ export default function QurbanRegistration() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <div className={`w-4 h-4 lg:w-5 lg:h-5 rounded-full border-2 mr-3 flex-shrink-0 ${
-                          selectedAnimal === 'kambing'
+                          selectedAnimal === 'kelasC'
                             ? 'border-green-500 bg-green-500'
                             : 'border-gray-300'
                         }`}>
-                          {selectedAnimal === 'kambing' ? (
+                          {selectedAnimal === 'kelasC' ? (
                             <svg className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
                             </svg>
@@ -205,16 +219,16 @@ export default function QurbanRegistration() {
                             </svg>
                           )}
                         </div>
-                        <span className="font-medium text-base lg:text-lg">Kambing</span>
+                        <span className="font-medium text-base lg:text-lg">Domba Kelas C</span>
                       </div>
-                      <span className="text-gray-600 text-sm lg:text-base">Mulai Rp 2.5 Juta</span>
+                      <span className="text-gray-600 text-sm lg:text-base">Rp 2.600.000 (± 23kg)</span>
                     </div>
                   </div>
-                  
+
                   <div
-                    onClick={() => setSelectedAnimal('domba')}
+                    onClick={() => setSelectedAnimal('kelasB')}
                     className={`border-2 rounded-lg p-3 lg:p-4 cursor-pointer transition-all ${
-                      selectedAnimal === 'domba'
+                      selectedAnimal === 'kelasB'
                         ? 'border-green-500 bg-green-50'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
@@ -222,11 +236,11 @@ export default function QurbanRegistration() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <div className={`w-4 h-4 lg:w-5 lg:h-5 rounded-full border-2 mr-3 flex-shrink-0 ${
-                          selectedAnimal === 'domba'
+                          selectedAnimal === 'kelasB'
                             ? 'border-green-500 bg-green-500'
                             : 'border-gray-300'
                         }`}>
-                          {selectedAnimal === 'domba' ? (
+                          {selectedAnimal === 'kelasB' ? (
                             <svg className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
                             </svg>
@@ -236,9 +250,71 @@ export default function QurbanRegistration() {
                             </svg>
                           )}
                         </div>
-                        <span className="font-medium text-base lg:text-lg">Domba</span>
+                        <span className="font-medium text-base lg:text-lg">Domba Kelas B</span>
                       </div>
-                      <span className="text-gray-600 text-sm lg:text-base">Mulai Rp 3.0 Juta</span>
+                      <span className="text-gray-600 text-sm lg:text-base">Rp 3.000.000 (± 28kg)</span>
+                    </div>
+                  </div>
+
+                  <div
+                    onClick={() => setSelectedAnimal('kelasA')}
+                    className={`border-2 rounded-lg p-3 lg:p-4 cursor-pointer transition-all ${
+                      selectedAnimal === 'kelasA'
+                        ? 'border-green-500 bg-green-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className={`w-4 h-4 lg:w-5 lg:h-5 rounded-full border-2 mr-3 flex-shrink-0 ${
+                          selectedAnimal === 'kelasA'
+                            ? 'border-green-500 bg-green-500'
+                            : 'border-gray-300'
+                        }`}>
+                          {selectedAnimal === 'kelasA' ? (
+                            <svg className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+                            </svg>
+                          ) : (
+                            <svg className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-gray-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <rect x="4" y="4" width="16" height="16" strokeWidth={2} />
+                            </svg>
+                          )}
+                        </div>
+                        <span className="font-medium text-base lg:text-lg">Domba Kelas A</span>
+                      </div>
+                      <span className="text-gray-600 text-sm lg:text-base">Rp 3.400.000 (± 33kg)</span>
+                    </div>
+                  </div>
+
+                  <div
+                    onClick={() => setSelectedAnimal('istimewa')}
+                    className={`border-2 rounded-lg p-3 lg:p-4 cursor-pointer transition-all ${
+                      selectedAnimal === 'istimewa'
+                        ? 'border-green-500 bg-green-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className={`w-4 h-4 lg:w-5 lg:h-5 rounded-full border-2 mr-3 flex-shrink-0 ${
+                          selectedAnimal === 'istimewa'
+                            ? 'border-green-500 bg-green-500'
+                            : 'border-gray-300'
+                        }`}>
+                          {selectedAnimal === 'istimewa' ? (
+                            <svg className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-white mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+                            </svg>
+                          ) : (
+                            <svg className="w-2.5 h-2.5 lg:w-3 lg:h-3 text-gray-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <rect x="4" y="4" width="16" height="16" strokeWidth={2} />
+                            </svg>
+                          )}
+                        </div>
+                        <span className="font-medium text-base lg:text-lg">Domba Istimewa</span>
+                      </div>
+                      <span className="text-gray-600 text-sm lg:text-base">Rp 5.800.000 (± 55kg)</span>
                     </div>
                   </div>
                 </div>
@@ -289,7 +365,7 @@ export default function QurbanRegistration() {
               {/* Bank Transfer Section */}
               <div className="bg-gray-900 text-white rounded-xl p-6 mb-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-lg font-semibold">TRANSFER BANK JAGO (442)</h4>
+                  <h4 className="text-lg font-semibold">BANK MANDIRI</h4>
                   <div className="flex space-x-2">
                     <button className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -306,12 +382,24 @@ export default function QurbanRegistration() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between py-2 border-b border-gray-800">
                     <span className="text-gray-400">No. Rekening</span>
-                    <span className="font-mono text-lg">1234 5678 9012</span>
+                    <span className="font-mono text-lg">1730020561313</span>
+                  </div>
+                  <div className="flex items-center justify-between py-2 border-b border-gray-800">
+                    <span className="text-gray-400">A.N.</span>
+                    <span>Denta Herdiansyah</span>
                   </div>
                   <div className="flex items-center justify-between py-2">
-                    <span className="text-gray-400">A.N.</span>
-                    <span>Yayasan Amal Sejahtera</span>
+                    <span className="text-gray-400">Kontak</span>
+                    <span className="text-sm lg:text-base">0895-3386-83425 (Denta)</span>
                   </div>
+                </div>
+              </div>
+              <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
+                <h4 className="text-lg font-semibold mb-3">Informasi Tambahan</h4>
+                <div className="space-y-2 text-sm text-gray-700">
+                  <p>0895-3386-83425 (Denta)</p>
+                  <p>0896-0340-5077 (Hilmy)</p>
+                  <p>Dana: 0853538683425 (a.n. Denta Herdiansyah)</p>
                 </div>
               </div>
 
@@ -357,11 +445,11 @@ export default function QurbanRegistration() {
               {/* Confirm Button */}
               <button
                 onClick={() => {
-                  const message = `*Konfirmasi Donasi QurbanConnect*%0A%0A` +
+                  const message = `*Konfirmasi Donasi Qurban Bersama SKRT*%0A%0A` +
                     `Saya sudah melakukan transfer donasi.%0A%0A` +
                     `Mohon konfirmasi dan update status donasi saya.%0A%0A` +
                     `Terima kasih.`;
-                  const whatsappUrl = `https://wa.me/628123456789?text=${message}`;
+                  const whatsappUrl = `https://wa.me/62895338683425?text=${message}`;
                   window.open(whatsappUrl, '_blank');
                 }}
                 className="w-full bg-green-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
