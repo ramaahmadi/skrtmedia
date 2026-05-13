@@ -83,8 +83,12 @@ export async function PUT(request: Request) {
     const body = await request.json();
     const { id, ...formData } = body;
 
-    // Validasi data update
-    const updatedActivity = validateActivity(formData);
+    if (!id) {
+      return Response.json({ error: 'ID is required for update' }, { status: 400 });
+    }
+
+    // Validasi data update - preserve existing ID
+    const updatedActivity = validateActivity({ id, ...formData });
     
     // Update di file storage
     const result = await kegiatanStorage.update(id, updatedActivity);

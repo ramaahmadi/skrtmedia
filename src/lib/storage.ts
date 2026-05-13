@@ -74,17 +74,13 @@ export class FileStorage<T> {
       console.log(`Saved ${data.length} items to ${this.filePath}`);
     } catch (error) {
       console.error(`Error saving data to ${this.filePath}:`, error);
-      // Fallback to memory-only if file write fails
-      this.data = data;
-      console.log('Fallback: Data kept in memory only');
+      throw error;
     }
   }
 
   // Get all data
   async getAll(): Promise<T[]> {
-    if (this.data.length === 0) {
-      await this.load();
-    }
+    await this.load();
     return this.data;
   }
 
