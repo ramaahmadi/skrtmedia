@@ -7,7 +7,39 @@ export interface StorageData<T> {
   lastUpdated: string;
 }
 
-// Class untuk mengelola file storage
+function getGitHubRepo() {
+  return process.env.GITHUB_REPO || 'ramaahmadi/skrtmedia';
+}
+
+function getGitHubBranch() {
+  return process.env.GITHUB_BRANCH || 'main';
+}
+
+function getGitHubToken() {
+  return process.env.GITHUB_TOKEN || process.env.NEXT_PUBLIC_GITHUB_TOKEN;
+}
+
+function getGitHubApiUrl(path: string) {
+  return `https://api.github.com/repos/${getGitHubRepo()}/contents/${path}`;
+}
+
+async function githubRequest(url: string, init: RequestInit) {
+  const token = getGitHubToken();
+  if (!token) {
+    throw new Error('GITHUB_TOKEN is required for GitHub storage');
+  }
+
+  return fetch(url, {
+    ...init,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      ...(init.headers || {})
+    }
+  });
+}
+
+// Class untuk mengelola file storage lokal
 export class FileStorage<T> {
   private filePath: string;
   private data: T[] = [];
@@ -130,17 +162,151 @@ export class FileStorage<T> {
   }
 }
 
+export class GitHubFileStorage<T> {
+  private githubPath: string;
+  private data: T[] = [];
+  private sha?: string;
+
+  constructor(fileName: string) {
+    this.githubPath = `public/data/${fileName}.json`;
+  }
+
+  private async fetchFile() {
+    const url = `${getGitHubApiUrl(this.githubPath)}?ref=${getGitHubBranch()}`;
+    const response = await githubRequest(url, { method: 'GET' });
+
+    if (response.status === 404) {
+      return null;
+    }
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`GitHub read failed: ${response.status} - ${text}`);
+    }
+
+    const payload = await response.json();
+    return payload;
+  }
+
+  // Load data dari GitHub repo file
+  async load(): Promise<T[]> {
+    try {
+      const payload = await this.fetchFile();
+      if (!payload) {
+        await this.save([]);
+        return [];
+      }
+
+      this.sha = payload.sha;
+      const content = Buffer.from(payload.content, 'base64').toString('utf-8');
+      const parsed: StorageData<T> = JSON.parse(content);
+      this.data = parsed.data || [];
+      console.log(`Loaded ${this.data.length} items from GitHub path ${this.githubPath}`);
+      return this.data;
+    } catch (error) {
+      console.error(`Error loading GitHub storage for ${this.githubPath}:`, error);
+      this.data = [];
+      return [];
+    }
+  }
+
+  // Save data to GitHub repo file
+  async save(data: T[]): Promise<void> {
+    try {
+      const storageData: StorageData<T> = {
+        data,
+        lastUpdated: new Date().toISOString()
+      };
+      const content = Buffer.from(JSON.stringify(storageData, null, 2)).toString('base64');
+      const url = getGitHubApiUrl(this.githubPath);
+      const body: any = {
+        message: `Update ${this.githubPath}`,
+        content,
+        branch: getGitHubBranch()
+      };
+      if (this.sha) {
+        body.sha = this.sha;
+      }
+
+      const response = await githubRequest(url, {
+        method: 'PUT',
+        body: JSON.stringify(body)
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`GitHub save failed: ${response.status} - ${text}`);
+      }
+
+      const payload = await response.json();
+      this.sha = payload.content?.sha;
+      this.data = data;
+      console.log(`Saved ${data.length} items to GitHub path ${this.githubPath}`);
+    } catch (error) {
+      console.error(`Error saving GitHub storage for ${this.githubPath}:`, error);
+      throw error;
+    }
+  }
+
+  async getAll(): Promise<T[]> {
+    await this.load();
+    return this.data;
+  }
+
+  async add(item: T): Promise<T> {
+    const currentData = await this.getAll();
+    const newData = [...currentData, item];
+    await this.save(newData);
+    return item;
+  }
+
+  async update(id: string | number, updates: Partial<T>): Promise<T | null> {
+    const currentData = await this.getAll();
+    const index = currentData.findIndex((item: any) => item.id === id);
+    if (index === -1) {
+      return null;
+    }
+
+    const updatedItem = { ...currentData[index], ...updates };
+    currentData[index] = updatedItem;
+    await this.save(currentData);
+    return updatedItem;
+  }
+
+  async delete(id: string | number): Promise<boolean> {
+    const currentData = await this.getAll();
+    const index = currentData.findIndex((item: any) => item.id === id);
+    if (index === -1) {
+      return false;
+    }
+
+    currentData.splice(index, 1);
+    await this.save(currentData);
+    return true;
+  }
+
+  async findById(id: string | number): Promise<T | null> {
+    const currentData = await this.getAll();
+    return currentData.find((item: any) => item.id === id) || null;
+  }
+}
+
 // Singleton instances untuk setiap data type
-let kegiatanStorage: FileStorage<any> | null = null;
+let kegiatanStorage: FileStorage<any> | GitHubFileStorage<any> | null = null;
 let anggotaStorage: FileStorage<any> | null = null;
 let artikelStorage: FileStorage<any> | null = null;
 let beritaStorage: FileStorage<any> | null = null;
 let notulensiStorage: FileStorage<any> | null = null;
 
 // Get storage instances
-export function getKegiatanStorage(): FileStorage<any> {
+export function getKegiatanStorage(): FileStorage<any> | GitHubFileStorage<any> {
   if (!kegiatanStorage) {
-    kegiatanStorage = new FileStorage<any>('kegiatan');
+    const token = getGitHubToken();
+    if (token) {
+      kegiatanStorage = new GitHubFileStorage<any>('kegiatan');
+    } else {
+      kegiatanStorage = new FileStorage<any>('kegiatan');
+    }
   }
   return kegiatanStorage;
 }
