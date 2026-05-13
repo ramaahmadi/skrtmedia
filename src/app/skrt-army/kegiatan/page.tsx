@@ -56,7 +56,8 @@ function KegiatanPageContent() {
     contact_phone: '',
     max_participants: '',
     registration_link: '',
-    ticket_price: '',
+    ticket_price_min: '',
+    ticket_price_max: '',
     category: '',
     // UI customization fields
     hero_title: '',
@@ -192,7 +193,8 @@ function KegiatanPageContent() {
       contact_phone: activity.contact_phone || '',
       max_participants: activity.max_participants?.toString() || '',
       registration_link: activity.registration_link || '',
-      ticket_price: activity.ticket_price?.toString() || '',
+      ticket_price_min: activity.ticket_price_min?.toString() || activity.ticket_price?.toString() || '',
+      ticket_price_max: activity.ticket_price_max?.toString() || '',
       category: activity.category || '',
       // UI customization fields
       hero_title: activity.hero_title || '',
@@ -256,9 +258,11 @@ function KegiatanPageContent() {
         featured: activityForm.featured,
         contact_person: activityForm.contact_person || undefined,
         contact_phone: activityForm.contact_phone || undefined,
-        max_participants: activityForm.max_participants ? parseInt(activityForm.max_participants) : undefined,
+        max_participants: activityForm.max_participants !== '' ? parseInt(activityForm.max_participants, 10) : undefined,
         registration_link: activityForm.registration_link || undefined,
-        ticket_price: activityForm.ticket_price ? parseInt(activityForm.ticket_price) : undefined,
+        ticket_price_min: activityForm.ticket_price_min !== '' ? parseInt(activityForm.ticket_price_min, 10) : undefined,
+        ticket_price_max: activityForm.ticket_price_max !== '' ? parseInt(activityForm.ticket_price_max, 10) : undefined,
+        ticket_price: activityForm.ticket_price_min !== '' ? parseInt(activityForm.ticket_price_min, 10) : activityForm.ticket_price_max !== '' ? parseInt(activityForm.ticket_price_max, 10) : undefined,
         category: activityForm.category || undefined,
         // UI customization fields
         hero_title: activityForm.hero_title || undefined,
@@ -353,7 +357,8 @@ function KegiatanPageContent() {
       contact_phone: '',
       max_participants: '',
       registration_link: '',
-      ticket_price: '',
+      ticket_price_min: '',
+      ticket_price_max: '',
       category: '',
       // UI customization fields
       hero_title: '',
@@ -527,7 +532,11 @@ function KegiatanPageContent() {
                           {activity.max_participants !== undefined && (
                             <span className="flex items-center gap-1">👥 {activity.max_participants === 0 ? 'Unlimited' : activity.max_participants}</span>
                           )}
-                          {activity.ticket_price && activity.ticket_price > 0 ? (
+                          {activity.ticket_price_min !== undefined && activity.ticket_price_max !== undefined ? (
+                            <span className="flex items-center gap-1">💰 Rp {activity.ticket_price_min.toLocaleString('id-ID')} - Rp {activity.ticket_price_max.toLocaleString('id-ID')}</span>
+                          ) : activity.ticket_price_min !== undefined ? (
+                            <span className="flex items-center gap-1">💰 Rp {activity.ticket_price_min.toLocaleString('id-ID')}</span>
+                          ) : activity.ticket_price && activity.ticket_price > 0 ? (
                             <span className="flex items-center gap-1">💰 Rp {activity.ticket_price.toLocaleString('id-ID')}</span>
                           ) : (
                             <span className="flex items-center gap-1">💰 Gratis</span>
@@ -804,7 +813,7 @@ function KegiatanPageContent() {
 
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                       Kapasitas Peserta
@@ -820,16 +829,34 @@ function KegiatanPageContent() {
                   </div>
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Harga Tiket (Rp)
+                      Harga Tiket Minimal (Rp)
                     </label>
                     <input
                       type="number"
-                      name="ticket_price"
-                      value={activityForm.ticket_price}
+                      name="ticket_price_min"
+                      value={activityForm.ticket_price_min}
                       onChange={handleActivityChange}
-                      placeholder="0 untuk gratis"
+                      placeholder="contoh: 2000000"
+                      min="0"
                       className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                     />
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Harga Tiket Maksimal (Rp)
+                    </label>
+                    <input
+                      type="number"
+                      name="ticket_price_max"
+                      value={activityForm.ticket_price_max}
+                      onChange={handleActivityChange}
+                      placeholder="contoh: 5000000"
+                      min="0"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primary focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    />
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                      Opsional, jika tiket memiliki rentang harga.
+                    </p>
                   </div>
                 </div>
 

@@ -35,7 +35,9 @@ function validateActivity(data: any): Activity {
       goals: data.about_section?.goals || []
     },
     registration_link: data.registration_link || undefined,
-    ticket_price: data.ticket_price || 0,
+    ticket_price_min: typeof data.ticket_price_min === 'number' ? data.ticket_price_min : undefined,
+    ticket_price_max: typeof data.ticket_price_max === 'number' ? data.ticket_price_max : undefined,
+    ticket_price: typeof data.ticket_price === 'number' ? data.ticket_price : 0,
     max_participants: data.max_participants || 0,
     contact_person: data.contact_person || undefined,
     contact_phone: data.contact_phone || undefined,

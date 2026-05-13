@@ -16,6 +16,8 @@ export interface Activity {
   max_participants?: number;
   registration_link?: string;
   ticket_price?: number;
+  ticket_price_min?: number;
+  ticket_price_max?: number;
   category?: string;
   // UI customization fields (Trust Islam style)
   hero_title?: string;
