@@ -333,7 +333,7 @@ export default function KajianTrustIslam() {
               </Link>
             </nav>
           </div>
-        </header>
+        </div>
 
         {/* Mobile Navigation */}
         <AnimatePresence>
