@@ -1,14 +1,14 @@
-import { getBeritaStorage } from '@/lib/storage';
-
-// Get storage instance
-const beritaStorage = getBeritaStorage();
+import {
+  getAllBerita,
+  createBerita,
+  updateBerita,
+  deleteBerita
+} from '@/lib/db-queries';
 
 export async function GET() {
   try {
-    console.log('Fetching berita from file storage...');
-    
-    // Load data dari file storage
-    const data = await beritaStorage.getAll();
+    console.log('Fetching berita from database...');
+    const data = await getAllBerita();
     console.log('Successfully fetched berita:', data.length, 'records');
     return Response.json(data);
   } catch (error) {
@@ -21,11 +21,16 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    // Simpan ke file storage (persisten)
-    await beritaStorage.add(body);
+    const newBerita = {
+      id: crypto.randomUUID(),
+      ...body,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
 
-    console.log('Berita created and saved to file:', body.title);
-    return Response.json(body);
+    const result = await createBerita(newBerita);
+    console.log('Berita created and saved to database:', result.title);
+    return Response.json(result);
   } catch (error) {
     console.error('Error creating berita:', error);
     return Response.json({ error: 'Failed to create berita' }, { status: 500 });
@@ -37,14 +42,18 @@ export async function PUT(request: Request) {
     const body = await request.json();
     const { id, ...updateData } = body;
 
-    // Update di file storage
-    const result = await beritaStorage.update(id, updateData);
-    
+    const updatedData = {
+      ...updateData,
+      updated_at: new Date().toISOString()
+    };
+
+    const result = await updateBerita(id, updatedData);
+
     if (!result) {
       return Response.json({ error: 'Berita not found' }, { status: 404 });
     }
 
-    console.log('Berita updated and saved to file:', result.title);
+    console.log('Berita updated and saved to database:', result.title);
     return Response.json(result);
   } catch (error) {
     console.error('Error updating berita:', error);
@@ -56,17 +65,16 @@ export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-    
+
     if (!id) {
       return Response.json({ error: 'ID is required' }, { status: 400 });
     }
 
     console.log('Attempting to delete berita with ID:', id);
-    
-    // Hapus dari file storage
-    const success = await beritaStorage.delete(id);
-    
-    if (!success) {
+
+    const result = await deleteBerita(id);
+
+    if (!result) {
       console.log('Berita not found for deletion:', id);
       return Response.json({ error: 'Berita not found' }, { status: 404 });
     }
@@ -76,9 +84,9 @@ export async function DELETE(request: Request) {
   } catch (error) {
     console.error('Error deleting berita:', error);
     console.error('Error stack:', error instanceof Error ? error.stack : 'No stack');
-    return Response.json({ 
-      error: 'Failed to delete berita', 
-      details: error instanceof Error ? error.message : 'Unknown error' 
+    return Response.json({
+      error: 'Failed to delete berita',
+      details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
 }

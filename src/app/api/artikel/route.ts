@@ -1,12 +1,14 @@
-import { getArtikelStorage } from '@/lib/storage';
-
-// Get storage instance
-const artikelStorage = getArtikelStorage();
+import {
+  getAllArtikel,
+  createArtikel,
+  updateArtikel,
+  deleteArtikel
+} from '@/lib/db-queries';
 
 export async function GET() {
   try {
-    console.log('Fetching artikel from file storage...');
-    const data = await artikelStorage.getAll();
+    console.log('Fetching artikel from database...');
+    const data = await getAllArtikel();
     return Response.json(data);
   } catch (error) {
     console.error('Error fetching artikel:', error);
@@ -14,22 +16,22 @@ export async function GET() {
   }
 }
 
-    
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    console.log('Creating artikel with data (saved to file):', JSON.stringify(body, null, 2));
-    
+    console.log('Creating artikel with data (saved to database):', JSON.stringify(body, null, 2));
+
     const newArtikel = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       ...body,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
-    
-    await artikelStorage.add(newArtikel);
-    console.log('Successfully created artikel (saved to file):', newArtikel);
-    return Response.json(newArtikel);
+
+    const result = await createArtikel(newArtikel);
+    console.log('Successfully created artikel (saved to database):', result);
+    return Response.json(result);
   } catch (error) {
     console.error('Error creating artikel:', error);
     return Response.json({ error: 'Failed to create artikel' }, { status: 500 });
@@ -40,19 +42,19 @@ export async function PUT(request: Request) {
   try {
     const body = await request.json();
     const { id, ...updateData } = body;
-    
+
     const updatedArtikel = {
       ...updateData,
       updated_at: new Date().toISOString()
     };
-    
-    const result = await artikelStorage.update(id, updatedArtikel);
-    
+
+    const result = await updateArtikel(id, updatedArtikel);
+
     if (!result) {
       return Response.json({ error: 'Artikel not found' }, { status: 404 });
     }
 
-    console.log('Successfully updated artikel (saved to file):', result);
+    console.log('Successfully updated artikel (saved to database):', result);
     return Response.json(result);
   } catch (error) {
     console.error('Error updating artikel:', error);
@@ -64,18 +66,18 @@ export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-    
+
     if (!id) {
       return Response.json({ error: 'ID is required' }, { status: 400 });
     }
 
-    const success = await artikelStorage.delete(id);
-    
-    if (!success) {
+    const result = await deleteArtikel(id);
+
+    if (!result) {
       return Response.json({ error: 'Artikel not found' }, { status: 404 });
     }
 
-    console.log('Successfully deleted artikel (removed from file):', id);
+    console.log('Successfully deleted artikel (removed from database):', id);
     return Response.json({ success: true });
   } catch (error) {
     console.error('Error deleting artikel:', error);

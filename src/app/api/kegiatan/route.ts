@@ -1,8 +1,10 @@
 import { Activity } from '@/lib/types';
-import { getKegiatanStorage } from '@/lib/storage';
-
-// Get storage instance
-const kegiatanStorage = getKegiatanStorage();
+import {
+  getAllKegiatan,
+  createKegiatan,
+  updateKegiatan,
+  deleteKegiatan
+} from '@/lib/db-queries';
 
 // Function to generate slug from hero_title (or title) and year
 function generateSlug(title: string, heroTitle?: string, date?: string): string {
@@ -48,10 +50,9 @@ function validateActivity(data: any): Activity {
 
 export async function GET() {
   try {
-    console.log('Fetching kegiatan from file storage...');
-    
-    // Load data dari file storage
-    const data = await kegiatanStorage.getAll();
+    console.log('Fetching kegiatan from database...');
+
+    const data = await getAllKegiatan();
     console.log('Successfully fetched kegiatan:', data.length, 'records');
     return Response.json(data);
   } catch (error) {
@@ -65,13 +66,16 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     // Validasi dan buat activity baru
-    const newActivity = validateActivity(body);
-    
-    // Simpan ke file storage (persisten)
-    await kegiatanStorage.add(newActivity);
+    const newActivity = validateActivity({
+      ...body,
+      id: crypto.randomUUID()
+    });
 
-    console.log('Activity created and saved to file:', newActivity.title);
-    return Response.json(newActivity);
+    // Simpan ke database
+    const result = await createKegiatan(newActivity);
+
+    console.log('Activity created and saved to database:', result.title);
+    return Response.json(result);
   } catch (error) {
     console.error('Error creating kegiatan:', error);
     return Response.json({ error: 'Failed to create kegiatan' }, { status: 500 });
@@ -89,15 +93,15 @@ export async function PUT(request: Request) {
 
     // Validasi data update - preserve existing ID
     const updatedActivity = validateActivity({ id, ...formData });
-    
-    // Update di file storage
-    const result = await kegiatanStorage.update(id, updatedActivity);
-    
+
+    // Update di database
+    const result = await updateKegiatan(id, updatedActivity);
+
     if (!result) {
       return Response.json({ error: 'Activity not found' }, { status: 404 });
     }
 
-    console.log('Activity updated and saved to file:', result.title);
+    console.log('Activity updated and saved to database:', result.title);
     return Response.json(result);
   } catch (error) {
     console.error('Error updating kegiatan:', error);
@@ -109,17 +113,17 @@ export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-    
+
     if (!id) {
       return Response.json({ error: 'ID is required' }, { status: 400 });
     }
 
     console.log('Attempting to delete activity with ID:', id);
-    
-    // Hapus dari file storage
-    const success = await kegiatanStorage.delete(id);
-    
-    if (!success) {
+
+    // Hapus dari database
+    const result = await deleteKegiatan(id);
+
+    if (!result) {
       console.log('Activity not found for deletion:', id);
       return Response.json({ error: 'Activity not found' }, { status: 404 });
     }
@@ -129,9 +133,9 @@ export async function DELETE(request: Request) {
   } catch (error) {
     console.error('Error deleting kegiatan:', error);
     console.error('Error stack:', error instanceof Error ? error.stack : 'No stack');
-    return Response.json({ 
-      error: 'Failed to delete kegiatan', 
-      details: error instanceof Error ? error.message : 'Unknown error' 
+    return Response.json({
+      error: 'Failed to delete kegiatan',
+      details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
 }
