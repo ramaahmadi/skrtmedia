@@ -1,4 +1,5 @@
 -- Drop existing tables if they exist
+DROP TABLE IF EXISTS pembukuan CASCADE;
 DROP TABLE IF EXISTS notulensi CASCADE;
 DROP TABLE IF EXISTS kegiatan CASCADE;
 DROP TABLE IF EXISTS berita CASCADE;
@@ -78,6 +79,19 @@ CREATE TABLE notulensi (
   updated_at TIMESTAMP WITH TIME ZONE
 );
 
+-- Create pembukuan (financial records) table
+CREATE TABLE pembukuan (
+  id UUID PRIMARY KEY,
+  date DATE,
+  type VARCHAR(20) NOT NULL,
+  category VARCHAR(255),
+  amount NUMERIC NOT NULL,
+  description TEXT,
+  created_by VARCHAR(255),
+  created_at TIMESTAMP WITH TIME ZONE,
+  updated_at TIMESTAMP WITH TIME ZONE
+);
+
 -- Create indexes for better query performance
 CREATE INDEX idx_anggota_name ON anggota(name);
 CREATE INDEX idx_artikel_title ON artikel(title);
@@ -85,3 +99,5 @@ CREATE INDEX idx_berita_category ON berita(category);
 CREATE INDEX idx_kegiatan_date ON kegiatan(date);
 CREATE INDEX idx_kegiatan_status ON kegiatan(status);
 CREATE INDEX idx_notulensi_date ON notulensi(date);
+CREATE INDEX idx_pembukuan_date ON pembukuan(date);
+CREATE INDEX idx_pembukuan_type ON pembukuan(type);

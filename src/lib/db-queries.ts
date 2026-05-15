@@ -363,3 +363,73 @@ export async function deleteNotulensi(id: string) {
     throw error;
   }
 }
+
+// Pembukuan (Financial Records) functions
+export async function getAllPembukuan() {
+  try {
+    const result = await query('SELECT * FROM pembukuan ORDER BY date DESC');
+    return result.rows;
+  } catch (error) {
+    console.error('Error in getAllPembukuan:', error);
+    throw error;
+  }
+}
+
+export async function getPembukuanById(id: string) {
+  try {
+    const result = await query('SELECT * FROM pembukuan WHERE id = $1', [id]);
+    return result.rows[0] || null;
+  } catch (error) {
+    console.error('Error in getPembukuanById:', error);
+    throw error;
+  }
+}
+
+export async function createPembukuan(data: any) {
+  try {
+    const { id, date, type, category, amount, description, created_by } = data;
+    console.log('Creating pembukuan with data:', { id, date, type, category, amount, description, created_by });
+    const result = await query(
+      `INSERT INTO pembukuan (id, date, type, category, amount, description, created_by, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       RETURNING *`,
+      [id, date, type, category, amount, description, created_by, data.created_at, data.updated_at]
+    );
+    console.log('Pembukuan created successfully:', result.rows[0]);
+    return result.rows[0];
+  } catch (error) {
+    console.error('Error in createPembukuan:', error);
+    throw error;
+  }
+}
+
+export async function updatePembukuan(id: string, data: any) {
+  try {
+    const { date, type, category, amount, description, created_by, updated_at } = data;
+    console.log('Updating pembukuan with id:', id, 'data:', { date, type, category, amount, description, created_by });
+    const result = await query(
+      `UPDATE pembukuan 
+       SET date = $1, type = $2, category = $3, amount = $4, description = $5, created_by = $6, updated_at = $7
+       WHERE id = $8
+       RETURNING *`,
+      [date, type, category, amount, description, created_by, updated_at, id]
+    );
+    console.log('Pembukuan updated successfully:', result.rows[0]);
+    return result.rows[0] || null;
+  } catch (error) {
+    console.error('Error in updatePembukuan:', error);
+    throw error;
+  }
+}
+
+export async function deletePembukuan(id: string) {
+  try {
+    console.log('Deleting pembukuan with id:', id);
+    const result = await query('DELETE FROM pembukuan WHERE id = $1 RETURNING *', [id]);
+    console.log('Pembukuan deleted successfully:', result.rows[0]);
+    return result.rows[0] || null;
+  } catch (error) {
+    console.error('Error in deletePembukuan:', error);
+    throw error;
+  }
+}
