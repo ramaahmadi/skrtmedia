@@ -233,20 +233,20 @@ export async function getKegiatanById(id: string) {
 
 export async function createKegiatan(data: any) {
   try {
-    const { id, title, description, date, time, locations, status, featured, hero_title, hero_subtitle, hero_quote, about_section, registration_link, ticket_price, max_participants, contact_person, contact_phone, sponsors, media_partners } = data;
-    console.log('Creating kegiatan with data:', { id, title, date, status });
+    const { id, title, description, date, time, locations, status, featured, hero_title, hero_subtitle, hero_quote, about_section, registration_link, ticket_price, ticket_price_min, ticket_price_max, max_participants, contact_person, contact_phone, sponsors, media_partners } = data;
+    console.log('Creating kegiatan with data:', { id, title, date, status, ticket_price_min, ticket_price_max });
     const result = await query(
       `INSERT INTO kegiatan (
         id, title, description, date, time, locations, status, featured, 
         hero_title, hero_subtitle, hero_quote, about_section, registration_link, 
-        ticket_price, max_participants, contact_person, contact_phone, sponsors, media_partners
+        ticket_price, ticket_price_min, ticket_price_max, max_participants, contact_person, contact_phone, sponsors, media_partners
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
       RETURNING *`,
       [
         id, title, description, date, time, JSON.stringify(locations || []), status, featured,
         hero_title, hero_subtitle, hero_quote, JSON.stringify(about_section || {}), registration_link,
-        ticket_price, max_participants, contact_person, contact_phone, JSON.stringify(sponsors || []), JSON.stringify(media_partners || [])
+        ticket_price, ticket_price_min, ticket_price_max, max_participants, contact_person, contact_phone, JSON.stringify(sponsors || []), JSON.stringify(media_partners || [])
       ]
     );
     console.log('Kegiatan created successfully:', result.rows[0]);
@@ -259,19 +259,19 @@ export async function createKegiatan(data: any) {
 
 export async function updateKegiatan(id: string, data: any) {
   try {
-    const { title, description, date, time, locations, status, featured, hero_title, hero_subtitle, hero_quote, about_section, registration_link, ticket_price, max_participants, contact_person, contact_phone, sponsors, media_partners } = data;
-    console.log('Updating kegiatan with id:', id, 'data:', { title, date, status });
+    const { title, description, date, time, locations, status, featured, hero_title, hero_subtitle, hero_quote, about_section, registration_link, ticket_price, ticket_price_min, ticket_price_max, max_participants, contact_person, contact_phone, sponsors, media_partners } = data;
+    console.log('Updating kegiatan with id:', id, 'data:', { title, date, status, ticket_price_min, ticket_price_max });
     const result = await query(
       `UPDATE kegiatan 
        SET title = $1, description = $2, date = $3, time = $4, locations = $5, status = $6, featured = $7,
            hero_title = $8, hero_subtitle = $9, hero_quote = $10, about_section = $11, registration_link = $12,
-           ticket_price = $13, max_participants = $14, contact_person = $15, contact_phone = $16, sponsors = $17, media_partners = $18
-       WHERE id = $19
+           ticket_price = $13, ticket_price_min = $14, ticket_price_max = $15, max_participants = $16, contact_person = $17, contact_phone = $18, sponsors = $19, media_partners = $20
+       WHERE id = $21
        RETURNING *`,
       [
         title, description, date, time, JSON.stringify(locations || []), status, featured,
         hero_title, hero_subtitle, hero_quote, JSON.stringify(about_section || {}), registration_link,
-        ticket_price, max_participants, contact_person, contact_phone, JSON.stringify(sponsors || []), JSON.stringify(media_partners || []), id
+        ticket_price, ticket_price_min, ticket_price_max, max_participants, contact_person, contact_phone, JSON.stringify(sponsors || []), JSON.stringify(media_partners || []), id
       ]
     );
     console.log('Kegiatan updated successfully:', result.rows[0]);

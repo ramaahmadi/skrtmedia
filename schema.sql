@@ -61,6 +61,8 @@ CREATE TABLE kegiatan (
   about_section JSONB,
   registration_link TEXT,
   ticket_price INTEGER DEFAULT 0,
+  ticket_price_min INTEGER,
+  ticket_price_max INTEGER,
   max_participants INTEGER DEFAULT 0,
   contact_person VARCHAR(255),
   contact_phone BIGINT,
