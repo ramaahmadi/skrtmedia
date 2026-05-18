@@ -57,72 +57,129 @@ export default function QurbanRegistration() {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-slate-50">
-      {/* Left Sidebar - Always shows Bank Info & Transfer Instructions */}
-      <div className="w-full lg:w-1/2 bg-slate-50 p-6 lg:p-12 flex flex-col justify-between overflow-y-auto">
-        {/* Information Rekening Card */}
-        <div className="mb-8">
-          <div className="rounded-[32px] bg-slate-950 text-white p-6 shadow-lg">
-            <div className="flex items-center justify-between mb-6 gap-4">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-emerald-300">Bank Mandiri</p>
-                <h4 className="mt-3 text-2xl font-semibold">Transfer Bank</h4>
+      {/* Left Sidebar - Always shows Green Model + Bank Info & Transfer Instructions */}
+      <div className="w-full lg:w-1/2 bg-gradient-to-br from-slate-950 via-emerald-900 to-emerald-700 text-white p-6 lg:p-12 flex flex-col justify-between overflow-y-auto">
+        {/* Green Marketing Section */}
+        <div>
+          <div className="mb-6 lg:mb-8">
+            <div className="inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-sm">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-emerald-200">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                  <path d="M12 5l7 7-7 7" />
+                </svg>
               </div>
-              <div className="rounded-full bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-200">
-                Rekening
+              <span>QurbanConnect</span>
+            </div>
+          </div>
+          
+          <div className="mb-8 lg:mb-12">
+            <h2 className="text-3xl lg:text-5xl font-bold tracking-tight leading-tight mb-4">
+              Sempurnakan <span className="text-emerald-200">Ibadah Anda.</span>
+            </h2>
+            <p className="text-base lg:text-lg text-slate-200 leading-relaxed max-w-xl">
+              Penyaluran hewan qurban dan donasi menjadi lebih mudah, transparan, dan tepat sasaran bersama kami.
+            </p>
+          </div>
+          
+          <div className="space-y-4 lg:space-y-5">
+            <div className="flex items-start gap-3 rounded-3xl border border-white/15 bg-white/10 p-4 shadow-sm">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-200/20 text-emerald-100">
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7" /></svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-base lg:text-lg text-white">Amanah & Terpercaya</h3>
+                <p className="text-slate-200 text-sm lg:text-base">Distribusi terjamin dan transparan.</p>
               </div>
             </div>
-            <div className="space-y-4 text-sm text-slate-200">
-              <div className="rounded-3xl bg-white/5 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-emerald-200">No. Rekening</p>
-                <p className="mt-2 text-lg font-semibold tracking-tight">1730020561313</p>
+            
+            <div className="flex items-start gap-3 rounded-3xl border border-white/15 bg-white/10 p-4 shadow-sm">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-200/20 text-emerald-100">
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14" /></svg>
               </div>
-              <div className="rounded-3xl bg-white/5 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-emerald-200">Atas Nama</p>
-                <p className="mt-2 text-lg font-semibold tracking-tight">Denta Herdiansyah</p>
-              </div>
-              <div className="rounded-3xl bg-white/5 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-emerald-200">Kontak</p>
-                <p className="mt-2 text-lg font-semibold tracking-tight">0895-3386-83425 (Denta)</p>
+              <div>
+                <h3 className="font-semibold text-base lg:text-lg text-white">Distribusi Pelosok Negeri</h3>
+                <p className="text-slate-200 text-sm lg:text-base">Menjangkau daerah terpencil.</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Cara Transfer Section */}
-        <div className="mb-8">
-          <h4 className="text-lg font-semibold mb-4 text-slate-900">Cara Transfer</h4>
-          <div className="space-y-4">
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-3xl border border-yellow-400 bg-yellow-50 p-4">
-                <p className="text-2xl font-bold text-yellow-600">01</p>
-                <p className="text-sm text-slate-600">Buka aplikasi m-Banking kamu</p>
+        {/* Bank Info & Transfer Instructions Section */}
+        <div className="mt-8 pt-8 border-t border-white/20">
+          {/* Information Rekening Card */}
+          <div className="mb-8">
+            <div className="rounded-[32px] bg-black/40 backdrop-blur-sm border border-white/10 text-white p-6 shadow-lg">
+              <div className="flex items-center justify-between mb-6 gap-4">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.25em] text-emerald-300">Bank Mandiri</p>
+                  <h4 className="mt-3 text-2xl font-semibold">Transfer Bank</h4>
+                </div>
+                <div className="rounded-full bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-slate-200">
+                  Rekening
+                </div>
               </div>
-              <div className="rounded-3xl border border-yellow-400 bg-yellow-50 p-4">
-                <p className="text-2xl font-bold text-yellow-600">02</p>
-                <p className="text-sm text-slate-600">Pilih menu Transfer</p>
+              <div className="space-y-4 text-sm text-slate-200">
+                <div className="rounded-3xl bg-white/5 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-emerald-200">No. Rekening</p>
+                  <p className="mt-2 text-lg font-semibold tracking-tight">1730020561313</p>
+                </div>
+                <div className="rounded-3xl bg-white/5 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-emerald-200">Atas Nama</p>
+                  <p className="mt-2 text-lg font-semibold tracking-tight">Denta Herdiansyah</p>
+                </div>
+                <div className="rounded-3xl bg-white/5 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-emerald-200">Kontak</p>
+                  <p className="mt-2 text-lg font-semibold tracking-tight">0895-3386-83425 (Denta)</p>
+                </div>
               </div>
-              <div className="rounded-3xl border border-yellow-400 bg-yellow-50 p-4">
-                <p className="text-2xl font-bold text-yellow-600">03</p>
-                <p className="text-sm text-slate-600">Masukkan no. rek 1730020561313</p>
-              </div>
-              <div className="rounded-3xl border border-yellow-400 bg-yellow-50 p-4">
-                <p className="text-2xl font-bold text-yellow-600">04</p>
-                <p className="text-sm text-slate-600">Tambahkan kode 001 di akhir nominal</p>
-              </div>
-              <div className="rounded-3xl border border-yellow-400 bg-yellow-50 p-4">
-                <p className="text-2xl font-bold text-yellow-600">05</p>
-                <p className="text-sm text-slate-600">Contoh: Rp 500.001</p>
-              </div>
-              <div className="rounded-3xl border border-yellow-400 bg-yellow-50 p-4">
-                <p className="text-2xl font-bold text-yellow-600">06</p>
-                <p className="text-sm text-slate-600">Kirim bukti transfer ke nomor CP</p>
-              </div>
-            </div>
-            <div className="rounded-3xl bg-slate-950 p-4 text-white">
-              <p className="text-sm">Jika transfer berhasil, segera konfirmasi dengan mengirim bukti transfer ke nomor:</p>
-              <p className="mt-3 text-base font-semibold">0895-3386-83425 (Denta) | 0896-0340-5077 (Hilmy)</p>
             </div>
           </div>
+
+          {/* Cara Transfer Section */}
+          <div>
+            <h4 className="text-lg font-semibold mb-4 text-emerald-100">Cara Transfer</h4>
+            <div className="space-y-4">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-3xl border border-emerald-400/50 bg-emerald-500/20 p-4 backdrop-blur-sm">
+                  <p className="text-2xl font-bold text-emerald-200">01</p>
+                  <p className="text-sm text-emerald-100">Buka aplikasi m-Banking kamu</p>
+                </div>
+                <div className="rounded-3xl border border-emerald-400/50 bg-emerald-500/20 p-4 backdrop-blur-sm">
+                  <p className="text-2xl font-bold text-emerald-200">02</p>
+                  <p className="text-sm text-emerald-100">Pilih menu Transfer</p>
+                </div>
+                <div className="rounded-3xl border border-emerald-400/50 bg-emerald-500/20 p-4 backdrop-blur-sm">
+                  <p className="text-2xl font-bold text-emerald-200">03</p>
+                  <p className="text-sm text-emerald-100">Masukkan no. rek 1730020561313</p>
+                </div>
+                <div className="rounded-3xl border border-emerald-400/50 bg-emerald-500/20 p-4 backdrop-blur-sm">
+                  <p className="text-2xl font-bold text-emerald-200">04</p>
+                  <p className="text-sm text-emerald-100">Tambahkan kode 001 di akhir nominal</p>
+                </div>
+                <div className="rounded-3xl border border-emerald-400/50 bg-emerald-500/20 p-4 backdrop-blur-sm">
+                  <p className="text-2xl font-bold text-emerald-200">05</p>
+                  <p className="text-sm text-emerald-100">Contoh: Rp 500.001</p>
+                </div>
+                <div className="rounded-3xl border border-emerald-400/50 bg-emerald-500/20 p-4 backdrop-blur-sm">
+                  <p className="text-2xl font-bold text-emerald-200">06</p>
+                  <p className="text-sm text-emerald-100">Kirim bukti transfer ke nomor CP</p>
+                </div>
+              </div>
+              <div className="rounded-3xl bg-black/40 backdrop-blur-sm border border-white/10 p-4 text-white">
+                <p className="text-sm">Jika transfer berhasil, segera konfirmasi dengan mengirim bukti transfer ke nomor:</p>
+                <p className="mt-3 text-base font-semibold">0895-3386-83425 (Denta) | 0896-0340-5077 (Hilmy)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 lg:mt-8">
+          <p className="text-green-100 text-sm lg:text-base">
+            Butuh bantuan?{' '}
+            <a href="#" className="text-white font-semibold hover:underline">
+              Hubungi Customer Service
+            </a>
+          </p>
         </div>
       </div>
 
