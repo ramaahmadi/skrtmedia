@@ -1,17 +1,15 @@
 import Contact from "@/components/Contact";
-
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Kontak | skrtmedia.ig",
-  description: "This is Contact Page for Startup Nextjs Template",
-  // other metadata
+  title: "Kontak | skrtmedia.id",
+  description: "Hubungi tim SKRT MEDIA untuk pertanyaan, kolaborasi, atau informasi kegiatan.",
 };
 
 const ContactPage = () => {
   return (
-    <div className="text-center">
-      {/* <Contact /> */}
+    <div className="pt-24">
+      <Contact />
     </div>
   );
 };

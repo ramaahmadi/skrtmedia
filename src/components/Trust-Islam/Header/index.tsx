@@ -14,16 +14,17 @@ const Header = () => {
 
   // Sticky Navbar
   const [sticky, setSticky] = useState(false);
-  const handleStickyNavbar = () => {
-    if (window.scrollY >= 80) {
-      setSticky(true);
-    } else {
-      setSticky(false);
-    }
-  };
   useEffect(() => {
-    window.addEventListener("scroll", handleStickyNavbar);
-  });
+    const handleStickyNavbar = () => {
+      if (window.scrollY >= 80) {
+        setSticky(true);
+      } else {
+        setSticky(false);
+      }
+    };
+    window.addEventListener("scroll", handleStickyNavbar, { passive: true });
+    return () => window.removeEventListener("scroll", handleStickyNavbar);
+  }, []);
 
   // submenu handler
   const [openIndex, setOpenIndex] = useState(-1);

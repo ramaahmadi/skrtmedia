@@ -4,10 +4,10 @@ import {
   updateArtikel,
   deleteArtikel
 } from '@/lib/db-queries';
+import { requireAuth } from '@/lib/auth';
 
 export async function GET() {
   try {
-    console.log('Fetching artikel from database...');
     const data = await getAllArtikel();
     return Response.json(data);
   } catch (error) {
@@ -16,11 +16,12 @@ export async function GET() {
   }
 }
 
-
 export async function POST(request: Request) {
+  const { errorResponse } = await requireAuth();
+  if (errorResponse) return errorResponse;
+
   try {
     const body = await request.json();
-    console.log('Creating artikel with data (saved to database):', JSON.stringify(body, null, 2));
 
     const newArtikel = {
       id: crypto.randomUUID(),
@@ -30,7 +31,6 @@ export async function POST(request: Request) {
     };
 
     const result = await createArtikel(newArtikel);
-    console.log('Successfully created artikel (saved to database):', result);
     return Response.json(result);
   } catch (error) {
     console.error('Error creating artikel:', error);
@@ -39,9 +39,16 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
+  const { errorResponse } = await requireAuth();
+  if (errorResponse) return errorResponse;
+
   try {
     const body = await request.json();
     const { id, ...updateData } = body;
+
+    if (!id) {
+      return Response.json({ error: 'ID is required' }, { status: 400 });
+    }
 
     const updatedArtikel = {
       ...updateData,
@@ -54,7 +61,6 @@ export async function PUT(request: Request) {
       return Response.json({ error: 'Artikel not found' }, { status: 404 });
     }
 
-    console.log('Successfully updated artikel (saved to database):', result);
     return Response.json(result);
   } catch (error) {
     console.error('Error updating artikel:', error);
@@ -63,6 +69,9 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const { errorResponse } = await requireAuth();
+  if (errorResponse) return errorResponse;
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
@@ -77,7 +86,6 @@ export async function DELETE(request: Request) {
       return Response.json({ error: 'Artikel not found' }, { status: 404 });
     }
 
-    console.log('Successfully deleted artikel (removed from database):', id);
     return Response.json({ success: true });
   } catch (error) {
     console.error('Error deleting artikel:', error);

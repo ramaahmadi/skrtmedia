@@ -4,13 +4,14 @@ import {
   updatePembukuan,
   deletePembukuan
 } from '@/lib/db-queries';
+import { requireAuth } from '@/lib/auth';
 
 export async function GET() {
-  try {
-    console.log('Fetching pembukuan from database...');
+  const { errorResponse } = await requireAuth();
+  if (errorResponse) return errorResponse;
 
+  try {
     const data = await getAllPembukuan();
-    console.log('Successfully fetched pembukuan:', data.length, 'records');
     return Response.json(data);
   } catch (error) {
     console.error('Error fetching pembukuan:', error);
@@ -19,9 +20,11 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const { errorResponse } = await requireAuth();
+  if (errorResponse) return errorResponse;
+
   try {
     const body = await request.json();
-    console.log('Creating pembukuan with data:', JSON.stringify(body, null, 2));
 
     const newPembukuan = {
       id: crypto.randomUUID(),
@@ -31,7 +34,6 @@ export async function POST(request: Request) {
     };
 
     const result = await createPembukuan(newPembukuan);
-    console.log('Pembukuan created and saved to database:', result.description);
     return Response.json(result);
   } catch (error) {
     console.error('Error creating pembukuan:', error);
@@ -40,9 +42,16 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
+  const { errorResponse } = await requireAuth();
+  if (errorResponse) return errorResponse;
+
   try {
     const body = await request.json();
     const { id, ...updateData } = body;
+
+    if (!id) {
+      return Response.json({ error: 'ID is required' }, { status: 400 });
+    }
 
     const updatedData = {
       ...updateData,
@@ -55,7 +64,6 @@ export async function PUT(request: Request) {
       return Response.json({ error: 'Pembukuan not found' }, { status: 404 });
     }
 
-    console.log('Pembukuan updated and saved to database:', result.description);
     return Response.json(result);
   } catch (error) {
     console.error('Error updating pembukuan:', error);
@@ -64,6 +72,9 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const { errorResponse } = await requireAuth();
+  if (errorResponse) return errorResponse;
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
@@ -72,20 +83,15 @@ export async function DELETE(request: Request) {
       return Response.json({ error: 'ID is required' }, { status: 400 });
     }
 
-    console.log('Attempting to delete pembukuan with ID:', id);
-
     const result = await deletePembukuan(id);
 
     if (!result) {
-      console.log('Pembukuan not found for deletion:', id);
       return Response.json({ error: 'Pembukuan not found' }, { status: 404 });
     }
 
-    console.log('Pembukuan deleted successfully:', id);
     return Response.json({ success: true });
   } catch (error) {
     console.error('Error deleting pembukuan:', error);
-    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack');
     return Response.json({ error: 'Failed to delete pembukuan' }, { status: 500 });
   }
 }

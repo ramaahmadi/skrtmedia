@@ -6,8 +6,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Tentang Kami | skrtmedia.id",
-  description: "This is About Page for Startup Nextjs Template",
-  // other metadata
+  description: "Mengenal lebih dekat SKRT MEDIA — Good Vibes, Good Circle. Partner dalam ketaatan untuk generasi muda.",
 };
 
 const AboutPage = () => {

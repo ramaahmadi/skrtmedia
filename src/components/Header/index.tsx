@@ -15,16 +15,17 @@ const Header = () => {
 
   // Sticky Navbar
   const [sticky, setSticky] = useState(false);
-  const handleStickyNavbar = () => {
-    if (window.scrollY >= 80) {
-      setSticky(true);
-    } else {
-      setSticky(false);
-    }
-  };
   useEffect(() => {
-    window.addEventListener("scroll", handleStickyNavbar);
-  });
+    const handleStickyNavbar = () => {
+      if (window.scrollY >= 80) {
+        setSticky(true);
+      } else {
+        setSticky(false);
+      }
+    };
+    window.addEventListener("scroll", handleStickyNavbar, { passive: true });
+    return () => window.removeEventListener("scroll", handleStickyNavbar);
+  }, []);
 
   // submenu handler
   const [openIndex, setOpenIndex] = useState(-1);
@@ -110,6 +111,7 @@ const Header = () => {
                         {menuItem.path ? (
                           <Link
                             href={menuItem.path}
+                            onClick={() => setNavbarOpen(false)}
                             className={`flex py-2 text-base lg:mr-0 lg:inline-flex lg:px-0 lg:py-6 ${
                               usePathName === menuItem.path
                                 ? "text-primary dark:text-white"
@@ -141,10 +143,11 @@ const Header = () => {
                                 openIndex === index ? "block" : "hidden"
                               }`}
                             >
-                              {menuItem.submenu.map((submenuItem, index) => (
+                              {menuItem.submenu.map((submenuItem, subIndex) => (
                                 <Link
                                   href={submenuItem.path}
-                                  key={index}
+                                  key={subIndex}
+                                  onClick={() => setNavbarOpen(false)}
                                   className="text-dark hover:text-primary block rounded-sm py-2.5 text-sm lg:px-3 dark:text-white/70 dark:hover:text-white"
                                 >
                                   {submenuItem.title}
@@ -155,6 +158,15 @@ const Header = () => {
                         )}
                       </li>
                     ))}
+                    <li className="mt-2 border-t border-gray-200 pt-2 md:hidden dark:border-gray-700">
+                      <Link
+                        href="/contact"
+                        onClick={() => setNavbarOpen(false)}
+                        className="flex py-2 text-base font-medium text-primary dark:text-white"
+                      >
+                        Kontak
+                      </Link>
+                    </li>
                   </ul>
                 </nav>
               </div>

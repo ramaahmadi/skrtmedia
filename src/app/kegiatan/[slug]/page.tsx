@@ -17,18 +17,18 @@ export default function ActivityDetailPage() {
     const loadActivity = async () => {
       try {
         const response = await fetch('/api/kegiatan');
-        const data = await response.json();
-        
-        // Auto-update status based on date
-        let activities = data;
-        try {
-          activities = autoUpdateActivityStatus(data);
-        } catch (statusError) {
-          console.error('Error updating activity status:', statusError);
-          activities = data;
+        if (!response.ok) {
+          router.push('/kegiatan');
+          return;
         }
-        
-        const foundActivity = activities.find((a: Activity) => a.id === params.slug);
+        const data = await response.json();
+        if (!Array.isArray(data)) {
+          router.push('/kegiatan');
+          return;
+        }
+
+        const activities = autoUpdateActivityStatus(data);
+        const foundActivity = activities.find((a: Activity) => String(a.id) === String(params.slug));
         if (foundActivity) {
           setActivity(foundActivity);
         } else {

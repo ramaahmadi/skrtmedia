@@ -24,10 +24,18 @@ const Blog = () => {
     const loadArticles = async () => {
       try {
         const response = await fetch('/api/artikel');
+        if (!response.ok) {
+          setArticles([]);
+          return;
+        }
         const data = await response.json();
+        if (!Array.isArray(data)) {
+          setArticles([]);
+          return;
+        }
         // Transform API data to match the expected structure
         const transformedArticles = data.map((item: any) => ({
-          id: item.id,
+          id: String(item.id),
           title: item.title,
           paragraph: item.paragraph,
           image: item.images && item.images.length > 0 ? item.images[0] : '/images/blog/blog-01.jpg',
@@ -39,6 +47,7 @@ const Blog = () => {
         setArticles(transformedArticles);
       } catch (error) {
         console.error('Error loading articles:', error);
+        setArticles([]);
       } finally {
         setLoading(false);
       }
@@ -79,7 +88,7 @@ const Blog = () => {
           ) : (
             <>
               <div className="-mx-4 flex flex-wrap justify-center">
-                {articles.map((article) => (
+                {articles.map((article, index) => (
                   <div
                     key={article.id}
                     className="w-full px-4 sm:w-full md:w-2/3 lg:w-1/2 xl:w-1/3"
@@ -87,7 +96,7 @@ const Blog = () => {
                     <SingleBlog 
                       href={`/blog/${article.id}`}
                       blog={{
-                        id: parseInt(article.id),
+                        id: Number.isNaN(Number(article.id)) ? index + 1 : Number(article.id),
                         title: article.title,
                         paragraph: article.paragraph,
                         image: article.image,

@@ -4,13 +4,14 @@ import {
   updateNotulensi,
   deleteNotulensi
 } from '@/lib/db-queries';
+import { requireAuth } from '@/lib/auth';
 
 export async function GET() {
-  try {
-    console.log('Fetching notulensi from database...');
+  const { errorResponse } = await requireAuth();
+  if (errorResponse) return errorResponse;
 
+  try {
     const data = await getAllNotulensi();
-    console.log('Successfully fetched notulensi:', data.length, 'records');
     return Response.json(data);
   } catch (error) {
     console.error('Error fetching notulensi:', error);
@@ -19,9 +20,11 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const { errorResponse } = await requireAuth();
+  if (errorResponse) return errorResponse;
+
   try {
     const body = await request.json();
-    console.log('Creating notulensi with data:', JSON.stringify(body, null, 2));
 
     const newNotulensi = {
       id: crypto.randomUUID(),
@@ -31,7 +34,6 @@ export async function POST(request: Request) {
     };
 
     const result = await createNotulensi(newNotulensi);
-    console.log('Notulensi created and saved to database:', result.title);
     return Response.json(result);
   } catch (error) {
     console.error('Error creating notulensi:', error);
@@ -40,9 +42,16 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
+  const { errorResponse } = await requireAuth();
+  if (errorResponse) return errorResponse;
+
   try {
     const body = await request.json();
     const { id, ...updateData } = body;
+
+    if (!id) {
+      return Response.json({ error: 'ID is required' }, { status: 400 });
+    }
 
     const updatedData = {
       ...updateData,
@@ -55,7 +64,6 @@ export async function PUT(request: Request) {
       return Response.json({ error: 'Notulensi not found' }, { status: 404 });
     }
 
-    console.log('Notulensi updated and saved to database:', result.title);
     return Response.json(result);
   } catch (error) {
     console.error('Error updating notulensi:', error);
@@ -64,6 +72,9 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const { errorResponse } = await requireAuth();
+  if (errorResponse) return errorResponse;
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
@@ -72,23 +83,15 @@ export async function DELETE(request: Request) {
       return Response.json({ error: 'ID is required' }, { status: 400 });
     }
 
-    console.log('Attempting to delete notulensi with ID:', id);
-
     const result = await deleteNotulensi(id);
 
     if (!result) {
-      console.log('Notulensi not found for deletion:', id);
       return Response.json({ error: 'Notulensi not found' }, { status: 404 });
     }
 
-    console.log('Notulensi deleted successfully:', id);
     return Response.json({ success: true });
   } catch (error) {
     console.error('Error deleting notulensi:', error);
-    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack');
-    return Response.json({
-      error: 'Failed to delete notulensi',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 });
+    return Response.json({ error: 'Failed to delete notulensi' }, { status: 500 });
   }
 }

@@ -13,16 +13,17 @@ export default function KegiatanPage() {
     const loadActivities = async () => {
       try {
         const response = await fetch('/api/kegiatan');
-        const data = await response.json();
-        // Auto-update status based on date
-        let updatedActivities = data;
-        try {
-          updatedActivities = autoUpdateActivityStatus(data);
-        } catch (statusError) {
-          console.error('Error updating activity status:', statusError);
-          // If status update fails, use data as-is
-          updatedActivities = data;
+        if (!response.ok) {
+          setActivities([]);
+          return;
         }
+        const data = await response.json();
+        if (!Array.isArray(data)) {
+          setActivities([]);
+          return;
+        }
+        // Auto-update status based on date
+        const updatedActivities = autoUpdateActivityStatus(data);
         setActivities(updatedActivities);
       } catch (error) {
         console.error('Error loading activities:', error);

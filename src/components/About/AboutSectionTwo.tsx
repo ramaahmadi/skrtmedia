@@ -14,7 +14,7 @@ const AboutSectionTwo = () => {
                 src="/images/hero/landscape1.JPG"
                 alt="kegiatan-skrtmedia"
                 fill
-                className="object-cover drop-shadow-three dark:hidden dark:drop-shadow-none"
+                className="rounded-lg object-cover drop-shadow-three dark:drop-shadow-none"
               />
             </div>
           </div>

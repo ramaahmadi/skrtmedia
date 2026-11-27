@@ -28,14 +28,22 @@ export default function ArticleDetailPage() {
       try {
         // Fetch all articles from API
         const response = await fetch('/api/artikel');
+        if (!response.ok) {
+          router.push('/blog');
+          return;
+        }
         const data = await response.json();
+        if (!Array.isArray(data)) {
+          router.push('/blog');
+          return;
+        }
         
         // Find the specific article
-        const foundArticle = data.find((item: any) => item.id === articleId);
+        const foundArticle = data.find((item: any) => String(item.id) === String(articleId));
         if (foundArticle) {
           // Transform API data to match the expected structure
           setArticle({
-            id: foundArticle.id,
+            id: String(foundArticle.id),
             title: foundArticle.title,
             paragraph: foundArticle.paragraph,
             image: foundArticle.images && foundArticle.images.length > 0 ? foundArticle.images[0] : '/images/blog/blog-01.jpg',
@@ -90,9 +98,9 @@ export default function ArticleDetailPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-black">
       <section className="pt-[120px] pb-[120px]">
-        <div className="container text-center">
+        <div className="container">
           {/* Back Button */}
-          <div className="mb-8">
+          <div className="mb-8 max-w-4xl mx-auto">
             <Link
               href="/blog"
               className="inline-flex items-center gap-2 text-gray-600 hover:text-primary dark:text-gray-400 dark:hover:text-primary transition"
@@ -105,7 +113,7 @@ export default function ArticleDetailPage() {
           </div>
 
           {/* Article Header */}
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-4xl mx-auto text-left">
             <div className="mb-8">
               <div className="flex items-center gap-2 mb-4">
                 {article.tags.map((tag, index) => (
@@ -114,12 +122,12 @@ export default function ArticleDetailPage() {
                   </span>
                 ))}
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
                 {article.title}
               </h1>
               <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400">
                 <div className="flex items-center gap-2">
-                  <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold text-lg">
+                  <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold text-sm">
                     SKRT
                   </div>
                   <div>

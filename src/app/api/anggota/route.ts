@@ -4,12 +4,14 @@ import {
   updateAnggota,
   deleteAnggota
 } from '@/lib/db-queries';
+import { requireAuth } from '@/lib/auth';
 
 export async function GET() {
+  const { errorResponse } = await requireAuth();
+  if (errorResponse) return errorResponse;
+
   try {
-    console.log('Fetching anggota from database...');
     const data = await getAllAnggota();
-    console.log('Records:', data.length);
     return Response.json(data);
   } catch (error) {
     console.error('Error fetching anggota:', error);
@@ -18,27 +20,25 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const { errorResponse } = await requireAuth();
+  if (errorResponse) return errorResponse;
+
   try {
     const body = await request.json();
-    console.log('Creating anggota with data (saved to database):', JSON.stringify(body, null, 2));
 
-    // Buat anggota baru
     const newAnggota = {
       id: crypto.randomUUID(),
       name: body.name,
       phone: body.phone,
       position: body.position || null,
       email: body.email || null,
-      join_date: body.joinDate || null,
+      join_date: body.join_date || body.joinDate || null,
       is_admin: body.is_admin || false,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
 
-    // Simpan ke database
     const result = await createAnggota(newAnggota);
-
-    console.log('Successfully created anggota (saved to database):', result);
     return Response.json(result);
   } catch (error) {
     console.error('Error creating anggota:', error);
@@ -47,14 +47,20 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
+  const { errorResponse } = await requireAuth();
+  if (errorResponse) return errorResponse;
+
   try {
     const body = await request.json();
-    const { id, ...updateData } = body;
-    console.log('Updating anggota with id:', id, 'data (saved to database):', JSON.stringify(updateData, null, 2));
+    const { id, joinDate, ...updateData } = body;
 
-    // Update anggota di database
+    if (!id) {
+      return Response.json({ error: 'ID is required' }, { status: 400 });
+    }
+
     const updatedAnggota = {
       ...updateData,
+      join_date: updateData.join_date ?? joinDate ?? null,
       updated_at: new Date().toISOString()
     };
 
@@ -64,7 +70,6 @@ export async function PUT(request: Request) {
       return Response.json({ error: 'Anggota not found' }, { status: 404 });
     }
 
-    console.log('Successfully updated anggota (saved to database):', result);
     return Response.json(result);
   } catch (error) {
     console.error('Error updating anggota:', error);
@@ -73,6 +78,9 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const { errorResponse } = await requireAuth();
+  if (errorResponse) return errorResponse;
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
@@ -81,16 +89,12 @@ export async function DELETE(request: Request) {
       return Response.json({ error: 'ID is required' }, { status: 400 });
     }
 
-    console.log('Deleting anggota with id:', id);
-
-    // Hapus dari database
     const result = await deleteAnggota(id);
 
     if (!result) {
       return Response.json({ error: 'Anggota not found' }, { status: 404 });
     }
 
-    console.log('Successfully deleted anggota (removed from database):', id);
     return Response.json({ success: true });
   } catch (error) {
     console.error('Error deleting anggota:', error);

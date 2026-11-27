@@ -36,12 +36,17 @@ export const ACTIVITIES_STORAGE_KEY = 'skrt_activities';
 
 // Utility function to determine activity status based on date
 export function getAutoStatus(activityDate: string): 'upcoming' | 'ongoing' | 'completed' {
+  if (!activityDate) return 'upcoming';
+
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Reset to start of day
-  
+  today.setHours(0, 0, 0, 0);
+
   const activityDateObj = new Date(activityDate);
-  activityDateObj.setHours(0, 0, 0, 0); // Reset to start of day
-  
+  if (Number.isNaN(activityDateObj.getTime())) {
+    return 'upcoming';
+  }
+  activityDateObj.setHours(0, 0, 0, 0);
+
   if (activityDateObj.getTime() === today.getTime()) {
     return 'ongoing';
   } else if (activityDateObj.getTime() < today.getTime()) {
@@ -53,6 +58,7 @@ export function getAutoStatus(activityDate: string): 'upcoming' | 'ongoing' | 'c
 
 // Function to auto-update activity status based on date
 export function autoUpdateActivityStatus(activities: Activity[]): Activity[] {
+  if (!Array.isArray(activities)) return [];
   return activities.map(activity => ({
     ...activity,
     status: getAutoStatus(activity.date)

@@ -25,11 +25,13 @@ export default function HighlightEvent({
   const [upcomingActivity, setUpcomingActivity] = useState<Activity | null>(null)
 
   useEffect(() => {
-    // Load activities from API (Supabase) for synchronization with SKRT Army
+    // Load activities from API for synchronization with SKRT Army
     const loadActivities = async () => {
       try {
         const response = await fetch('/api/kegiatan')
+        if (!response.ok) return
         const data = await response.json()
+        if (!Array.isArray(data)) return
         // Auto-update status based on date
         const activities = autoUpdateActivityStatus(data)
         // Filter activities with status 'upcoming'
@@ -57,12 +59,12 @@ export default function HighlightEvent({
     featured: true,
     category: 'Kajian',
     ticket_price: 50000,
-    registration_link: '/trust-islam',
+    registration_link: '/kegiatan',
   }
 
   const displayTitle = title || displayActivity.title
   const displaySubtitle = subtitle || displayActivity.description
-  const displayHref = href || `/kegiatan/${displayActivity.id}`
+  const displayHref = href || (upcomingActivity ? `/kegiatan/${upcomingActivity.id}` : '/kegiatan')
   return (
     <div className="mt-8 flex justify-center">
       <Link href={displayHref} aria-label={`Buka halaman acara ${displayTitle}`} className="w-full max-w-[980px]">

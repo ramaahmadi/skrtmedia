@@ -9,39 +9,43 @@ const SigninPage = () => {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [error, setError] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoggingIn(true);
     setError('');
 
-    // Simple validation - allow any phone number format
-    if (!phone || phone.length < 10) {
-      setError('Nomor HP tidak valid');
+    const cleanedPhone = phone.replace(/[\s\-()]/g, '').trim();
+    if (!cleanedPhone || cleanedPhone.length < 10) {
+      setError('Nomor HP tidak valid (minimal 10 digit)');
       setIsLoggingIn(false);
       return;
     }
 
     try {
-      // Check if phone number is the admin
-      const isAdmin = phone === '082122451622';
-      
-      // Store phone in localStorage as auth token
-      localStorage.setItem('auth_token', phone);
-      localStorage.setItem('user_data', JSON.stringify({
-        phone: phone,
-        name: isAdmin ? 'RAMA' : 'Anggota',
-        isAdmin: isAdmin
-      }));
-      
-      console.log('Auth token stored:', localStorage.getItem('auth_token'));
-      console.log('User data stored:', localStorage.getItem('user_data'));
+      const response = await fetch('/api/auth/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: cleanedPhone }),
+      });
 
-      // Redirect to skrt-army after a small delay to ensure localStorage is set
-      setTimeout(() => {
-        router.push('/skrt-army');
-      }, 100);
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Gagal login. Periksa kembali nomor HP Anda.');
+        setIsLoggingIn(false);
+        return;
+      }
+
+      // Sync user info to localStorage for existing dashboard UI components
+      if (data.user) {
+        localStorage.setItem('auth_token', data.user.phone);
+        localStorage.setItem('user_data', JSON.stringify(data.user));
+      }
+
+      router.push('/skrt-army');
+      router.refresh();
     } catch (error) {
-      console.error('Error storing auth data:', error);
+      console.error('Error during login:', error);
       setError('Terjadi kesalahan saat login. Silakan coba lagi.');
       setIsLoggingIn(false);
     }

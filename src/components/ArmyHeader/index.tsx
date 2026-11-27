@@ -6,12 +6,18 @@ import { useRouter } from 'next/navigation';
 const ArmyHeader = () => {
   const router = useRouter();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
     if (typeof window !== 'undefined') {
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user_data');
     }
     router.push('/signin');
+    router.refresh();
   };
 
   return (

@@ -55,7 +55,7 @@ const AboutSectionOne = () => {
                   src="/images/hero/portrait1.JPG"
                   alt="kegiatan-skrtmedia"
                   fill
-                  className="mx-auto max-w-full object-cover drop-shadow-three dark:hidden dark:drop-shadow-none lg:mr-0"
+                  className="mx-auto max-w-full rounded-lg object-cover drop-shadow-three dark:drop-shadow-none lg:mr-0"
                 />
               </div>
             </div>

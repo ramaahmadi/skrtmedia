@@ -28,31 +28,45 @@ export default function QurbanRegistration() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Format WhatsApp message based on active tab
+
+    const fullName = formData.fullName.trim();
+    const whatsapp = formData.whatsapp.trim();
+    const notes = formData.notes.trim() || 'Tidak ada';
+
     let message = '';
-    
+
     if (activeTab === 'registration') {
-      message = `*Pendaftaran Qurban Bersama SKRT*%0A%0A` +
-        `*Detail Pendaftar:*%0A` +
-        `Nama: ${formData.fullName}%0A` +
-        `WhatsApp: ${formData.whatsapp}%0A%0A` +
-        `*Pilihan Hewan Qurban:*%0A` +
-        `${getAnimalLabel(selectedAnimal)}%0A%0A` +
-        `*Catatan:*%0A${formData.notes || 'Tidak ada'}`;
+      message = [
+        '*Pendaftaran Qurban Bersama SKRT*',
+        '',
+        '*Detail Pendaftar:*',
+        `Nama: ${fullName}`,
+        `WhatsApp: ${whatsapp}`,
+        '',
+        '*Pilihan Hewan Qurban:*',
+        getAnimalLabel(selectedAnimal),
+        '',
+        '*Catatan:*',
+        notes,
+      ].join('\n');
     } else {
-      message = `*Donasi Qurban Bersama SKRT*%0A%0A` +
-        `*Detail Donatur:*%0A` +
-        `Nama: ${formData.fullName}%0A` +
-        `WhatsApp: ${formData.whatsapp}%0A%0A` +
-        `*Jenis Donasi:*%0A` +
-        `Donasi Qurban Umum%0A%0A` +
-        `*Catatan:*%0A${formData.notes || 'Tidak ada'}`;
+      message = [
+        '*Donasi Qurban Bersama SKRT*',
+        '',
+        '*Detail Donatur:*',
+        `Nama: ${fullName}`,
+        `WhatsApp: ${whatsapp}`,
+        '',
+        '*Jenis Donasi:*',
+        'Donasi Qurban Umum',
+        '',
+        '*Catatan:*',
+        notes,
+      ].join('\n');
     }
-    
-    // Open WhatsApp with pre-filled message
-    const whatsappUrl = `https://wa.me/62895338683425?text=${message}`;
-    window.open(whatsappUrl, '_blank');
+
+    const whatsappUrl = `https://wa.me/62895338683425?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
 
   return (

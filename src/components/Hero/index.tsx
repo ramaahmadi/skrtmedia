@@ -80,9 +80,8 @@ const Hero = React.memo(() => {
 
           {/* Link ke dokumentasi acara */}
           <Link
-            href='/'
-            className={`flex text-sm underline py-2 lg:mr-0 inline-flex lg:px-0 "text-dark hover:text-primary dark:text-white/70 dark:hover:text-white"
-            }`}
+            href="/kegiatan"
+            className="inline-flex py-2 text-sm underline text-dark hover:text-primary dark:text-white/70 dark:hover:text-white lg:mr-0 lg:px-0"
           >
             Lihat lebih lanjut dokumentasi acara
           </Link>

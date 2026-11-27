@@ -25,7 +25,7 @@ export default function RootLayout({
   const showGlobalChrome = !pathname?.startsWith("/trust-islam") && !pathname?.startsWith("/skrt-army") && !pathname?.startsWith("/kurban") && !pathname?.startsWith("/qurban_registration");
 
   return (
-    <html suppressHydrationWarning lang="en" className={`${inter.className} ${caveat.variable}`}>
+    <html suppressHydrationWarning lang="id" className={`${inter.className} ${caveat.variable}`}>
       {/*
         <head /> will contain the components returned by the nearest parent
         head.js. Find out more at https://beta.nextjs.org/docs/api-reference/file-conventions/head

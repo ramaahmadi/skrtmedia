@@ -4,12 +4,14 @@ import {
   updateBerita,
   deleteBerita
 } from '@/lib/db-queries';
+import { requireAuth } from '@/lib/auth';
 
 export async function GET() {
+  const { errorResponse } = await requireAuth();
+  if (errorResponse) return errorResponse;
+
   try {
-    console.log('Fetching berita from database...');
     const data = await getAllBerita();
-    console.log('Successfully fetched berita:', data.length, 'records');
     return Response.json(data);
   } catch (error) {
     console.error('Error fetching berita:', error);
@@ -18,6 +20,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const { errorResponse } = await requireAuth();
+  if (errorResponse) return errorResponse;
+
   try {
     const body = await request.json();
 
@@ -29,7 +34,6 @@ export async function POST(request: Request) {
     };
 
     const result = await createBerita(newBerita);
-    console.log('Berita created and saved to database:', result.title);
     return Response.json(result);
   } catch (error) {
     console.error('Error creating berita:', error);
@@ -38,9 +42,16 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
+  const { errorResponse } = await requireAuth();
+  if (errorResponse) return errorResponse;
+
   try {
     const body = await request.json();
     const { id, ...updateData } = body;
+
+    if (!id) {
+      return Response.json({ error: 'ID is required' }, { status: 400 });
+    }
 
     const updatedData = {
       ...updateData,
@@ -53,7 +64,6 @@ export async function PUT(request: Request) {
       return Response.json({ error: 'Berita not found' }, { status: 404 });
     }
 
-    console.log('Berita updated and saved to database:', result.title);
     return Response.json(result);
   } catch (error) {
     console.error('Error updating berita:', error);
@@ -62,6 +72,9 @@ export async function PUT(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const { errorResponse } = await requireAuth();
+  if (errorResponse) return errorResponse;
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
@@ -70,23 +83,15 @@ export async function DELETE(request: Request) {
       return Response.json({ error: 'ID is required' }, { status: 400 });
     }
 
-    console.log('Attempting to delete berita with ID:', id);
-
     const result = await deleteBerita(id);
 
     if (!result) {
-      console.log('Berita not found for deletion:', id);
       return Response.json({ error: 'Berita not found' }, { status: 404 });
     }
 
-    console.log('Berita deleted successfully:', id);
     return Response.json({ success: true });
   } catch (error) {
     console.error('Error deleting berita:', error);
-    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack');
-    return Response.json({
-      error: 'Failed to delete berita',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 });
+    return Response.json({ error: 'Failed to delete berita' }, { status: 500 });
   }
 }
