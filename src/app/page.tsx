@@ -11,10 +11,11 @@ export const metadata: Metadata = {
     "Sempat Kelam Resah Tinggalkan. Komunitas anak muda Muslim yang hadir sebagai partner dalam ketaatan melalui kajian rutin, diskusi positif, dan kegiatan sosial.",
   icons: {
     icon: [
-      { url: "/skrt-square.svg", type: "image/svg+xml" },
-      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/skrt-square.svg?v=skrt2", type: "image/svg+xml" },
+      { url: "/icon-192.png?v=skrt2", sizes: "192x192", type: "image/png" },
     ],
-    apple: "/icon-192.png",
+    shortcut: "/favicon.ico?v=skrt2",
+    apple: "/icon-192.png?v=skrt2",
   },
   openGraph: {
     title: "SKRT MEDIA INDONESIA — Good Vibes, Good Circle",
