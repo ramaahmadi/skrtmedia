@@ -11,7 +11,49 @@ import {
   FaShieldAlt,
   FaHandsHelping,
   FaStar,
+  FaCalendarPlus,
 } from 'react-icons/fa';
+import ShareButtons from '@/components/Common/ShareButtons';
+
+function buildGoogleCalendarUrl(activity: Activity): string {
+  const dateObj = parseLocalDate(activity.date);
+  const pad = (n: number) => String(n).padStart(2, '0');
+
+  let datesParam = '';
+  if (dateObj) {
+    const yyyy = dateObj.getFullYear();
+    const mm = pad(dateObj.getMonth() + 1);
+    const dd = pad(dateObj.getDate());
+
+    const timeMatch = activity.time ? /(\d{1,2})[:.](\d{2})/.exec(activity.time) : null;
+    if (timeMatch) {
+      const startH = Math.min(23, Math.max(0, Number(timeMatch[1])));
+      const startM = Math.min(59, Math.max(0, Number(timeMatch[2])));
+      const endDate = new Date(yyyy, dateObj.getMonth(), dateObj.getDate(), startH + 2, startM);
+      const startStr = `${yyyy}${mm}${dd}T${pad(startH)}${pad(startM)}00`;
+      const endStr = `${endDate.getFullYear()}${pad(endDate.getMonth() + 1)}${pad(endDate.getDate())}T${pad(endDate.getHours())}${pad(endDate.getMinutes())}00`;
+      datesParam = `${startStr}/${endStr}`;
+    } else {
+      const nextDay = new Date(yyyy, dateObj.getMonth(), dateObj.getDate() + 1);
+      const endStr = `${nextDay.getFullYear()}${pad(nextDay.getMonth() + 1)}${pad(nextDay.getDate())}`;
+      datesParam = `${yyyy}${mm}${dd}/${endStr}`;
+    }
+  }
+
+  const location = Array.isArray(activity.locations)
+    ? activity.locations.join(', ')
+    : String(activity.locations || '');
+
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: activity.title || 'Kegiatan SKRT MEDIA',
+    details: activity.description || '',
+    location,
+  });
+  if (datesParam) params.set('dates', datesParam);
+
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
 
 export default function ActivityDetailPage() {
   const params = useParams();
@@ -433,17 +475,17 @@ export default function ActivityDetailPage() {
                 )}
               </div>
 
-              {/* Registration Button */}
-              {activity.registration_link && (
-                <div className="mt-8">
+              {/* Action Buttons: Registration + Google Calendar */}
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                {activity.registration_link && (
                   <a
                     href={activity.registration_link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-3.5 font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-md"
+                    className="inline-flex items-center gap-2 rounded-xl bg-primary px-7 py-3.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-md sm:text-base"
                   >
                     Daftar Sekarang
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -452,8 +494,30 @@ export default function ActivityDetailPage() {
                       />
                     </svg>
                   </a>
-                </div>
-              )}
+                )}
+
+                <a
+                  href={buildGoogleCalendarUrl(activity)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-6 py-3.5 text-sm font-semibold text-gray-800 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:text-primary dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:border-primary/50 sm:text-base"
+                >
+                  <FaCalendarPlus className="h-4 w-4 text-primary dark:text-sky-400" />
+                  <span>Tambahkan ke Google Calendar</span>
+                </a>
+              </div>
+
+              {/* Share Section */}
+              <div className="mt-8 border-t border-gray-200 pt-6 dark:border-white/10">
+                <p className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">
+                  Ajak teman &amp; bagikan kegiatan ini
+                </p>
+                <ShareButtons
+                  title={activity.title}
+                  description={`${formattedDate}${activity.time ? ` • ${activity.time}` : ''} — ${locationsText}`}
+                  path={`/kegiatan/${activity.id}`}
+                />
+              </div>
 
               {/* Contact Information */}
               {(activity.contact_person || activity.contact_phone) && (
