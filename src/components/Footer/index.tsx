@@ -13,15 +13,8 @@ const Footer = () => {
                 <Link href="/" className="mb-8 inline-block">
                   <Image
                     src="/images/logo/skrt-logo.svg"
-                    alt="logo"
-                    className="w-50 dark:hidden"
-                    width={140}
-                    height={30}
-                  />
-                  <Image
-                    src="/images/logo/skrt-logo.svg"
-                    alt="logo"
-                    className="hidden w-full dark:block"
+                    alt="SKRT MEDIA logo"
+                    className="w-50"
                     width={140}
                     height={30}
                   />
