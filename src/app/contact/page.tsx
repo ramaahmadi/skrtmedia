@@ -1,4 +1,5 @@
 import Contact from "@/components/Contact";
+import OngoingActivityBar from "@/components/Common/OngoingActivityBar";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -8,9 +9,10 @@ export const metadata: Metadata = {
 
 const ContactPage = () => {
   return (
-    <div className="pt-24">
+    <main className="pt-28">
+      <OngoingActivityBar />
       <Contact />
-    </div>
+    </main>
   );
 };
 

@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import SingleBlog from "@/components/Blog/SingleBlog";
+import OngoingActivityBar from "@/components/Common/OngoingActivityBar";
 import Link from 'next/link';
 
 interface Article {
@@ -20,46 +21,50 @@ const Blog = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    const loadArticles = async () => {
-      try {
-        const response = await fetch('/api/artikel');
-        if (!response.ok) {
-          setArticles([]);
-          return;
-        }
-        const data = await response.json();
-        if (!Array.isArray(data)) {
-          setArticles([]);
-          return;
-        }
-        const transformedArticles = data.map((item: any) => ({
-          id: String(item.id),
-          title: item.title,
-          paragraph: item.paragraph,
-          image: item.images && item.images.length > 0 ? item.images[0] : '/images/blog/blog-01.jpg',
-          author: item.author || 'SKRT Team',
-          designation: item.role || 'Member',
-          tags: ['Artikel'],
-          publishDate:
-            item.publish_date ||
-            item.publishDate ||
-            new Date().toLocaleDateString('id-ID', {
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric',
-            }),
-        }));
-        setArticles(transformedArticles);
-      } catch (error) {
-        console.error('Error loading articles:', error);
+  const loadArticles = useCallback(async () => {
+    try {
+      const response = await fetch('/api/artikel', { cache: 'no-store' });
+      if (!response.ok) {
         setArticles([]);
-      } finally {
-        setLoading(false);
+        return;
       }
-    };
-    loadArticles();
+      const data = await response.json();
+      if (!Array.isArray(data)) {
+        setArticles([]);
+        return;
+      }
+      const transformedArticles = data.map((item: any) => ({
+        id: String(item.id),
+        title: item.title,
+        paragraph: item.paragraph,
+        image: item.images && item.images.length > 0 ? item.images[0] : '/images/blog/blog-01.jpg',
+        author: item.author || 'SKRT Team',
+        designation: item.role || 'Member',
+        tags: ['Artikel'],
+        publishDate:
+          item.publish_date ||
+          item.publishDate ||
+          new Date().toLocaleDateString('id-ID', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          }),
+      }));
+      setArticles(transformedArticles);
+    } catch (error) {
+      console.error('Error loading articles:', error);
+      setArticles([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    loadArticles();
+    const onFocus = () => loadArticles();
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, [loadArticles]);
 
   const filteredArticles = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -74,6 +79,7 @@ const Blog = () => {
 
   return (
     <main className="min-h-screen bg-slate-50/50 pt-28 pb-20 dark:bg-black sm:pt-32 sm:pb-24">
+      <OngoingActivityBar />
       <div className="container px-4 sm:px-6">
         {/* Header */}
         <div className="mx-auto mb-10 max-w-3xl text-center">

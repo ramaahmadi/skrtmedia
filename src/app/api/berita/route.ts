@@ -6,16 +6,22 @@ import {
 } from '@/lib/db-queries';
 import { requireAuth } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
+const NO_STORE_HEADERS = {
+  'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+};
+
 export async function GET() {
   const { errorResponse } = await requireAuth();
   if (errorResponse) return errorResponse;
 
   try {
     const data = await getAllBerita();
-    return Response.json(data);
+    return Response.json(data, { headers: NO_STORE_HEADERS });
   } catch (error) {
     console.error('Error fetching berita:', error);
-    return Response.json({ error: 'Failed to fetch berita' }, { status: 500 });
+    return Response.json({ error: 'Failed to fetch berita' }, { status: 500, headers: NO_STORE_HEADERS });
   }
 }
 

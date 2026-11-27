@@ -27,7 +27,7 @@ export default function ArticleDetailPage() {
       
       try {
         // Fetch all articles from API
-        const response = await fetch('/api/artikel');
+        const response = await fetch('/api/artikel', { cache: 'no-store' });
         if (!response.ok) {
           router.push('/blog');
           return;
@@ -64,6 +64,9 @@ export default function ArticleDetailPage() {
       }
     };
     loadArticle();
+    const onFocus = () => loadArticle();
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
   }, [params.id, router]);
 
   if (loading) {

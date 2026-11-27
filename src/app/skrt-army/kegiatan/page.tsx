@@ -82,7 +82,7 @@ function KegiatanPageContent() {
   const loadActivities = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/kegiatan');
+      const response = await fetch('/api/kegiatan', { cache: 'no-store' });
       const data = await response.json();
       
       // Check if response contains an error

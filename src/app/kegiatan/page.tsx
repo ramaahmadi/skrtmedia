@@ -1,9 +1,13 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Activity, autoUpdateActivityStatus } from '@/lib/types';
-import RecurringIslamicActivities from '@/components/Kegiatan/RecurringIslamicActivities';
+import {
+  Activity,
+  autoUpdateActivityStatus,
+  parseLocalDate,
+  sortActivitiesByPriority,
+} from '@/lib/types';
 
 type StatusFilter = 'all' | 'upcoming' | 'ongoing' | 'completed';
 
@@ -13,30 +17,33 @@ export default function KegiatanPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
 
-  useEffect(() => {
-    const loadActivities = async () => {
-      try {
-        const response = await fetch('/api/kegiatan');
-        if (!response.ok) {
-          setActivities([]);
-          return;
-        }
-        const data = await response.json();
-        if (!Array.isArray(data)) {
-          setActivities([]);
-          return;
-        }
-        setActivities(autoUpdateActivityStatus(data));
-      } catch (error) {
-        console.error('Error loading activities:', error);
+  const loadActivities = useCallback(async () => {
+    try {
+      const response = await fetch('/api/kegiatan', { cache: 'no-store' });
+      if (!response.ok) {
         setActivities([]);
-      } finally {
-        setLoading(false);
+        return;
       }
-    };
-
-    loadActivities();
+      const data = await response.json();
+      if (!Array.isArray(data)) {
+        setActivities([]);
+        return;
+      }
+      setActivities(sortActivitiesByPriority(autoUpdateActivityStatus(data)));
+    } catch (error) {
+      console.error('Error loading activities:', error);
+      setActivities([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    loadActivities();
+    const onFocus = () => loadActivities();
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, [loadActivities]);
 
   const counts = useMemo(() => {
     return {
@@ -198,8 +205,8 @@ export default function KegiatanPage() {
           <div className="mx-auto max-w-4xl space-y-5">
             {filteredActivities.map((activity) => {
               const badge = getStatusBadge(activity.status);
-              const dateObj = new Date(activity.date);
-              const validDate = !Number.isNaN(dateObj.getTime());
+              const dateObj = parseLocalDate(activity.date);
+              const validDate = dateObj !== null;
               const locationsText = Array.isArray(activity.locations)
                 ? activity.locations.join(', ')
                 : activity.locations || '-';
@@ -317,9 +324,6 @@ export default function KegiatanPage() {
             )}
           </div>
         )}
-
-        {/* Kegiatan Muslim Berulang (Puasa, Zakat, Sedekah, Qurban, dll.) */}
-        <RecurringIslamicActivities />
       </div>
     </main>
   );

@@ -1,136 +1,153 @@
-'use client'
+'use client';
 
-import React, { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { Activity, ACTIVITIES_STORAGE_KEY, autoUpdateActivityStatus } from '@/lib/types'
+import React, { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import {
+  Activity,
+  autoUpdateActivityStatus,
+  parseLocalDate,
+  sortActivitiesByPriority,
+} from '@/lib/types';
 
 type Props = {
-  title?: string
-  subtitle?: string
-  href?: string
-}
+  title?: string;
+  subtitle?: string;
+  href?: string;
+};
 
-/**
- * HighlightEvent
- * - A small attention-grabbing card to promote upcoming activities (kegiatan yang akan datang)
- * - Fetches activities with status 'upcoming' from localStorage
- * - Save this file as `components/HighlightEvent.tsx` and import it into your landing section.
- */
-export default function HighlightEvent({
-  title,
-  subtitle,
-  href,
-}: Props) {
-  const [upcomingActivity, setUpcomingActivity] = useState<Activity | null>(null)
+export default function HighlightEvent({ title, subtitle, href }: Props) {
+  const [featuredActivity, setFeaturedActivity] = useState<Activity | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const loadActivities = useCallback(async () => {
+    try {
+      const response = await fetch('/api/kegiatan', { cache: 'no-store' });
+      if (!response.ok) return;
+      const data = await response.json();
+      if (!Array.isArray(data) || data.length === 0) return;
+
+      const updated = sortActivitiesByPriority(autoUpdateActivityStatus(data));
+      // Priority: ongoing -> upcoming -> latest real activity in DB
+      setFeaturedActivity(updated[0] || null);
+    } catch (error) {
+      console.error('Error loading activities:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    // Load activities from API for synchronization with SKRT Army
-    const loadActivities = async () => {
-      try {
-        const response = await fetch('/api/kegiatan')
-        if (!response.ok) return
-        const data = await response.json()
-        if (!Array.isArray(data)) return
-        // Auto-update status based on date
-        const activities = autoUpdateActivityStatus(data)
-        // Filter activities with status 'upcoming'
-        const upcomingActivities = activities.filter(a => a.status === 'upcoming')
-        // Get the first upcoming activity
-        if (upcomingActivities.length > 0) {
-          setUpcomingActivity(upcomingActivities[0])
-        }
-      } catch (error) {
-        console.error('Error loading activities:', error)
-      }
-    }
-    loadActivities()
-  }, [])
+    loadActivities();
+    const onFocus = () => loadActivities();
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, [loadActivities]);
 
-  // Fallback to Trust Islam if no upcoming activities found
-  const displayActivity = upcomingActivity || {
-    id: 'trust-islam',
-    title: 'Trust Islam — Event Baru',
-    description: 'Diskusi, kajian, dan networking untuk pemuda. Klik untuk info & tiket gratis.',
-    date: '2025-06-15',
-    time: '16:00',
-    location: 'Jakarta Convention Center',
-    status: 'upcoming' as const,
-    featured: true,
-    category: 'Kajian',
-    ticket_price: 50000,
-    registration_link: '/kegiatan',
+  if (loading) {
+    return (
+      <div className="mt-8 flex justify-center">
+        <div className="h-24 w-full max-w-[980px] animate-pulse rounded-2xl border border-gray-200/80 bg-white/80 dark:border-white/10 dark:bg-gray-dark/70" />
+      </div>
+    );
   }
 
-  const displayTitle = title || displayActivity.title
-  const displaySubtitle = subtitle || displayActivity.description
-  const displayHref = href || (upcomingActivity ? `/kegiatan/${upcomingActivity.id}` : '/kegiatan')
+  if (!featuredActivity && !title) {
+    return null;
+  }
+
+  const displayTitle = title || featuredActivity?.title || 'Kegiatan SKRT MEDIA';
+  const displaySubtitle = subtitle || featuredActivity?.description || '';
+  const displayHref =
+    href || (featuredActivity ? `/kegiatan/${featuredActivity.id}` : '/kegiatan');
+
+  const statusMeta =
+    featuredActivity?.status === 'ongoing'
+      ? {
+          label: 'SEDANG BERLANGSUNG',
+          badgeClass:
+            'bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30',
+          dotClass: 'bg-emerald-500',
+        }
+      : featuredActivity?.status === 'upcoming'
+        ? {
+            label: 'AKAN DATANG',
+            badgeClass:
+              'bg-blue-50 text-primary ring-blue-200 dark:bg-primary/20 dark:text-sky-300 dark:ring-primary/30',
+            dotClass: 'bg-primary',
+          }
+        : {
+            label: 'KEGIATAN TERBARU',
+            badgeClass:
+              'bg-gray-100 text-gray-700 ring-gray-200 dark:bg-white/10 dark:text-gray-300 dark:ring-white/15',
+            dotClass: 'bg-gray-500',
+          };
+
+  const parsedDate = featuredActivity?.date ? parseLocalDate(featuredActivity.date) : null;
+  const formattedDate = parsedDate
+    ? parsedDate.toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      })
+    : null;
+
   return (
     <div className="mt-8 flex justify-center">
-      <Link href={displayHref} aria-label={`Buka halaman acara ${displayTitle}`} className="w-full max-w-[980px]">
+      <Link
+        href={displayHref}
+        aria-label={`Buka halaman acara ${displayTitle}`}
+        className="w-full max-w-[980px]"
+      >
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          whileHover={{ scale: 1.01 }}
-          transition={{ duration: 0.35 }}
-          className="group relative flex items-center gap-6 overflow-hidden rounded-2xl border border-sky-100/30 bg-gradient-to-r from-white/80 to-sky-50/60 px-6 py-5 shadow-lg ring-1 ring-sky-100/20 dark:from-gray-800/70 dark:to-gray-800/50 dark:border-gray-700"
+          whileHover={{ y: -2 }}
+          transition={{ duration: 0.25 }}
+          className="group relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-gray-200/80 bg-white px-6 py-5 text-left shadow-sm transition-shadow hover:border-primary/40 hover:shadow-lg dark:border-white/10 dark:bg-gray-dark sm:flex-row sm:items-center sm:gap-6"
         >
-          {/* Left: badge + icon */}
-          <div className="flex items-center gap-4">
-            <div className="relative flex h-16 w-16 items-center justify-center rounded-xl bg-white shadow-sm dark:bg-gray-900">
-              <div className="absolute -inset-0.5 animate-pulse rounded-xl bg-gradient-to-br from-rose-400 via-orange-300 to-yellow-300 opacity-60 blur-[6px]" />
-              <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-lg bg-white/90 text-primary dark:bg-gray-800">
-                {/* megaphone icon (inline svg) */}
-                <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-                  <path d="M3 11v2a2 2 0 002 2h2l7 3V6L7 9H5a2 2 0 00-2 2z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M19 8v8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-            </div>
-
-            {/* NEW badge */}
-            <div className="flex flex-col">
-              <span className="inline-flex items-center gap-2 text-xs font-semibold text-rose-600">
-                <span className="inline-flex h-2 w-2 items-center justify-center">
-                  <span className="h-2 w-2 animate-ping rounded-full bg-rose-400" />
-                  <span className="absolute inline-flex h-2 w-2 rounded-full bg-rose-500" />
-                </span>
-                NEW
-              </span>
-            </div>
-          </div>
-
-          {/* Middle: text */}
           <div className="flex min-w-0 flex-1 flex-col">
-            <h3 className="truncate text-left text-lg font-bold leading-snug text-sky-900 dark:text-white sm:text-xl">
-              {displayTitle}
-            </h3>
-            <p className="mt-1 truncate text-left text-sm font-medium text-sky-700/80 dark:text-sky-200/80 sm:text-sm">
-              {displaySubtitle}
-            </p>
-
-            <div className="mt-3 flex items-center gap-3">
-              {displayActivity.category && (
-                <span className="hidden rounded-full bg-sky-50/60 px-3 py-1 text-xs font-medium text-sky-700 dark:bg-gray-700/40 dark:text-sky-200 sm:inline">
-                  {displayActivity.category}
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <span
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold tracking-wide ring-1 ring-inset ${statusMeta.badgeClass}`}
+              >
+                <span className={`h-1.5 w-1.5 rounded-full ${statusMeta.dotClass}`} />
+                {statusMeta.label}
+              </span>
+              {formattedDate && (
+                <span className="text-xs font-medium text-body-color dark:text-body-color-dark">
+                  {formattedDate}
+                  {featuredActivity?.time ? ` • ${featuredActivity.time}` : ''}
                 </span>
               )}
-              <span className="ml-auto inline-flex items-center gap-2 rounded-full bg-sky-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition-transform group-hover:translate-x-0.5">
-                Lihat Kegiatan
-                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-                  <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </span>
             </div>
+
+            <h2 className="truncate text-lg font-bold tracking-tight text-gray-900 transition-colors group-hover:text-primary dark:text-white sm:text-xl">
+              {displayTitle}
+            </h2>
+            {displaySubtitle && (
+              <p className="mt-1 line-clamp-1 text-sm text-body-color dark:text-body-color-dark">
+                {displaySubtitle}
+              </p>
+            )}
           </div>
 
-          {/* Right: subtle decorative gradient */}
-          <div className="pointer-events-none absolute right-3 top-3 hidden h-20 w-20 -rotate-12 transform rounded-xl bg-gradient-to-br from-pink-200 to-yellow-200 opacity-40 blur-xl dark:opacity-20 md:block" />
-
-          {/* keyboard focus ring */}
-          <span className="sr-only">Buka detail acara {displayTitle}</span>
+          <span className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition-all group-hover:bg-primary/90 sm:self-center sm:text-sm">
+            Lihat Detail
+            <svg
+              className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </span>
         </motion.div>
       </Link>
     </div>
-  )
+  );
 }

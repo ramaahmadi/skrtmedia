@@ -16,7 +16,7 @@ export default function ActivityDetailPage() {
   useEffect(() => {
     const loadActivity = async () => {
       try {
-        const response = await fetch('/api/kegiatan');
+        const response = await fetch('/api/kegiatan', { cache: 'no-store' });
         if (!response.ok) {
           router.push('/kegiatan');
           return;
@@ -43,6 +43,9 @@ export default function ActivityDetailPage() {
     };
 
     loadActivity();
+    const onFocus = () => loadActivity();
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
   }, [params.slug, router]);
 
   if (loading) {

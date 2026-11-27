@@ -6,13 +6,19 @@ import {
 } from '@/lib/db-queries';
 import { requireAuth } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
+const NO_STORE_HEADERS = {
+  'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+};
+
 export async function GET() {
   try {
     const data = await getAllArtikel();
-    return Response.json(data);
+    return Response.json(data, { headers: NO_STORE_HEADERS });
   } catch (error) {
     console.error('Error fetching artikel:', error);
-    return Response.json({ error: 'Failed to fetch artikel' }, { status: 500 });
+    return Response.json({ error: 'Failed to fetch artikel' }, { status: 500, headers: NO_STORE_HEADERS });
   }
 }
 

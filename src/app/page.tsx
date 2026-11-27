@@ -2,6 +2,7 @@ import ScrollUp from "@/components/Common/ScrollUp";
 import Features from "@/components/Features";
 import Hero from "@/components/Hero";
 import CommunityCTA from "@/components/Home/CommunityCTA";
+import LatestUpdates from "@/components/Home/LatestUpdates";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export default function Home() {
     <main>
       <ScrollUp />
       <Hero />
+      <LatestUpdates />
       <Features />
       <CommunityCTA />
     </main>

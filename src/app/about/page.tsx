@@ -1,6 +1,7 @@
 import AboutSectionOne from "@/components/About/AboutSectionOne";
 import AboutSectionTwo from "@/components/About/AboutSectionTwo";
 import AboutLocation from "@/components/About/AboutLocation";
+import OngoingActivityBar from "@/components/Common/OngoingActivityBar";
 
 import { Metadata } from "next";
 
@@ -11,11 +12,12 @@ export const metadata: Metadata = {
 
 const AboutPage = () => {
   return (
-    <div className="text-center pt-24">
+    <main className="pt-28 text-center">
+      <OngoingActivityBar />
       <AboutSectionOne />
       <AboutSectionTwo />
       <AboutLocation />
-    </div>
+    </main>
   );
 };
 

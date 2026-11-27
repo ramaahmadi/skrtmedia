@@ -7,6 +7,12 @@ import {
 } from '@/lib/db-queries';
 import { requireAuth } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
+const NO_STORE_HEADERS = {
+  'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+};
+
 // Function to generate slug from hero_title (or title) and year
 function generateSlug(title: string, heroTitle?: string, date?: string): string {
   const year = date ? new Date(date).getFullYear() : new Date().getFullYear();
@@ -27,9 +33,10 @@ function validateActivity(data: any): Activity {
     description: data.description || '',
     date: data.date || '',
     time: data.time || '',
-    locations: data.locations || [''],
+    locations: Array.isArray(data.locations) ? data.locations : [''],
     status: data.status || 'upcoming',
-    featured: data.featured || false,
+    featured: Boolean(data.featured),
+    category: data.category || undefined,
     hero_title: data.hero_title || undefined,
     hero_subtitle: data.hero_subtitle || undefined,
     hero_quote: data.hero_quote || undefined,
@@ -38,10 +45,10 @@ function validateActivity(data: any): Activity {
       goals: data.about_section?.goals || []
     },
     registration_link: data.registration_link || undefined,
-    ticket_price_min: typeof data.ticket_price_min === 'number' ? data.ticket_price_min : undefined,
-    ticket_price_max: typeof data.ticket_price_max === 'number' ? data.ticket_price_max : undefined,
-    ticket_price: typeof data.ticket_price === 'number' ? data.ticket_price : 0,
-    max_participants: data.max_participants || 0,
+    ticket_price_min: typeof data.ticket_price_min === 'number' && Number.isFinite(data.ticket_price_min) ? data.ticket_price_min : undefined,
+    ticket_price_max: typeof data.ticket_price_max === 'number' && Number.isFinite(data.ticket_price_max) ? data.ticket_price_max : undefined,
+    ticket_price: typeof data.ticket_price === 'number' && Number.isFinite(data.ticket_price) ? data.ticket_price : 0,
+    max_participants: typeof data.max_participants === 'number' && Number.isFinite(data.max_participants) ? data.max_participants : 0,
     contact_person: data.contact_person || undefined,
     contact_phone: data.contact_phone || undefined,
     sponsors: data.sponsors || [],
@@ -52,10 +59,10 @@ function validateActivity(data: any): Activity {
 export async function GET() {
   try {
     const data = await getAllKegiatan();
-    return Response.json(data);
+    return Response.json(data, { headers: NO_STORE_HEADERS });
   } catch (error) {
     console.error('Error fetching kegiatan:', error);
-    return Response.json({ error: 'Failed to fetch kegiatan' }, { status: 500 });
+    return Response.json({ error: 'Failed to fetch kegiatan' }, { status: 500, headers: NO_STORE_HEADERS });
   }
 }
 

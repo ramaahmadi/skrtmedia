@@ -56,10 +56,10 @@ export default function SKRTArmyPage() {
     const loadStats = async () => {
       try {
         const [anggotaRes, kegiatanRes, artikelRes, pembukuanRes] = await Promise.all([
-          fetch('/api/anggota'),
-          fetch('/api/kegiatan'),
-          fetch('/api/artikel'),
-          fetch('/api/pembukuan'),
+          fetch('/api/anggota', { cache: 'no-store' }),
+          fetch('/api/kegiatan', { cache: 'no-store' }),
+          fetch('/api/artikel', { cache: 'no-store' }),
+          fetch('/api/pembukuan', { cache: 'no-store' }),
         ]);
 
         const [anggota, kegiatan, artikel, pembukuan] = await Promise.all([
