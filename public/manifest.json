@@ -1,14 +1,20 @@
 {
-  "name": "SKRT Media",
+  "name": "SKRT Media Indonesia",
   "short_name": "SKRT",
-  "description": "SKRT Media - Digital Media Platform",
+  "description": "SKRT Media Indonesia — Good Vibes, Good Circle",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FCFCFC",
-  "theme_color": "#000000",
+  "theme_color": "#4a6cf7",
   "orientation": "portrait-primary",
   "scope": "/",
   "icons": [
+    {
+      "src": "/skrt-square.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
@@ -22,20 +28,20 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["news", "media"],
+  "categories": ["community", "media"],
   "shortcuts": [
     {
-      "name": "Berita",
-      "short_name": "Berita",
-      "description": "Baca berita terbaru",
-      "url": "/skrt-army/berita",
+      "name": "Kegiatan",
+      "short_name": "Kegiatan",
+      "description": "Lihat jadwal kegiatan SKRT MEDIA",
+      "url": "/kegiatan",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Artikel",
       "short_name": "Artikel",
-      "description": "Baca artikel",
-      "url": "/skrt-army/artikel",
+      "description": "Baca artikel terbaru",
+      "url": "/blog",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ]

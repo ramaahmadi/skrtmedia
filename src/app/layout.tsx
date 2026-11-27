@@ -32,12 +32,14 @@ export default function RootLayout({
       */}
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#000000" />
+        <meta name="theme-color" content="#4a6cf7" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="SKRT" />
+        <meta name="apple-mobile-web-app-title" content="SKRT MEDIA" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" type="image/svg+xml" href="/skrt-square.svg" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+        <link rel="shortcut icon" href="/icon-192.png" />
       </head>
 
       <body className={`bg-[#FCFCFC] text-gray-900 dark:bg-black dark:text-white ${inter.className}`}>

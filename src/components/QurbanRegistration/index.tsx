@@ -78,12 +78,14 @@ export default function QurbanRegistration() {
         <div>
           <div className="mb-6 lg:mb-8">
             <div className="inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white shadow-sm">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-emerald-200">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-                  <path d="M12 5l7 7-7 7" />
-                </svg>
+              <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-white p-1">
+                <img
+                  src="/skrt-square.svg"
+                  alt="SKRT MEDIA"
+                  className="h-full w-full object-contain"
+                />
               </div>
-              <span>QurbanConnect</span>
+              <span>Qurban Bersama SKRT</span>
             </div>
           </div>
           

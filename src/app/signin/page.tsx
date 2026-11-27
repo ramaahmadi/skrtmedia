@@ -1,5 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import Link from "next/link";
 import { useState } from 'react';
 
@@ -57,11 +58,21 @@ const SigninPage = () => {
         <div className="container">
           <div className="-mx-4 flex flex-wrap">
             <div className="w-full px-4">
-              <div className="shadow-three dark:bg-dark mx-auto max-w-[500px] rounded-sm bg-white px-6 py-10 sm:p-[60px]">
-                <h3 className="mb-3 text-center text-2xl font-bold text-black sm:text-3xl dark:text-white">
-                  🛡️ Dashboard Panitia
-                </h3>
-                <p className="text-body-color mb-11 text-center text-base font-medium">
+              <div className="shadow-three dark:bg-dark mx-auto max-w-[500px] rounded-2xl border border-gray-200/80 bg-white px-6 py-10 dark:border-white/10 sm:p-[60px]">
+                <div className="mb-6 flex justify-center">
+                  <Image
+                    src="/images/logo/skrt-logo.svg"
+                    alt="SKRT MEDIA logo"
+                    width={140}
+                    height={54}
+                    priority
+                    className="h-12 w-auto"
+                  />
+                </div>
+                <h1 className="mb-3 text-center text-2xl font-bold text-black sm:text-3xl dark:text-white">
+                  Dashboard Panitia
+                </h1>
+                <p className="text-body-color mb-11 text-center text-base font-medium dark:text-body-color-dark">
                   Masuk ke dashboard panitia SKRT MEDIA
                 </p>
                 

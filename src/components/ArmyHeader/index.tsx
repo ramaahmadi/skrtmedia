@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ThemeToggler from '@/components/Header/ThemeToggler';
@@ -27,9 +28,19 @@ const ArmyHeader = () => {
         <div className="flex items-center justify-between gap-4">
           <Link
             href="/skrt-army"
-            className="text-xl font-bold tracking-tight text-primary dark:text-white sm:text-2xl"
+            className="flex items-center gap-2.5 text-lg font-bold tracking-tight text-primary dark:text-white sm:text-xl"
           >
-            SKRT Army
+            <Image
+              src="/images/logo/skrt-logo.svg"
+              alt="SKRT MEDIA logo"
+              width={96}
+              height={36}
+              priority
+              className="h-8 w-auto"
+            />
+            <span className="border-l border-gray-300 pl-2.5 text-sm font-semibold text-gray-700 dark:border-white/20 dark:text-gray-200 sm:text-base">
+              Army
+            </span>
           </Link>
           <div className="flex items-center gap-2 sm:gap-4">
             <ThemeToggler />
