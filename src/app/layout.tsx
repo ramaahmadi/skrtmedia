@@ -36,10 +36,10 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="SKRT MEDIA" />
-        <link rel="apple-touch-icon" href="/icon-192.png?v=skrt2" />
-        <link rel="icon" type="image/svg+xml" href="/skrt-square.svg?v=skrt2" />
-        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=skrt2" />
-        <link rel="shortcut icon" href="/favicon.ico?v=skrt2" />
+        <link rel="apple-touch-icon" href="/icon-192.png?v=skrt3" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=skrt3" />
+        <link rel="icon" type="image/x-icon" href="/favicon.ico?v=skrt3" />
+        <link rel="shortcut icon" href="/favicon.ico?v=skrt3" />
       </head>
 
       <body className={`bg-[#FCFCFC] text-gray-900 dark:bg-black dark:text-white ${inter.className}`}>

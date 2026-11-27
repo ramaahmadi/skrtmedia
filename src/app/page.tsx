@@ -6,16 +6,17 @@ import LatestUpdates from "@/components/Home/LatestUpdates";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://skrtmedia.id"),
   title: "SKRT MEDIA INDONESIA — Good Vibes, Good Circle",
   description:
     "Sempat Kelam Resah Tinggalkan. Komunitas anak muda Muslim yang hadir sebagai partner dalam ketaatan melalui kajian rutin, diskusi positif, dan kegiatan sosial.",
   icons: {
     icon: [
-      { url: "/skrt-square.svg?v=skrt2", type: "image/svg+xml" },
-      { url: "/icon-192.png?v=skrt2", sizes: "192x192", type: "image/png" },
+      { url: "/icon-192.png?v=skrt3", sizes: "192x192", type: "image/png" },
+      { url: "/favicon.ico?v=skrt3", type: "image/x-icon" },
     ],
-    shortcut: "/favicon.ico?v=skrt2",
-    apple: "/icon-192.png?v=skrt2",
+    shortcut: "/favicon.ico?v=skrt3",
+    apple: "/icon-192.png?v=skrt3",
   },
   openGraph: {
     title: "SKRT MEDIA INDONESIA — Good Vibes, Good Circle",
