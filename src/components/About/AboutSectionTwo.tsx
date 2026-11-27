@@ -24,7 +24,7 @@ const AboutSectionTwo = () => {
                 <h3 className="mb-4 text-xl font-bold text-black dark:text-white sm:text-2xl lg:text-xl xl:text-2xl">
                   Partner dalam Ketaatan
                 </h3>
-                <p className="text-base font-medium leading-relaxed text-body-color sm:text-lg sm:leading-relaxed">
+                <p className="text-base font-medium leading-relaxed text-body-color dark:text-body-color-dark sm:text-lg sm:leading-relaxed">
                   Maka kebersamaan adalah Solusi yang di butuhkan saat ini, sebagai bentuk penjagaan dan pengawasan, karenanya kami hadir untuk menjadi partner dalam menjalankan ketaatan bersama, dan denganya di harapkan agar kami bisa  saling mengingatkan akan kebenaran dan mengingatkan akan kesabaran .
                 </p>
               </div>

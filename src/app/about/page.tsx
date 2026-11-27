@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 const AboutPage = () => {
   return (
-    <main className="pt-28 text-center">
+    <main className="min-h-screen bg-white pt-28 text-center dark:bg-black">
       <OngoingActivityBar />
       <AboutSectionOne />
       <AboutSectionTwo />

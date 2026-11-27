@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import ThemeToggler from '@/components/Header/ThemeToggler';
 
 export default function QurbanRegistration() {
   const [activeTab, setActiveTab] = useState<'registration' | 'donation'>('registration');
@@ -70,7 +71,7 @@ export default function QurbanRegistration() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row bg-slate-50">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-slate-50 text-slate-900 dark:bg-black dark:text-white">
       {/* Left Sidebar - Always shows Green Model + Bank Info & Transfer Instructions */}
       <div className="w-full lg:w-1/2 bg-gradient-to-br from-slate-950 via-emerald-900 to-emerald-700 text-white p-6 lg:p-12 flex flex-col justify-between overflow-y-auto">
         {/* Green Marketing Section */}
@@ -199,41 +200,46 @@ export default function QurbanRegistration() {
 
       {/* Right Section - Form */}
       <div className="w-full lg:w-1/2 p-6 lg:p-12 min-h-screen flex items-center justify-center">
-        <div className="w-full max-w-xl rounded-[40px] bg-white p-6 lg:p-8 shadow-[0_40px_120px_-40px_rgba(15,23,42,0.35)] border border-slate-200">
-          {/* Tabs */}
-          <div className="inline-flex gap-2 rounded-full bg-slate-100 p-1 mb-6 lg:mb-8">
-            <button
-              onClick={() => setActiveTab('registration')}
-              className={`rounded-full px-5 py-2 text-sm lg:text-base font-semibold transition ${
-                activeTab === 'registration'
-                  ? 'bg-white text-slate-950 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-700'
-              }`}
-            >
-              Pendaftaran Qurban
-            </button>
-            <button
-              onClick={() => setActiveTab('donation')}
-              className={`rounded-full px-5 py-2 text-sm lg:text-base font-semibold transition ${
-                activeTab === 'donation'
-                  ? 'bg-white text-slate-950 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-700'
-              }`}
-            >
-              Infaq & Donasi
-            </button>
+        <div className="w-full max-w-xl rounded-[40px] bg-white p-6 lg:p-8 shadow-[0_40px_120px_-40px_rgba(15,23,42,0.35)] border border-slate-200 dark:bg-gray-dark dark:border-white/10">
+          {/* Tabs + Theme Toggler */}
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-6 lg:mb-8">
+            <div className="inline-flex gap-2 rounded-full bg-slate-100 p-1 dark:bg-white/10">
+              <button
+                type="button"
+                onClick={() => setActiveTab('registration')}
+                className={`rounded-full px-5 py-2 text-sm lg:text-base font-semibold transition ${
+                  activeTab === 'registration'
+                    ? 'bg-white text-slate-950 shadow-sm dark:bg-emerald-600 dark:text-white'
+                    : 'text-slate-500 hover:text-slate-700 dark:text-slate-300 dark:hover:text-white'
+                }`}
+              >
+                Pendaftaran Qurban
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('donation')}
+                className={`rounded-full px-5 py-2 text-sm lg:text-base font-semibold transition ${
+                  activeTab === 'donation'
+                    ? 'bg-white text-slate-950 shadow-sm dark:bg-emerald-600 dark:text-white'
+                    : 'text-slate-500 hover:text-slate-700 dark:text-slate-300 dark:hover:text-white'
+                }`}
+              >
+                Infaq &amp; Donasi
+              </button>
+            </div>
+            <ThemeToggler />
           </div>
 
           {activeTab === 'registration' ? (
             <form onSubmit={handleSubmit}>
               {/* Detail Pendaftar Section */}
               <div className="mb-6 lg:mb-8">
-                <h3 className="text-lg lg:text-xl font-bold mb-2">Detail Pendaftar</h3>
-                <p className="text-gray-600 mb-4 lg:mb-6 text-sm lg:text-base">Lengkapi data di bawah untuk proses administrasi.</p>
+                <h3 className="text-lg lg:text-xl font-bold mb-2 text-slate-900 dark:text-white">Detail Pendaftar</h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-4 lg:mb-6 text-sm lg:text-base">Lengkapi data di bawah untuk proses administrasi.</p>
                 
                 <div className="space-y-3 lg:space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       NAMA LENGKAP
                     </label>
                     <div className="relative">
@@ -247,14 +253,14 @@ export default function QurbanRegistration() {
                         value={formData.fullName}
                         onChange={(e) => setFormData({...formData, fullName: e.target.value})}
                         placeholder="Sesuai KTP"
-                        className="w-full pl-10 pr-3 lg:pr-4 py-2 lg:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm lg:text-base"
+                        className="w-full pl-10 pr-3 lg:pr-4 py-2 lg:py-3 border border-gray-300 bg-white text-slate-900 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm lg:text-base dark:border-white/15 dark:bg-black/40 dark:text-white dark:placeholder-gray-400"
                         required
                       />
                     </div>
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       NO. WHATSAPP
                     </label>
                     <div className="relative">
@@ -268,7 +274,7 @@ export default function QurbanRegistration() {
                         value={formData.whatsapp}
                         onChange={(e) => setFormData({...formData, whatsapp: e.target.value})}
                         placeholder="0812xxxx"
-                        className="w-full pl-10 pr-3 lg:pr-4 py-2 lg:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm lg:text-base"
+                        className="w-full pl-10 pr-3 lg:pr-4 py-2 lg:py-3 border border-gray-300 bg-white text-slate-900 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm lg:text-base dark:border-white/15 dark:bg-black/40 dark:text-white dark:placeholder-gray-400"
                         required
                       />
                     </div>
@@ -278,114 +284,54 @@ export default function QurbanRegistration() {
 
               {/* Pilih Hewan Qurban Section */}
               <div className="mb-6 lg:mb-8">
-                <h3 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4">PILIH HEWAN QURBAN</h3>
+                <h3 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4 text-slate-900 dark:text-white">PILIH HEWAN QURBAN</h3>
                 
                 <div className="space-y-3">
-                  <div
-                    onClick={() => setSelectedAnimal('kelasC')}
-                    className={`rounded-3xl p-4 cursor-pointer transition-all ${
-                      selectedAnimal === 'kelasC'
-                        ? 'border border-emerald-600 bg-emerald-50'
-                        : 'border border-slate-200 bg-slate-50 hover:border-slate-300'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                        <div className={`flex h-10 w-10 items-center justify-center rounded-2xl border-2 ${
-                          selectedAnimal === 'kelasC'
-                            ? 'border-emerald-600 bg-emerald-600 text-white'
-                            : 'border-slate-200 bg-slate-100 text-slate-500'
-                        }`}>
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={selectedAnimal === 'kelasC' ? 3 : 2} d="M9 5l7 7-7 7" />
-                          </svg>
+                  {(
+                    [
+                      { key: 'kelasC', name: 'Domba Kelas C', price: 'Rp 2.600.000 (± 23kg)' },
+                      { key: 'kelasB', name: 'Domba Kelas B', price: 'Rp 3.000.000 (± 28kg)' },
+                      { key: 'kelasA', name: 'Domba Kelas A', price: 'Rp 3.400.000 (± 33kg)' },
+                      { key: 'istimewa', name: 'Domba Istimewa', price: 'Rp 5.800.000 (± 55kg)' },
+                    ] as const
+                  ).map((animal) => {
+                    const isSelected = selectedAnimal === animal.key;
+                    return (
+                      <div
+                        key={animal.key}
+                        onClick={() => setSelectedAnimal(animal.key)}
+                        className={`rounded-3xl p-4 cursor-pointer transition-all ${
+                          isSelected
+                            ? 'border border-emerald-600 bg-emerald-50 dark:bg-emerald-500/15 dark:border-emerald-400'
+                            : 'border border-slate-200 bg-slate-50 hover:border-slate-300 dark:border-white/10 dark:bg-white/5 dark:hover:border-white/25'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`flex h-10 w-10 items-center justify-center rounded-2xl border-2 ${
+                                isSelected
+                                  ? 'border-emerald-600 bg-emerald-600 text-white'
+                                  : 'border-slate-200 bg-slate-100 text-slate-500 dark:border-white/15 dark:bg-white/10 dark:text-slate-300'
+                              }`}
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={isSelected ? 3 : 2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </div>
+                            <span className="font-medium text-base lg:text-lg text-slate-900 dark:text-white">{animal.name}</span>
+                          </div>
+                          <span className="text-slate-500 dark:text-slate-300 text-sm lg:text-base">{animal.price}</span>
                         </div>
-                        <span className="font-medium text-base lg:text-lg">Domba Kelas C</span>
                       </div>
-                      <span className="text-slate-500 text-sm lg:text-base">Rp 2.600.000 (± 23kg)</span>
-                    </div>
-                  </div>
-
-                  <div
-                    onClick={() => setSelectedAnimal('kelasB')}
-                    className={`rounded-3xl p-4 cursor-pointer transition-all ${
-                      selectedAnimal === 'kelasB'
-                        ? 'border border-emerald-600 bg-emerald-50'
-                        : 'border border-slate-200 bg-slate-50 hover:border-slate-300'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                        <div className={`flex h-10 w-10 items-center justify-center rounded-2xl border-2 ${
-                          selectedAnimal === 'kelasB'
-                            ? 'border-emerald-600 bg-emerald-600 text-white'
-                            : 'border-slate-200 bg-slate-100 text-slate-500'
-                        }`}>
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={selectedAnimal === 'kelasB' ? 3 : 2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </div>
-                        <span className="font-medium text-base lg:text-lg">Domba Kelas B</span>
-                      </div>
-                      <span className="text-slate-500 text-sm lg:text-base">Rp 3.000.000 (± 28kg)</span>
-                    </div>
-                  </div>
-
-                  <div
-                    onClick={() => setSelectedAnimal('kelasA')}
-                    className={`rounded-3xl p-4 cursor-pointer transition-all ${
-                      selectedAnimal === 'kelasA'
-                        ? 'border border-emerald-600 bg-emerald-50'
-                        : 'border border-slate-200 bg-slate-50 hover:border-slate-300'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                        <div className={`flex h-10 w-10 items-center justify-center rounded-2xl border-2 ${
-                          selectedAnimal === 'kelasA'
-                            ? 'border-emerald-600 bg-emerald-600 text-white'
-                            : 'border-slate-200 bg-slate-100 text-slate-500'
-                        }`}>
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={selectedAnimal === 'kelasA' ? 3 : 2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </div>
-                        <span className="font-medium text-base lg:text-lg">Domba Kelas A</span>
-                      </div>
-                      <span className="text-slate-500 text-sm lg:text-base">Rp 3.400.000 (± 33kg)</span>
-                    </div>
-                  </div>
-
-                  <div
-                    onClick={() => setSelectedAnimal('istimewa')}
-                    className={`rounded-3xl p-4 cursor-pointer transition-all ${
-                      selectedAnimal === 'istimewa'
-                        ? 'border border-emerald-600 bg-emerald-50'
-                        : 'border border-slate-200 bg-slate-50 hover:border-slate-300'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                        <div className={`flex h-10 w-10 items-center justify-center rounded-2xl border-2 ${
-                          selectedAnimal === 'istimewa'
-                            ? 'border-emerald-600 bg-emerald-600 text-white'
-                            : 'border-slate-200 bg-slate-100 text-slate-500'
-                        }`}>
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={selectedAnimal === 'istimewa' ? 3 : 2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </div>
-                        <span className="font-medium text-base lg:text-lg">Domba Istimewa</span>
-                      </div>
-                      <span className="text-slate-500 text-sm lg:text-base">Rp 5.800.000 (± 55kg)</span>
-                    </div>
-                  </div>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Catatan Tambahan */}
               <div className="mb-6 lg:mb-8">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   CATATAN TAMBAHAN (OPSIONAL)
                 </label>
                 <textarea
@@ -393,16 +339,16 @@ export default function QurbanRegistration() {
                   onChange={(e) => setFormData({...formData, notes: e.target.value})}
                   placeholder="Misal: Qurban atas nama Ayah (Fulan bin Fulan)"
                   rows={3}
-                  className="w-full px-3 lg:px-4 py-2 lg:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm lg:text-base"
+                  className="w-full px-3 lg:px-4 py-2 lg:py-3 border border-gray-300 bg-white text-slate-900 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm lg:text-base dark:border-white/15 dark:bg-black/40 dark:text-white dark:placeholder-gray-400"
                 />
               </div>
 
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full bg-slate-950 text-white py-4 px-6 rounded-3xl font-semibold text-base lg:text-lg hover:bg-slate-800 transition-colors flex items-center justify-center space-x-2 shadow-lg"
+                className="w-full bg-slate-950 text-white py-4 px-6 rounded-3xl font-semibold text-base lg:text-lg hover:bg-slate-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 transition-colors flex items-center justify-center space-x-2 shadow-lg"
               >
-                <span>Konfirmasi & Lanjut ke WhatsApp</span>
+                <span>Konfirmasi &amp; Lanjut ke WhatsApp</span>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
@@ -410,41 +356,47 @@ export default function QurbanRegistration() {
             </form>
           ) : (
             <div className="space-y-6">
-              <div className="rounded-[32px] border border-slate-200 bg-slate-50 p-6 shadow-sm">
-                <h3 className="text-xl lg:text-2xl font-semibold mb-2">Salurkan Kebaikan</h3>
-                <p className="text-slate-600 text-sm lg:text-base max-w-2xl">
+              <div className="rounded-[32px] border border-slate-200 bg-slate-50 p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+                <h3 className="text-xl lg:text-2xl font-semibold mb-2 text-slate-900 dark:text-white">Salurkan Kebaikan</h3>
+                <p className="text-slate-600 dark:text-slate-300 text-sm lg:text-base max-w-2xl">
                   Donasi Anda akan kami gunakan untuk operasional dan memperluas manfaat qurban kepada lebih banyak penerima.
                 </p>
               </div>
 
-              <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm">
-                <h4 className="text-lg font-semibold mb-4">Informasi Tambahan</h4>
-                <div className="space-y-4 text-sm text-slate-600">
-                  <div className="rounded-3xl bg-slate-50 p-4">
-                    <p className="font-semibold">Denta</p>
-                    <p className="mt-1 text-sm text-slate-500">0895-3386-83425</p>
+              <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5">
+                <h4 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">Informasi Tambahan</h4>
+                <div className="space-y-4 text-sm text-slate-600 dark:text-slate-300">
+                  <div className="rounded-3xl bg-slate-50 p-4 dark:bg-black/30">
+                    <p className="font-semibold text-slate-900 dark:text-white">Denta</p>
+                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-300">0895-3386-83425</p>
                   </div>
-                  <div className="rounded-3xl bg-slate-50 p-4">
-                    <p className="font-semibold">Hilmy</p>
-                    <p className="mt-1 text-sm text-slate-500">0896-0340-5077</p>
+                  <div className="rounded-3xl bg-slate-50 p-4 dark:bg-black/30">
+                    <p className="font-semibold text-slate-900 dark:text-white">Hilmy</p>
+                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-300">0896-0340-5077</p>
                   </div>
-                  <div className="rounded-3xl bg-slate-50 p-4">
-                    <p className="font-semibold">Dana</p>
-                    <p className="mt-1 text-sm text-slate-500">0853538683425 (a.n. Denta Herdiansyah)</p>
+                  <div className="rounded-3xl bg-slate-50 p-4 dark:bg-black/30">
+                    <p className="font-semibold text-slate-900 dark:text-white">Dana</p>
+                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-300">0853538683425 (a.n. Denta Herdiansyah)</p>
                   </div>
                 </div>
               </div>
 
               <button
+                type="button"
                 onClick={() => {
-                  const message = `*Konfirmasi Donasi Qurban Bersama SKRT*%0A%0A` +
-                    `Saya sudah melakukan transfer donasi.%0A%0A` +
-                    `Mohon konfirmasi dan update status donasi saya.%0A%0A` +
-                    `Terima kasih.`;
-                  const whatsappUrl = `https://wa.me/62895338683425?text=${message}`;
-                  window.open(whatsappUrl, '_blank');
+                  const message = [
+                    '*Konfirmasi Donasi Qurban Bersama SKRT*',
+                    '',
+                    'Saya sudah melakukan transfer donasi.',
+                    '',
+                    'Mohon konfirmasi dan update status donasi saya.',
+                    '',
+                    'Terima kasih.',
+                  ].join('\n');
+                  const whatsappUrl = `https://wa.me/62895338683425?text=${encodeURIComponent(message)}`;
+                  window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
                 }}
-                className="w-full bg-slate-950 text-white py-4 px-6 rounded-3xl font-semibold text-lg hover:bg-slate-800 transition-colors flex items-center justify-center space-x-2 shadow-lg"
+                className="w-full bg-slate-950 text-white py-4 px-6 rounded-3xl font-semibold text-lg hover:bg-slate-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 transition-colors flex items-center justify-center space-x-2 shadow-lg"
               >
                 <span>Konfirmasi Donasi via WhatsApp</span>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
