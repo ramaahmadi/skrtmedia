@@ -7,122 +7,127 @@ import ThemeToggler from "./ThemeToggler";
 import menuData from "./menuData";
 
 const Header = () => {
-  // Navbar toggle
   const [navbarOpen, setNavbarOpen] = useState(false);
   const navbarToggleHandler = () => {
-    setNavbarOpen(!navbarOpen);
+    setNavbarOpen((prev) => !prev);
   };
 
-  // Sticky Navbar
   const [sticky, setSticky] = useState(false);
   useEffect(() => {
     const handleStickyNavbar = () => {
-      if (window.scrollY >= 80) {
-        setSticky(true);
-      } else {
-        setSticky(false);
-      }
+      setSticky(window.scrollY >= 40);
     };
+    handleStickyNavbar();
     window.addEventListener("scroll", handleStickyNavbar, { passive: true });
     return () => window.removeEventListener("scroll", handleStickyNavbar);
   }, []);
 
-  // submenu handler
   const [openIndex, setOpenIndex] = useState(-1);
-  const handleSubmenu = (index) => {
-    if (openIndex === index) {
-      setOpenIndex(-1);
-    } else {
-      setOpenIndex(index);
-    }
+  const handleSubmenu = (index: number) => {
+    setOpenIndex((prev) => (prev === index ? -1 : index));
   };
 
-  const usePathName = usePathname();
+  const pathname = usePathname();
 
   return (
-    <>
-      <header
-        className={`header top-0 left-0 z-40 flex w-full items-center ${
-          sticky
-            ? "dark:bg-gray-dark dark:shadow-sticky-dark shadow-sticky fixed z-9999 bg-white/80 backdrop-blur-xs "
-            : "absolute bg-transparent"
-        }`}
-      >
-        <div className="container">
-          <div className="relative -mx-4 flex items-center justify-between">
-            <div className="w-60 max-w-full px-4 xl:mr-12">
-              <Link
-                href="/"
-                className={`header-logo block w-full ${
-                  sticky ? "py-5 lg:py-2" : "py-8"
-                } `}
+    <header
+      className={`header top-0 left-0 z-40 flex w-full items-center transition-all duration-300 ${
+        sticky
+          ? "fixed z-9999 border-b border-gray-200/70 bg-white/85 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-gray-dark/85"
+          : "absolute bg-transparent"
+      }`}
+    >
+      <div className="container">
+        <div className="relative -mx-4 flex items-center justify-between">
+          <div className="w-48 max-w-full px-4 sm:w-56 xl:mr-10">
+            <Link
+              href="/"
+              className={`header-logo block w-full transition-all duration-300 ${
+                sticky ? "py-3.5 lg:py-2.5" : "py-6"
+              }`}
+            >
+              <Image
+                src="/images/logo/skrt-logo.svg"
+                alt="SKRT MEDIA logo"
+                width={140}
+                height={30}
+                priority
+                className="w-full"
+              />
+            </Link>
+          </div>
+
+          <div className="flex w-full items-center justify-between px-4">
+            <div className="flex flex-1 justify-center">
+              <button
+                onClick={navbarToggleHandler}
+                id="navbarToggler"
+                aria-label="Mobile Menu"
+                aria-expanded={navbarOpen}
+                className="ring-primary absolute top-1/2 right-4 block translate-y-[-50%] rounded-lg px-3 py-[6px] focus:ring-2 lg:hidden"
               >
-                <Image
-                  src="/images/logo/skrt-logo.svg"
-                  alt="SKRT MEDIA logo"
-                  width={140}
-                  height={30}
-                  priority
-                  className="w-full"
-                />
-              </Link>
-            </div>
-            <div className="flex w-full items-center justify-between px-4">
-              <div className="flex-1 flex justify-center">
-                <button
-                  onClick={navbarToggleHandler}
-                  id="navbarToggler"
-                  aria-label="Mobile Menu"
-                  className="ring-primary absolute top-1/2 right-4 block translate-y-[-50%] rounded-lg px-3 py-[6px] focus:ring-2 lg:hidden"
-                >
-                  <span
-                    className={`relative my-1.5 block h-0.5 w-[30px] bg-black  dark:bg-white ${
-                      navbarOpen ? "top-[7px] rotate-45" : " "
-                    }`}
-                  />
-                  <span
-                    className={`relative my-1.5 block h-0.5 w-[30px] bg-black  dark:bg-white ${
-                      navbarOpen ? "opacity-0" : " "
-                    }`}
-                  />
-                  <span
-                    className={`relative my-1.5 block h-0.5 w-[30px] bg-black  dark:bg-white ${
-                      navbarOpen ? "top-[-8px] -rotate-45" : " "
-                    }`}
-                  />
-                </button>
-                <nav
-                  id="navbarCollapse"
-                  className={`navbar border-body-color/50 dark:border-body-color/20 dark:bg-dark absolute right-0 z-30 w-[250px] rounded border-[.5px] bg-white px-6 py-4 lg:visible lg:static lg:w-auto lg:border-none lg:!bg-transparent lg:p-0 lg:opacity-100 ${
-                    navbarOpen
-                      ? "visibility top-full opacity-100"
-                      : "invisible top-[120%] opacity-0"
+                <span
+                  className={`relative my-1.5 block h-0.5 w-[26px] bg-black transition-all duration-300 dark:bg-white ${
+                    navbarOpen ? "top-[7px] rotate-45" : ""
                   }`}
-                >
-                  <ul className="block lg:flex lg:space-x-12 lg:justify-center">
-                    {menuData.map((menuItem, index) => (
-                      <li key={index} className="group relative">
+                />
+                <span
+                  className={`relative my-1.5 block h-0.5 w-[26px] bg-black transition-all duration-300 dark:bg-white ${
+                    navbarOpen ? "opacity-0" : ""
+                  }`}
+                />
+                <span
+                  className={`relative my-1.5 block h-0.5 w-[26px] bg-black transition-all duration-300 dark:bg-white ${
+                    navbarOpen ? "top-[-8px] -rotate-45" : ""
+                  }`}
+                />
+              </button>
+
+              <nav
+                id="navbarCollapse"
+                aria-label="Navigasi Utama"
+                className={`navbar absolute right-0 z-30 w-[260px] rounded-2xl border border-gray-200/80 bg-white px-6 py-4 shadow-xl transition-all duration-300 dark:border-white/10 dark:bg-dark lg:visible lg:static lg:w-auto lg:rounded-none lg:border-none lg:!bg-transparent lg:p-0 lg:opacity-100 lg:shadow-none ${
+                  navbarOpen
+                    ? "visible top-full opacity-100"
+                    : "invisible top-[115%] opacity-0"
+                }`}
+              >
+                <ul className="block lg:flex lg:items-center lg:justify-center lg:space-x-9">
+                  {menuData.map((menuItem, index) => {
+                    const isActive =
+                      menuItem.path === "/"
+                        ? pathname === "/"
+                        : menuItem.path
+                          ? pathname?.startsWith(menuItem.path)
+                          : false;
+
+                    return (
+                      <li key={menuItem.id ?? index} className="group relative">
                         {menuItem.path ? (
                           <Link
                             href={menuItem.path}
                             onClick={() => setNavbarOpen(false)}
-                            className={`flex py-2 text-base lg:mr-0 lg:inline-flex lg:px-0 lg:py-6 ${
-                              usePathName === menuItem.path
+                            className={`relative flex py-2.5 text-sm font-medium transition-colors lg:inline-flex lg:px-0 lg:py-5 ${
+                              isActive
                                 ? "text-primary dark:text-white"
-                                : "text-dark hover:text-primary dark:text-white/70 dark:hover:text-white"
+                                : "text-dark/80 hover:text-primary dark:text-white/75 dark:hover:text-white"
                             }`}
                           >
                             {menuItem.title}
+                            {isActive && (
+                              <span className="absolute bottom-3 left-0 hidden h-0.5 w-full rounded-full bg-primary lg:block" />
+                            )}
                           </Link>
                         ) : (
                           <>
-                            <p
+                            <button
+                              type="button"
                               onClick={() => handleSubmenu(index)}
-                              className="text-dark group-hover:text-primary flex cursor-pointer items-center justify-between py-2 text-base lg:mr-0 lg:inline-flex lg:px-0 lg:py-6 dark:text-white/70 dark:group-hover:text-white"
+                              className="text-dark/80 group-hover:text-primary flex w-full cursor-pointer items-center justify-between py-2.5 text-sm font-medium lg:inline-flex lg:w-auto lg:px-0 lg:py-5 dark:text-white/75 dark:group-hover:text-white"
                             >
                               {menuItem.title}
-                              <span className="pl-3">
-                                <svg width="25" height="24" viewBox="0 0 25 24">
+                              <span className="pl-2">
+                                <svg width="20" height="20" viewBox="0 0 25 24">
                                   <path
                                     fillRule="evenodd"
                                     clipRule="evenodd"
@@ -131,18 +136,18 @@ const Header = () => {
                                   />
                                 </svg>
                               </span>
-                            </p>
+                            </button>
                             <div
-                              className={`submenu dark:bg-dark relative top-full left-0 rounded-sm bg-white group-hover:opacity-100 lg:invisible lg:absolute lg:top-[110%] lg:block lg:w-[250px] lg:p-4 lg:opacity-0 lg:shadow-lg lg:group-hover:visible lg:group-hover:top-full ${
+                              className={`submenu dark:bg-dark relative top-full left-0 rounded-xl bg-white group-hover:opacity-100 lg:invisible lg:absolute lg:top-[110%] lg:block lg:w-[240px] lg:border lg:border-gray-200/80 lg:p-3 lg:opacity-0 lg:shadow-lg lg:group-hover:visible lg:group-hover:top-full dark:lg:border-white/10 ${
                                 openIndex === index ? "block" : "hidden"
                               }`}
                             >
-                              {menuItem.submenu.map((submenuItem, subIndex) => (
+                              {menuItem.submenu?.map((submenuItem, subIndex) => (
                                 <Link
                                   href={submenuItem.path}
                                   key={subIndex}
                                   onClick={() => setNavbarOpen(false)}
-                                  className="text-dark hover:text-primary block rounded-sm py-2.5 text-sm lg:px-3 dark:text-white/70 dark:hover:text-white"
+                                  className="text-dark hover:text-primary block rounded-lg px-3 py-2 text-sm transition-colors hover:bg-gray-50 dark:text-white/75 dark:hover:bg-white/5 dark:hover:text-white"
                                 >
                                   {submenuItem.title}
                                 </Link>
@@ -151,41 +156,34 @@ const Header = () => {
                           </>
                         )}
                       </li>
-                    ))}
-                    <li className="mt-2 border-t border-gray-200 pt-2 md:hidden dark:border-gray-700">
-                      <Link
-                        href="/contact"
-                        onClick={() => setNavbarOpen(false)}
-                        className="flex py-2 text-base font-medium text-primary dark:text-white"
-                      >
-                        Kontak
-                      </Link>
-                    </li>
-                  </ul>
-                </nav>
-              </div>
-              <div className="flex items-center justify-end pr-16 lg:pr-0">
-                {/* <Link
-                  href="/signin"
-                  className="text-dark hidden px-7 py-3 text-base font-medium hover:opacity-70 md:block dark:text-white"
-                >
-                  Sign In
-                </Link> */}
-                <Link
-                  href="/contact"
-                  className="ease-in-up shadow-btn hover:shadow-btn-hover bg-primary hover:bg-primary/90 hidden rounded-xs px-8 py-3 text-base font-medium text-white md:block md:px-9 lg:px-6 xl:px-9"
-                >
-                  Kontak
-                </Link>
-                {/* <div>
-                  <ThemeToggler />
-                </div> */}
-              </div>
+                    );
+                  })}
+                  <li className="mt-2 border-t border-gray-200 pt-2 md:hidden dark:border-gray-700">
+                    <Link
+                      href="/contact"
+                      onClick={() => setNavbarOpen(false)}
+                      className="flex py-2 text-sm font-semibold text-primary dark:text-white"
+                    >
+                      Kontak Kami
+                    </Link>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pr-14 lg:pr-0">
+              <ThemeToggler />
+              <Link
+                href="/contact"
+                className="hidden rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-md md:inline-flex"
+              >
+                Kontak
+              </Link>
             </div>
           </div>
         </div>
-      </header>
-    </>
+      </div>
+    </header>
   );
 };
 

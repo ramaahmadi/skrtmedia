@@ -1,28 +1,40 @@
-import SectionTitle from "../Common/SectionTitle";
 import SingleFeature from "./SingleFeature";
 import featuresData from "./featuresData";
 
 const Features = () => {
   return (
-    <>
-      <section id="features" className="py-16 px-4 md:py-20 md:px-8 lg:py-28 lg:px-16 xl:px-32">
-        <div className="container">
-          <SectionTitle
-            title="Visi"  
-            paragraph="Terwujudnya generasi muda yang berkarakter Qur'ani, solid dalam persaudaraan, serta menjadi pelopor dalam karya dan kebaikan."
-            center
-          />
-          <h1 className="mb-5 text-center text-3xl font-bold leading-tight text-black dark:text-white sm:text-4xl md:text-5xl">
-            Misi </h1>
+    <section
+      id="features"
+      className="bg-slate-50/70 py-20 dark:bg-bg-color-dark md:py-24 lg:py-28"
+    >
+      <div className="container">
+        {/* Visi Section */}
+        <div className="mx-auto mb-16 max-w-3xl text-center">
+          <p className="mb-3 text-xs font-semibold tracking-[0.2em] text-primary uppercase">
+            Arah Gerak Kami
+          </p>
+          <h2 className="mb-5 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+            Visi SKRT MEDIA
+          </h2>
+          <p className="text-base leading-relaxed text-body-color dark:text-body-color-dark sm:text-lg">
+            Terwujudnya generasi muda yang berkarakter Qur&apos;ani, solid dalam
+            persaudaraan, serta menjadi pelopor dalam karya dan kebaikan.
+          </p>
+        </div>
 
-          <div className="grid text-center grid-cols-1 gap-x-8 gap-y-14 md:grid-cols-2 lg:grid-cols-2">
+        {/* Misi Section */}
+        <div className="mx-auto max-w-5xl">
+          <h2 className="mb-10 text-center text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-3xl">
+            Empat Pilar Misi
+          </h2>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8">
             {featuresData.map((feature) => (
               <SingleFeature key={feature.id} feature={feature} />
             ))}
           </div>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 };
 

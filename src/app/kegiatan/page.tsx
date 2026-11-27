@@ -1,15 +1,18 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Activity, ACTIVITIES_STORAGE_KEY, autoUpdateActivityStatus } from '@/lib/types';
+import { Activity, autoUpdateActivityStatus } from '@/lib/types';
+
+type StatusFilter = 'all' | 'upcoming' | 'ongoing' | 'completed';
 
 export default function KegiatanPage() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
 
   useEffect(() => {
-    // Load activities from API
     const loadActivities = async () => {
       try {
         const response = await fetch('/api/kegiatan');
@@ -22,9 +25,7 @@ export default function KegiatanPage() {
           setActivities([]);
           return;
         }
-        // Auto-update status based on date
-        const updatedActivities = autoUpdateActivityStatus(data);
-        setActivities(updatedActivities);
+        setActivities(autoUpdateActivityStatus(data));
       } catch (error) {
         console.error('Error loading activities:', error);
         setActivities([]);
@@ -36,180 +37,286 @@ export default function KegiatanPage() {
     loadActivities();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-white dark:bg-black">
-        <div className="text-center">
-          <div className="mb-4 h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-          <p className="text-gray-600 dark:text-gray-400">Memuat kegiatan...</p>
-        </div>
-      </div>
-    );
-  }
+  const counts = useMemo(() => {
+    return {
+      all: activities.length,
+      upcoming: activities.filter((a) => a.status === 'upcoming').length,
+      ongoing: activities.filter((a) => a.status === 'ongoing').length,
+      completed: activities.filter((a) => a.status === 'completed').length,
+    };
+  }, [activities]);
 
-  const getStatusColor = (status: string) => {
+  const filteredActivities = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return activities.filter((activity) => {
+      const matchesStatus = statusFilter === 'all' || activity.status === statusFilter;
+      if (!matchesStatus) return false;
+      if (!q) return true;
+      const locText = Array.isArray(activity.locations)
+        ? activity.locations.join(' ').toLowerCase()
+        : String(activity.locations || '').toLowerCase();
+      return (
+        activity.title.toLowerCase().includes(q) ||
+        (activity.description || '').toLowerCase().includes(q) ||
+        locText.includes(q)
+      );
+    });
+  }, [activities, searchQuery, statusFilter]);
+
+  const getStatusBadge = (status: string) => {
     switch (status) {
       case 'upcoming':
-        return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+        return {
+          label: 'Akan Datang',
+          cls: 'bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30',
+        };
       case 'ongoing':
-        return 'bg-green-100 text-green-700 border-green-200';
+        return {
+          label: 'Berlangsung',
+          cls: 'bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30',
+        };
       case 'completed':
-        return 'bg-gray-100 text-gray-700 border-gray-200';
+        return {
+          label: 'Selesai',
+          cls: 'bg-gray-100 text-gray-600 ring-gray-200 dark:bg-white/10 dark:text-gray-300 dark:ring-white/15',
+        };
       default:
-        return 'bg-gray-100 text-gray-700 border-gray-200';
+        return {
+          label: status,
+          cls: 'bg-gray-100 text-gray-600 ring-gray-200 dark:bg-white/10 dark:text-gray-300 dark:ring-white/15',
+        };
     }
   };
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'upcoming':
-        return 'Akan Datang';
-      case 'ongoing':
-        return 'Berlangsung';
-      case 'completed':
-        return 'Selesai';
-      default:
-        return status;
+  const formatPrice = (activity: Activity) => {
+    if (activity.ticket_price_min != null && activity.ticket_price_max != null) {
+      return `Rp ${Number(activity.ticket_price_min).toLocaleString('id-ID')} - Rp ${Number(activity.ticket_price_max).toLocaleString('id-ID')}`;
     }
+    if (activity.ticket_price_min != null) {
+      return `Rp ${Number(activity.ticket_price_min).toLocaleString('id-ID')}`;
+    }
+    if (activity.ticket_price != null && Number(activity.ticket_price) > 0) {
+      return `Rp ${Number(activity.ticket_price).toLocaleString('id-ID')}`;
+    }
+    return 'Gratis';
   };
 
-  // Generate random gradient colors for each activity
-  const getRandomGradient = (id: string) => {
-    const gradients = [
-      'from-blue-600 to-cyan-600',
-      'from-purple-600 to-pink-600',
-      'from-green-600 to-teal-600',
-      'from-orange-600 to-amber-600',
-      'from-red-600 to-rose-600',
-      'from-indigo-600 to-violet-600',
-      'from-emerald-600 to-green-600',
-      'from-cyan-600 to-blue-600',
-      'from-pink-600 to-purple-600',
-      'from-amber-600 to-orange-600',
-    ];
-    // Use activity ID to get consistent random gradient
-    const index = id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % gradients.length;
-    return gradients[index];
-  };
+  const filterTabs: Array<{ key: StatusFilter; label: string }> = [
+    { key: 'all', label: 'Semua' },
+    { key: 'upcoming', label: 'Akan Datang' },
+    { key: 'ongoing', label: 'Berlangsung' },
+    { key: 'completed', label: 'Selesai' },
+  ];
 
   return (
-    <>
-      <section className="pt-[100px] sm:pt-[120px] pb-[80px] sm:pb-[120px]">
-        <div className="container px-4 sm:px-6">
-          {/* Header Section */}
-          <div className="text-center mb-8 sm:mb-12">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-              Kegiatan <span className="text-primary">SKRT MEDIA</span>
-            </h1>
-            <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Ikuti berbagai kegiatan dan acara yang kami selenggarakan untuk berkembang bersama
-            </p>
+    <main className="min-h-screen bg-slate-50/50 pt-28 pb-20 dark:bg-black sm:pt-32 sm:pb-24">
+      <div className="container px-4 sm:px-6">
+        {/* Header */}
+        <div className="mx-auto mb-10 max-w-3xl text-center">
+          <p className="mb-3 text-xs font-semibold tracking-[0.2em] text-primary uppercase">
+            Agenda &amp; Program
+          </p>
+          <h1 className="mb-4 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl md:text-5xl">
+            Kegiatan SKRT MEDIA
+          </h1>
+          <p className="text-base text-body-color dark:text-body-color-dark sm:text-lg">
+            Ikuti kajian rutin, kegiatan sosial, dan acara inspiratif bersama komunitas kami.
+          </p>
+        </div>
+
+        {/* Search & Filter Bar */}
+        <div className="mx-auto mb-10 max-w-4xl space-y-4">
+          <div className="relative">
+            <svg
+              className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+            </svg>
+            <input
+              id="search-kegiatan"
+              type="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Cari kegiatan berdasarkan judul, deskripsi, atau lokasi..."
+              className="w-full rounded-2xl border border-gray-200 bg-white py-3.5 pr-4 pl-12 text-sm text-gray-900 shadow-xs outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 dark:border-white/10 dark:bg-gray-dark dark:text-white dark:placeholder-gray-400 sm:text-base"
+            />
           </div>
 
-          {/* All Activities Grid */}
-          {activities.length > 0 && (
-            <>
-              <div className="flex flex-col gap-4 sm:gap-6">
-                {activities.map((activity) => (
-                  <Link key={activity.id} href={`/kegiatan/${activity.id}`} className="block">
-                    <div className={`bg-gradient-to-r ${getRandomGradient(activity.id)} rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 text-white shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-2`}>
-                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 sm:gap-6">
-                        <div className="flex-1">
-                          <div className="flex flex-wrap items-center gap-2 mb-3 sm:mb-4">
-                            {activity.category && (
-                              <span className="bg-white/20 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold">
-                                {activity.category}
-                              </span>
-                            )}
-                            <span className="bg-white/20 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold">
-                              {getStatusText(activity.status)}
-                            </span>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {filterTabs.map((tab) => {
+              const active = statusFilter === tab.key;
+              return (
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => setStatusFilter(tab.key)}
+                  className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all ${
+                    active
+                      ? 'bg-primary text-white shadow-xs'
+                      : 'border border-gray-200 bg-white text-gray-700 hover:border-primary/40 hover:text-primary dark:border-white/10 dark:bg-gray-dark dark:text-gray-300'
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-xs ${
+                      active
+                        ? 'bg-white/20 text-white'
+                        : 'bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300'
+                    }`}
+                  >
+                    {counts[tab.key]}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Loading Skeleton */}
+        {loading ? (
+          <div className="mx-auto max-w-4xl space-y-5">
+            {[1, 2, 3].map((n) => (
+              <div
+                key={n}
+                className="animate-pulse rounded-2xl border border-gray-200/80 bg-white p-6 dark:border-white/10 dark:bg-gray-dark sm:p-8"
+              >
+                <div className="mb-4 h-5 w-28 rounded-full bg-gray-200 dark:bg-white/10" />
+                <div className="mb-3 h-7 w-3/4 rounded-lg bg-gray-200 dark:bg-white/10" />
+                <div className="mb-6 h-4 w-full rounded bg-gray-100 dark:bg-white/5" />
+                <div className="flex gap-4">
+                  <div className="h-4 w-32 rounded bg-gray-100 dark:bg-white/5" />
+                  <div className="h-4 w-28 rounded bg-gray-100 dark:bg-white/5" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filteredActivities.length > 0 ? (
+          <div className="mx-auto max-w-4xl space-y-5">
+            {filteredActivities.map((activity) => {
+              const badge = getStatusBadge(activity.status);
+              const dateObj = new Date(activity.date);
+              const validDate = !Number.isNaN(dateObj.getTime());
+              const locationsText = Array.isArray(activity.locations)
+                ? activity.locations.join(', ')
+                : activity.locations || '-';
+
+              return (
+                <Link
+                  key={activity.id}
+                  href={`/kegiatan/${activity.id}`}
+                  className="group block"
+                >
+                  <article className="flex flex-col overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-xs transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg dark:border-white/10 dark:bg-gray-dark sm:flex-row">
+                    {/* Date Block */}
+                    <div className="flex shrink-0 flex-row items-center justify-between gap-3 bg-primary/5 px-6 py-4 text-primary dark:bg-primary/15 dark:text-sky-300 sm:w-36 sm:flex-col sm:justify-center sm:py-6 sm:text-center">
+                      {validDate ? (
+                        <>
+                          <span className="text-3xl font-extrabold leading-none sm:text-4xl">
+                            {dateObj.getDate()}
+                          </span>
+                          <div className="text-right sm:text-center">
+                            <p className="text-sm font-semibold">
+                              {dateObj.toLocaleString('id-ID', { month: 'long' })}
+                            </p>
+                            <p className="text-xs opacity-80">{dateObj.getFullYear()}</p>
                           </div>
-                          <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-4 line-clamp-2">{activity.title}</h3>
-                          <p className="text-white/90 mb-4 sm:mb-6 max-w-2xl text-sm sm:text-base line-clamp-3">{activity.description}</p>
-                          
-                          <div className="flex flex-wrap gap-3 sm:gap-4 mb-4 sm:mb-6 text-xs sm:text-sm">
-                            <div className="flex items-center gap-2">
-                              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                              </svg>
-                              <span>{new Date(activity.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                              {activity.time && <span className="text-white/70">• {activity.time}</span>}
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                              </svg>
-                              <span className="truncate max-w-[150px]">{Array.isArray(activity.locations) ? activity.locations.join(', ') : activity.locations || '-'}</span>
-                            </div>
-                            {(activity.ticket_price_min != null && activity.ticket_price_max != null) ? (
-                              <div className="flex items-center gap-2">
-                                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12 a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <span>{`Rp ${Number(activity.ticket_price_min).toLocaleString('id-ID')} - Rp ${Number(activity.ticket_price_max).toLocaleString('id-ID')}`}</span>
-                              </div>
-                            ) : activity.ticket_price_min != null ? (
-                              <div className="flex items-center gap-2">
-                                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12 a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <span>{`Rp ${Number(activity.ticket_price_min).toLocaleString('id-ID')}`}</span>
-                              </div>
-                            ) : activity.ticket_price != null ? (
-                              <div className="flex items-center gap-2">
-                                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12 a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <span>{Number(activity.ticket_price) > 0 ? `Rp ${Number(activity.ticket_price).toLocaleString('id-ID')}` : 'Gratis'}</span>
-                              </div>
-                            ) : null}
-                          </div>
-                          <div
-                            className="inline-flex items-center gap-2 bg-white text-blue-600 hover:bg-blue-50 font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg text-sm sm:text-base"
+                        </>
+                      ) : (
+                        <span className="text-sm font-semibold">Segera</span>
+                      )}
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex flex-1 flex-col justify-between p-6">
+                      <div>
+                        <div className="mb-3 flex flex-wrap items-center gap-2">
+                          <span
+                            className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset ${badge.cls}`}
                           >
-                            Lihat Detail
-                            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                            </svg>
-                          </div>
+                            {badge.label}
+                          </span>
+                          {activity.category && (
+                            <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-primary dark:bg-primary/20 dark:text-sky-300">
+                              {activity.category}
+                            </span>
+                          )}
                         </div>
 
-                        <div className="flex-shrink-0">
-                          <div className="bg-white/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 backdrop-blur-sm text-center min-w-[120px] sm:min-w-[150px]">
-                            <div className="text-4xl sm:text-6xl md:text-7xl font-bold mb-1 sm:mb-2">{new Date(activity.date).getDate()}</div>
-                            <div className="text-base sm:text-xl md:text-2xl">{new Date(activity.date).toLocaleString('id-ID', { month: 'long' })}</div>
-                            <div className="text-xs sm:text-sm text-white/80">{new Date(activity.date).getFullYear()}</div>
-                          </div>
+                        <h2 className="mb-2 text-xl font-bold tracking-tight text-gray-900 transition-colors group-hover:text-primary dark:text-white sm:text-2xl">
+                          {activity.title}
+                        </h2>
+                        <p className="mb-5 line-clamp-2 text-sm leading-relaxed text-body-color dark:text-body-color-dark sm:text-base">
+                          {activity.description}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-wrap items-center justify-between gap-4 border-t border-gray-100 pt-4 text-xs text-gray-600 dark:border-white/10 dark:text-gray-300 sm:text-sm">
+                        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+                          <span className="inline-flex items-center gap-1.5">
+                            <svg className="h-4 w-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span className="max-w-[200px] truncate">{locationsText}</span>
+                          </span>
+                          <span className="inline-flex items-center gap-1.5 font-medium text-gray-800 dark:text-gray-200">
+                            <svg className="h-4 w-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {formatPrice(activity)}
+                          </span>
                         </div>
+
+                        <span className="inline-flex items-center gap-1 font-semibold text-primary transition-transform group-hover:translate-x-0.5 dark:text-sky-400">
+                          Lihat Detail
+                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </span>
                       </div>
                     </div>
-                  </Link>
-                ))}
-              </div>
-            </>
-          )}
-
-          {/* Empty State */}
-          {activities.length === 0 && (
-            <div className="text-center py-12 sm:py-20 bg-white dark:bg-gray-800 rounded-2xl sm:rounded-3xl shadow-lg">
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                Belum Ada Kegiatan Lain
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-6 px-4 text-sm sm:text-base">
-                Silakan login ke dashboard panitia untuk menambahkan kegiatan baru
-              </p>
+                  </article>
+                </Link>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="mx-auto max-w-lg rounded-2xl border border-gray-200/80 bg-white p-10 text-center shadow-xs dark:border-white/10 dark:bg-gray-dark">
+            <h2 className="mb-2 text-xl font-bold text-gray-900 dark:text-white">
+              {searchQuery || statusFilter !== 'all'
+                ? 'Kegiatan Tidak Ditemukan'
+                : 'Belum Ada Kegiatan'}
+            </h2>
+            <p className="mb-6 text-sm text-body-color dark:text-body-color-dark">
+              {searchQuery || statusFilter !== 'all'
+                ? 'Coba ubah kata kunci pencarian atau pilih filter status lainnya.'
+                : 'Silakan login ke dashboard panitia untuk menambahkan kegiatan baru.'}
+            </p>
+            {searchQuery || statusFilter !== 'all' ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery('');
+                  setStatusFilter('all');
+                }}
+                className="inline-flex items-center rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90"
+              >
+                Reset Filter
+              </button>
+            ) : (
               <Link
                 href="/skrt-army"
-                className="inline-block rounded-lg bg-primary px-6 py-3 text-white hover:bg-primary/90 transition"
+                className="inline-flex items-center rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90"
               >
                 Login Dashboard
               </Link>
-            </div>
-          )}
-        </div>
-      </section>
-    </>
+            )}
+          </div>
+        )}
+      </div>
+    </main>
   );
 }
