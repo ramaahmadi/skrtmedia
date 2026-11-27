@@ -87,7 +87,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
       {/* Actions */}
       <div className="space-y-3">
         <Link
-          href="/kurban"
+          href="/qurban_registration"
           className="flex items-center justify-center gap-2 bg-white text-green-600 hover:bg-green-50 font-bold py-3 px-6 rounded-xl transition-colors w-full"
         >
           <FaHome className="w-5 h-5" />

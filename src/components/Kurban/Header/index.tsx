@@ -166,7 +166,7 @@ const Header = () => {
               </div>
               <div className="flex items-center justify-end pr-16 lg:pr-0">
                 <Link 
-                  href="/kurban/ticket" 
+                  href="/qurban_registration" 
                   className="ease-in-up bg-gradient-to-r from-[#16A34A] to-[#15803D] text-white font-bold hidden py-4 px-8 rounded-2xl text-lg shadow-2xl hover:shadow-3xl transform hover:-translate-y-1  hover:scale-105 md:block md:px-9 lg:px-6 xl:px-9"
                 >
                   Daftar Sekarang

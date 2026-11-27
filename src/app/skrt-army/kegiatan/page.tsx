@@ -529,15 +529,15 @@ function KegiatanPageContent() {
                         )}
                         <div className="flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                           <span className="flex items-center gap-1">📍 {Array.isArray(activity.locations) ? activity.locations.join(', ') : activity.locations || ''}</span>
-                          {activity.max_participants !== undefined && (
+                          {activity.max_participants != null && (
                             <span className="flex items-center gap-1">👥 {activity.max_participants === 0 ? 'Unlimited' : activity.max_participants}</span>
                           )}
-                          {activity.ticket_price_min !== undefined && activity.ticket_price_max !== undefined ? (
-                            <span className="flex items-center gap-1">💰 Rp {activity.ticket_price_min.toLocaleString('id-ID')} - Rp {activity.ticket_price_max.toLocaleString('id-ID')}</span>
-                          ) : activity.ticket_price_min !== undefined ? (
-                            <span className="flex items-center gap-1">💰 Rp {activity.ticket_price_min.toLocaleString('id-ID')}</span>
-                          ) : activity.ticket_price && activity.ticket_price > 0 ? (
-                            <span className="flex items-center gap-1">💰 Rp {activity.ticket_price.toLocaleString('id-ID')}</span>
+                          {activity.ticket_price_min != null && activity.ticket_price_max != null ? (
+                            <span className="flex items-center gap-1">💰 Rp {Number(activity.ticket_price_min).toLocaleString('id-ID')} - Rp {Number(activity.ticket_price_max).toLocaleString('id-ID')}</span>
+                          ) : activity.ticket_price_min != null ? (
+                            <span className="flex items-center gap-1">💰 Rp {Number(activity.ticket_price_min).toLocaleString('id-ID')}</span>
+                          ) : activity.ticket_price != null && Number(activity.ticket_price) > 0 ? (
+                            <span className="flex items-center gap-1">💰 Rp {Number(activity.ticket_price).toLocaleString('id-ID')}</span>
                           ) : (
                             <span className="flex items-center gap-1">💰 Gratis</span>
                           )}

@@ -141,28 +141,28 @@ export default function KegiatanPage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                               </svg>
-                              <span className="truncate max-w-[150px]">{activity.locations.join(', ')}</span>
+                              <span className="truncate max-w-[150px]">{Array.isArray(activity.locations) ? activity.locations.join(', ') : activity.locations || '-'}</span>
                             </div>
-                            {(activity.ticket_price_min !== undefined && activity.ticket_price_max !== undefined) ? (
+                            {(activity.ticket_price_min != null && activity.ticket_price_max != null) ? (
                               <div className="flex items-center gap-2">
                                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12 a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <span>{`Rp ${activity.ticket_price_min.toLocaleString('id-ID')} - Rp ${activity.ticket_price_max.toLocaleString('id-ID')}`}</span>
+                                <span>{`Rp ${Number(activity.ticket_price_min).toLocaleString('id-ID')} - Rp ${Number(activity.ticket_price_max).toLocaleString('id-ID')}`}</span>
                               </div>
-                            ) : activity.ticket_price_min !== undefined ? (
+                            ) : activity.ticket_price_min != null ? (
                               <div className="flex items-center gap-2">
                                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12 a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <span>{`Rp ${activity.ticket_price_min.toLocaleString('id-ID')}`}</span>
+                                <span>{`Rp ${Number(activity.ticket_price_min).toLocaleString('id-ID')}`}</span>
                               </div>
-                            ) : activity.ticket_price !== undefined ? (
+                            ) : activity.ticket_price != null ? (
                               <div className="flex items-center gap-2">
                                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12 a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <span>{activity.ticket_price > 0 ? `Rp ${activity.ticket_price.toLocaleString('id-ID')}` : 'Gratis'}</span>
+                                <span>{Number(activity.ticket_price) > 0 ? `Rp ${Number(activity.ticket_price).toLocaleString('id-ID')}` : 'Gratis'}</span>
                               </div>
                             ) : null}
                           </div>

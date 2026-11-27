@@ -447,7 +447,7 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket }) => {
                   Informasi Infaq
                 </h4>
                 <div className="grid md:grid-cols-2 gap-4">
-                  {donation !== undefined && (
+                  {donation != null && (
                     <div>
                       <div className="text-sm text-gray-600 font-medium">Nominal Infaq</div>
                       <div className="font-bold text-2xl text-purple-600">

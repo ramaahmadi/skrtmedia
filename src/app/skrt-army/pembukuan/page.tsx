@@ -392,7 +392,7 @@ export default function PembukuanPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold">
                         <span className={record.type === 'income' ? 'text-primary' : 'text-red-600'}>
-                          {record.type === 'income' ? '+' : '-'} Rp {record.amount.toLocaleString('id-ID')}
+                          {record.type === 'income' ? '+' : '-'} Rp {Number(record.amount || 0).toLocaleString('id-ID')}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">

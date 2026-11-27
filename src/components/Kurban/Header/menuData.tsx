@@ -22,7 +22,7 @@ const menuData: Menu[] = [
   {
     id: 4,
     title: "Daftar",
-    path: "/kurban/ticket",
+    path: "/qurban_registration",
     newTab: false,
   },
 ];
