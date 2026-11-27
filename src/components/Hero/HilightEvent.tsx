@@ -28,8 +28,11 @@ export default function HighlightEvent({ title, subtitle, href }: Props) {
       if (!Array.isArray(data) || data.length === 0) return;
 
       const updated = sortActivitiesByPriority(autoUpdateActivityStatus(data));
-      // Priority: ongoing -> upcoming -> latest real activity in DB
-      setFeaturedActivity(updated[0] || null);
+      // Only show ongoing or upcoming events; hide completed/expired events
+      const activeEvents = updated.filter(
+        (a) => a.status === 'ongoing' || a.status === 'upcoming'
+      );
+      setFeaturedActivity(activeEvents[0] || null);
     } catch (error) {
       console.error('Error loading activities:', error);
     } finally {

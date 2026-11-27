@@ -20,7 +20,10 @@ export default function OngoingActivityBar() {
       if (!Array.isArray(data) || data.length === 0) return;
 
       const sorted = sortActivitiesByPriority(autoUpdateActivityStatus(data));
-      setActivity(sorted[0] || null);
+      const active = sorted.filter(
+        (a) => a.status === 'ongoing' || a.status === 'upcoming'
+      );
+      setActivity(active[0] || null);
     } catch (error) {
       console.error('Error loading ongoing activity:', error);
     }

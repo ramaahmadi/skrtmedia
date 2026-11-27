@@ -32,7 +32,10 @@ export default function LatestUpdates() {
       if (kegRes.ok) {
         const kegData = await kegRes.json();
         if (Array.isArray(kegData)) {
-          setActivities(sortActivitiesByPriority(autoUpdateActivityStatus(kegData)).slice(0, 3));
+          const activeActivities = sortActivitiesByPriority(
+            autoUpdateActivityStatus(kegData)
+          ).filter((a) => a.status === 'ongoing' || a.status === 'upcoming');
+          setActivities(activeActivities.slice(0, 3));
         }
       }
 
@@ -71,17 +74,15 @@ export default function LatestUpdates() {
         cls: 'bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30',
       };
     }
-    if (status === 'upcoming') {
-      return {
-        label: 'Akan Datang',
-        cls: 'bg-blue-50 text-primary ring-blue-200 dark:bg-primary/20 dark:text-sky-300 dark:ring-primary/30',
-      };
-    }
     return {
-      label: 'Selesai',
-      cls: 'bg-gray-100 text-gray-600 ring-gray-200 dark:bg-white/10 dark:text-gray-300 dark:ring-white/15',
+      label: 'Akan Datang',
+      cls: 'bg-blue-50 text-primary ring-blue-200 dark:bg-primary/20 dark:text-sky-300 dark:ring-primary/30',
     };
   };
+
+  if (!loading && activities.length === 0 && articles.length === 0) {
+    return null;
+  }
 
   return (
     <section className="bg-white py-20 dark:bg-black md:py-24">
@@ -92,7 +93,7 @@ export default function LatestUpdates() {
               Informasi Terkini
             </p>
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-              Update Kegiatan &amp; Artikel
+              {activities.length > 0 ? 'Update Kegiatan & Artikel' : 'Artikel Terbaru'}
             </h2>
           </div>
           <div className="flex items-center gap-4 text-sm font-semibold">
