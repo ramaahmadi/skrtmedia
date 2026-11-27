@@ -40,7 +40,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
 
-      <body className={`bg-[#FCFCFC] dark:bg-black ${inter.className}`}>
+      <body className={`bg-[#FCFCFC] text-gray-900 dark:bg-black dark:text-white ${inter.className}`}>
         <Providers>
           {showGlobalChrome && <Header />}
           {children}

@@ -14,11 +14,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
-      <div className="antialiased">
-        {children}
-      </div>
-    </>
+    <div className="min-h-screen bg-white text-gray-900 antialiased">
+      {children}
+    </div>
   );
 }
 
