@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const SingleBlog = ({ blog, href }: { blog: Blog; href?: string }) => {
   const { title, paragraph, author, tags, publishDate } = blog;
-  const linkHref = href || "/blog-details";
+  const linkHref = href || "/blog";
 
   return (
     <article className="group flex h-full flex-col justify-between rounded-2xl border border-gray-200/80 bg-white p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg dark:border-white/10 dark:bg-gray-dark sm:p-7">
