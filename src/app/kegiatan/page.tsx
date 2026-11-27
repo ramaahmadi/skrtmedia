@@ -3,17 +3,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Activity, autoUpdateActivityStatus } from '@/lib/types';
-import IslamicCalendarSection from '@/components/Kegiatan/IslamicCalendarSection';
+import RecurringIslamicActivities from '@/components/Kegiatan/RecurringIslamicActivities';
 
 type StatusFilter = 'all' | 'upcoming' | 'ongoing' | 'completed';
-type SectionView = 'all' | 'skrt' | 'kalender';
 
 export default function KegiatanPage() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
-  const [sectionView, setSectionView] = useState<SectionView>('all');
 
   useEffect(() => {
     const loadActivities = async () => {
@@ -111,68 +109,21 @@ export default function KegiatanPage() {
     { key: 'completed', label: 'Selesai' },
   ];
 
-  const viewTabs: Array<{ key: SectionView; label: string }> = [
-    { key: 'all', label: 'Semua' },
-    { key: 'kalender', label: 'Kalender & Ibadah Rutin' },
-    { key: 'skrt', label: 'Agenda SKRT MEDIA' },
-  ];
-
   return (
     <main className="min-h-screen bg-slate-50/50 pt-28 pb-20 dark:bg-black sm:pt-32 sm:pb-24">
       <div className="container px-4 sm:px-6">
         {/* Header */}
-        <div className="mx-auto mb-8 max-w-3xl text-center">
+        <div className="mx-auto mb-10 max-w-3xl text-center">
           <p className="mb-3 text-xs font-semibold tracking-[0.2em] text-primary uppercase">
-            Agenda, Kalender &amp; Ibadah Rutin
+            Agenda &amp; Program
           </p>
           <h1 className="mb-4 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl md:text-5xl">
-            Kegiatan &amp; Kalender Muslim
+            Kegiatan SKRT MEDIA
           </h1>
           <p className="text-base text-body-color dark:text-body-color-dark sm:text-lg">
-            Pantau jadwal kegiatan SKRT MEDIA, kalender Masehi–Hijriah, serta pengingat puasa sunnah dan amalan rutin Muslim.
+            Ikuti kajian rutin, kegiatan sosial, dan acara inspiratif bersama komunitas kami.
           </p>
         </div>
-
-        {/* Section Switcher */}
-        <div className="mb-10 flex justify-center">
-          <div className="inline-flex flex-wrap justify-center gap-1 rounded-2xl border border-gray-200/80 bg-white p-1.5 shadow-xs dark:border-white/10 dark:bg-gray-dark">
-            {viewTabs.map((tab) => (
-              <button
-                key={tab.key}
-                type="button"
-                onClick={() => setSectionView(tab.key)}
-                className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
-                  sectionView === tab.key
-                    ? 'bg-primary text-white shadow-xs'
-                    : 'text-gray-600 hover:text-primary dark:text-gray-300 dark:hover:text-white'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Islamic Calendar & Recurring Muslim Activities */}
-        {(sectionView === 'all' || sectionView === 'kalender') && (
-          <div className={sectionView === 'all' ? 'mb-16' : ''}>
-            <IslamicCalendarSection activities={activities} />
-          </div>
-        )}
-
-        {/* SKRT MEDIA Events Section */}
-        {(sectionView === 'all' || sectionView === 'skrt') && (
-          <section aria-label="Daftar Kegiatan SKRT MEDIA">
-            {sectionView === 'all' && (
-              <div className="mx-auto mb-8 max-w-4xl text-center">
-                <p className="mb-2 text-xs font-semibold tracking-[0.2em] text-primary uppercase">
-                  Program Komunitas
-                </p>
-                <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-3xl">
-                  Daftar Kegiatan SKRT MEDIA
-                </h2>
-              </div>
-            )}
 
         {/* Search & Filter Bar */}
         <div className="mx-auto mb-10 max-w-4xl space-y-4">
@@ -366,8 +317,9 @@ export default function KegiatanPage() {
             )}
           </div>
         )}
-          </section>
-        )}
+
+        {/* Kegiatan Muslim Berulang (Puasa, Zakat, Sedekah, Qurban, dll.) */}
+        <RecurringIslamicActivities />
       </div>
     </main>
   );
