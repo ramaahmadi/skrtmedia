@@ -39,29 +39,39 @@ export default function HeroGallery({ photos: fallbackPhotos }: HeroGalleryProps
       const data: GalleryItem[] = await response.json();
       if (!Array.isArray(data) || data.length === 0) return;
 
-      const latestPhotos = data
+      const sortedPhotos = data
         .filter((item) => item.media_type === 'photo')
         .sort((a, b) => {
           const tA = new Date(a.event_date || a.created_at || 0).getTime() || 0;
           const tB = new Date(b.event_date || b.created_at || 0).getTime() || 0;
           if (tB !== tA) return tB - tA;
           return Number(a.sort_order || 0) - Number(b.sort_order || 0);
-        })
-        .slice(0, 4)
-        .map((item) => {
-          const media = resolveDriveMedia(item.drive_url, 'photo');
-          return {
-            src: media.thumbnailUrl,
-            fallbackSrc: media.fallbackImageUrl,
-            alt: item.title,
-            caption: item.caption ? `${item.title} — ${item.caption}` : item.title,
-            dateLabel: formatDateBadge(item.event_date),
-          };
-        })
-        .filter((p) => Boolean(p.src));
+        });
 
-      if (latestPhotos.length > 0) {
-        setPhotos(latestPhotos);
+      // Pick 1 representative photo per activity album
+      const seenAlbums = new Set<string>();
+      const onePerActivity: GalleryPhoto[] = [];
+
+      for (const item of sortedPhotos) {
+        const albumKey = (item.album_name || item.category || item.title).trim().toLowerCase();
+        if (seenAlbums.has(albumKey)) continue;
+        seenAlbums.add(albumKey);
+
+        const media = resolveDriveMedia(item.drive_url, 'photo');
+        if (!media.thumbnailUrl) continue;
+
+        const albumLabel = (item.album_name || item.title).trim();
+        onePerActivity.push({
+          src: media.thumbnailUrl,
+          fallbackSrc: media.fallbackImageUrl,
+          alt: albumLabel,
+          caption: item.caption ? `${albumLabel} — ${item.caption}` : albumLabel,
+          dateLabel: formatDateBadge(item.event_date),
+        });
+      }
+
+      if (onePerActivity.length > 0) {
+        setPhotos(onePerActivity);
       }
     } catch (error) {
       console.error('Error loading latest hero gallery photos:', error);
@@ -134,18 +144,18 @@ export default function HeroGallery({ photos: fallbackPhotos }: HeroGalleryProps
               }}
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent opacity-85 transition-opacity duration-300 group-hover:opacity-100" />
             {photo.dateLabel && (
               <span className="pointer-events-none absolute top-2.5 left-2.5 inline-flex items-center gap-1 rounded-full bg-black/60 px-2.5 py-0.5 text-[10px] font-medium text-white backdrop-blur-xs">
                 <Calendar className="h-2.5 w-2.5" />
                 {photo.dateLabel}
               </span>
             )}
-            <div className="pointer-events-none absolute right-3 bottom-3 left-3 flex translate-y-2 items-end justify-between gap-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-              <span className="line-clamp-2 text-xs font-medium text-white drop-shadow-xs">
+            <div className="pointer-events-none absolute right-3 bottom-3 left-3 flex items-end justify-between gap-2">
+              <span className="line-clamp-2 text-xs font-semibold text-white drop-shadow-xs">
                 {photo.alt}
               </span>
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-xs">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/20 text-white opacity-0 backdrop-blur-xs transition-opacity duration-300 group-hover:opacity-100">
                 <Expand className="h-3.5 w-3.5" />
               </span>
             </div>
