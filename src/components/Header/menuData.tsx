@@ -27,6 +27,12 @@ const menuData: Menu[] = [
   },
   {
     id: 5,
+    title: "Galeri",
+    path: "/galeri",
+    newTab: false,
+  },
+  {
+    id: 6,
     title: "Army",
     path: "/skrt-army",
     newTab: false,

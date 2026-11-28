@@ -433,3 +433,133 @@ export async function deletePembukuan(id: string) {
     throw error;
   }
 }
+
+// Galeri (Curated Google Drive Photos & Videos)
+let galeriTableInitialized = false;
+
+export async function ensureGaleriTable() {
+  if (galeriTableInitialized) return;
+  await query(`
+    CREATE TABLE IF NOT EXISTS galeri (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      caption TEXT DEFAULT '',
+      category TEXT DEFAULT 'Dokumentasi',
+      media_type TEXT NOT NULL DEFAULT 'photo',
+      drive_url TEXT NOT NULL,
+      album_url TEXT DEFAULT '',
+      is_featured BOOLEAN DEFAULT true,
+      sort_order INTEGER DEFAULT 0,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
+  galeriTableInitialized = true;
+}
+
+export async function getAllGaleri(featuredOnly = false) {
+  try {
+    await ensureGaleriTable();
+    const sql = featuredOnly
+      ? 'SELECT * FROM galeri WHERE is_featured = true ORDER BY sort_order ASC, created_at DESC'
+      : 'SELECT * FROM galeri ORDER BY is_featured DESC, sort_order ASC, created_at DESC';
+    const result = await query(sql);
+    return result.rows;
+  } catch (error) {
+    console.error('Error in getAllGaleri:', error);
+    throw error;
+  }
+}
+
+export async function createGaleri(data: any) {
+  try {
+    await ensureGaleriTable();
+    const {
+      id,
+      title,
+      caption,
+      category,
+      media_type,
+      drive_url,
+      album_url,
+      is_featured,
+      sort_order,
+      created_at,
+      updated_at,
+    } = data;
+    const result = await query(
+      `INSERT INTO galeri (id, title, caption, category, media_type, drive_url, album_url, is_featured, sort_order, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+       RETURNING *`,
+      [
+        id,
+        title,
+        caption || '',
+        category || 'Dokumentasi',
+        media_type === 'video' ? 'video' : 'photo',
+        drive_url,
+        album_url || '',
+        Boolean(is_featured),
+        Number.isFinite(Number(sort_order)) ? Number(sort_order) : 0,
+        created_at,
+        updated_at,
+      ]
+    );
+    return result.rows[0];
+  } catch (error) {
+    console.error('Error in createGaleri:', error);
+    throw error;
+  }
+}
+
+export async function updateGaleri(id: string, data: any) {
+  try {
+    await ensureGaleriTable();
+    const {
+      title,
+      caption,
+      category,
+      media_type,
+      drive_url,
+      album_url,
+      is_featured,
+      sort_order,
+      updated_at,
+    } = data;
+    const result = await query(
+      `UPDATE galeri
+       SET title = $1, caption = $2, category = $3, media_type = $4, drive_url = $5,
+           album_url = $6, is_featured = $7, sort_order = $8, updated_at = $9
+       WHERE id = $10
+       RETURNING *`,
+      [
+        title,
+        caption || '',
+        category || 'Dokumentasi',
+        media_type === 'video' ? 'video' : 'photo',
+        drive_url,
+        album_url || '',
+        Boolean(is_featured),
+        Number.isFinite(Number(sort_order)) ? Number(sort_order) : 0,
+        updated_at,
+        id,
+      ]
+    );
+    return result.rows[0] || null;
+  } catch (error) {
+    console.error('Error in updateGaleri:', error);
+    throw error;
+  }
+}
+
+export async function deleteGaleri(id: string) {
+  try {
+    await ensureGaleriTable();
+    const result = await query('DELETE FROM galeri WHERE id = $1 RETURNING *', [id]);
+    return result.rows[0] || null;
+  } catch (error) {
+    console.error('Error in deleteGaleri:', error);
+    throw error;
+  }
+}
+

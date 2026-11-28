@@ -42,6 +42,12 @@ const modules = [
     description: 'Catat dan arsipkan hasil rapat serta pertemuan',
   },
   {
+    href: '/skrt-army/galeri',
+    icon: '🖼️',
+    title: 'Galeri Drive',
+    description: 'Kurasi foto & video terbaik dari link Google Drive',
+  },
+  {
     href: '/skrt-army/anggota',
     icon: '👥',
     title: 'Anggota',

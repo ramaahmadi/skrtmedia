@@ -92,10 +92,10 @@ const Hero = React.memo(() => {
 
           <div className="mt-6">
             <Link
-              href="/kegiatan"
+              href="/galeri"
               className="inline-flex items-center gap-1.5 text-sm font-medium text-primary transition-colors hover:text-primary/80 dark:text-sky-400 dark:hover:text-sky-300"
             >
-              Lihat seluruh dokumentasi &amp; jadwal kegiatan
+              Lihat galeri foto &amp; video pilihan terbaik
               <svg
                 className="h-4 w-4"
                 viewBox="0 0 24 24"
