@@ -2,14 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Calendar, Compass, Home, Images, UserPlus } from 'lucide-react';
+import { BookOpen, Calendar, HandHeart, Home, Images } from 'lucide-react';
 
 const NAV_ITEMS = [
   { href: '/', label: 'Beranda', icon: Home },
   { href: '/kegiatan', label: 'Kegiatan', icon: Calendar },
-  { href: '/program', label: 'Program', icon: Compass },
   { href: '/galeri', label: 'Galeri', icon: Images },
-  { href: '/gabung', label: 'Gabung', icon: UserPlus },
+  { href: '/blog', label: 'Artikel', icon: BookOpen },
+  { href: '/donasi', label: 'Donasi', icon: HandHeart },
 ];
 
 export default function MobileBottomNav() {

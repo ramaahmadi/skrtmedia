@@ -9,8 +9,8 @@ const menuData: Menu[] = [
   },
   {
     id: 2,
-    title: "Program",
-    path: "/program",
+    title: "Tentang Kami",
+    path: "/about",
     newTab: false,
   },
   {
@@ -33,8 +33,8 @@ const menuData: Menu[] = [
   },
   {
     id: 6,
-    title: "Gabung",
-    path: "/gabung",
+    title: "Donasi",
+    path: "/donasi",
     newTab: false,
   },
   {

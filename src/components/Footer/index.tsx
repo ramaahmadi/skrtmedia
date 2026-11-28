@@ -72,14 +72,6 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/program"
-                  className="text-body-color transition-colors hover:text-primary dark:text-body-color-dark dark:hover:text-white"
-                >
-                  Program Unggulan
-                </Link>
-              </li>
-              <li>
-                <Link
                   href="/kegiatan"
                   className="text-body-color transition-colors hover:text-primary dark:text-body-color-dark dark:hover:text-white"
                 >
@@ -111,14 +103,6 @@ const Footer = () => {
               Partisipasi &amp; Akses
             </h2>
             <ul className="space-y-3 text-sm">
-              <li>
-                <Link
-                  href="/gabung"
-                  className="text-body-color transition-colors hover:text-primary dark:text-body-color-dark dark:hover:text-white"
-                >
-                  Gabung Komunitas / Relawan
-                </Link>
-              </li>
               <li>
                 <Link
                   href="/donasi"
