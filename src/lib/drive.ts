@@ -17,6 +17,8 @@ export interface GalleryItem {
 export interface ResolvedDriveMedia {
   fileId: string | null;
   isDrive: boolean;
+  isInstagram: boolean;
+  instagramCode: string | null;
   thumbnailUrl: string;
   fullImageUrl: string;
   fallbackImageUrl: string | null;
@@ -50,6 +52,24 @@ export function extractGoogleDriveFileId(rawUrl: string): string | null {
   return null;
 }
 
+/**
+ * Extracts an Instagram Post/Reel shortcode from standard Instagram URLs:
+ * - https://www.instagram.com/p/<CODE>/
+ * - https://www.instagram.com/reel/<CODE>/
+ * - https://www.instagram.com/tv/<CODE>/
+ */
+export function extractInstagramPost(
+  rawUrl: string
+): { kind: 'p' | 'reel' | 'tv'; code: string } | null {
+  if (!rawUrl || typeof rawUrl !== 'string') return null;
+  const match = /instagram\.com\/(p|reel|tv)\/([a-zA-Z0-9_-]+)/i.exec(rawUrl.trim());
+  if (!match) return null;
+  return {
+    kind: match[1].toLowerCase() as 'p' | 'reel' | 'tv',
+    code: match[2],
+  };
+}
+
 export function isGoogleDriveFolderUrl(rawUrl: string): boolean {
   if (!rawUrl) return false;
   return /drive\.google\.com\/drive\/(u\/\d+\/)?folders\/[a-zA-Z0-9_-]+/.test(rawUrl);
@@ -66,6 +86,8 @@ export function resolveDriveMedia(
     return {
       fileId,
       isDrive: true,
+      isInstagram: false,
+      instagramCode: null,
       thumbnailUrl: `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200`,
       fullImageUrl:
         mediaType === 'photo'
@@ -77,9 +99,26 @@ export function resolveDriveMedia(
     };
   }
 
+  const ig = extractInstagramPost(cleanUrl);
+  if (ig) {
+    return {
+      fileId: null,
+      isDrive: false,
+      isInstagram: true,
+      instagramCode: ig.code,
+      thumbnailUrl: '',
+      fullImageUrl: '',
+      fallbackImageUrl: null,
+      embedUrl: `https://www.instagram.com/${ig.kind}/${ig.code}/embed/`,
+      originalUrl: cleanUrl,
+    };
+  }
+
   return {
     fileId: null,
     isDrive: false,
+    isInstagram: false,
+    instagramCode: null,
     thumbnailUrl: cleanUrl,
     fullImageUrl: cleanUrl,
     fallbackImageUrl: null,

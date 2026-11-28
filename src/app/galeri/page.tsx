@@ -9,6 +9,7 @@ import {
   Film,
   FolderOpen,
   Image as ImageIcon,
+  Instagram,
   Play,
   Sparkles,
   X,
@@ -191,8 +192,8 @@ export default function GaleriPage() {
             dan kebersamaan keluarga besar SKRT MEDIA.
           </p>
 
-          {albumLink && (
-            <div className="mt-6">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            {albumLink && (
               <a
                 href={albumLink}
                 target="_blank"
@@ -200,11 +201,21 @@ export default function GaleriPage() {
                 className="inline-flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-800 shadow-xs transition hover:-translate-y-0.5 hover:border-primary/50 hover:text-primary dark:border-white/15 dark:bg-gray-dark dark:text-white dark:hover:border-primary/50 dark:hover:text-sky-400"
               >
                 <FolderOpen className="h-4 w-4 text-primary dark:text-sky-400" />
-                Buka Album Lengkap di Google Drive
+                Buka Album Google Drive
                 <ExternalLink className="h-3.5 w-3.5 opacity-70" />
               </a>
-            </div>
-          )}
+            )}
+            <a
+              href="https://www.instagram.com/skrtmedia.id"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-xs transition hover:-translate-y-0.5 hover:bg-primary/90"
+            >
+              <Instagram className="h-4 w-4" />
+              Follow @skrtmedia.id
+              <ExternalLink className="h-3.5 w-3.5 opacity-80" />
+            </a>
+          </div>
         </div>
 
         {/* Interactive Filter Controls */}
@@ -389,13 +400,13 @@ export default function GaleriPage() {
             >
               {/* Media Viewport */}
               <div className="relative aspect-[16/10] w-full bg-black">
-                {activeItem.media_type === 'video' && activeMedia.embedUrl ? (
+                {(activeItem.media_type === 'video' || activeMedia.isInstagram) && activeMedia.embedUrl ? (
                   <iframe
                     src={activeMedia.embedUrl}
                     title={activeItem.title}
                     allow="autoplay; fullscreen"
                     allowFullScreen
-                    className="h-full w-full border-0"
+                    className="h-full w-full border-0 bg-white"
                   />
                 ) : (
                   <img
@@ -437,14 +448,14 @@ export default function GaleriPage() {
                 </div>
 
                 <div className="flex shrink-0 flex-wrap items-center gap-2">
-                  {activeMedia.isDrive && (
+                  {(activeMedia.isDrive || activeMedia.isInstagram) && (
                     <a
                       href={activeItem.drive_url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/20"
                     >
-                      Buka di Drive
+                      {activeMedia.isInstagram ? 'Buka di Instagram' : 'Buka di Drive'}
                       <ExternalLink className="h-3.5 w-3.5" />
                     </a>
                   )}

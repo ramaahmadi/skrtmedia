@@ -245,14 +245,14 @@ export default function AdminGaleriPage() {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <label className="mb-1.5 block text-sm font-semibold text-gray-800 dark:text-gray-200">
-                  Link Google Drive (Foto atau Video) *
+                  Link Google Drive atau Post/Reels Instagram *
                 </label>
                 <input
                   type="url"
                   required
                   value={form.drive_url}
                   onChange={(e) => setForm({ ...form, drive_url: e.target.value })}
-                  placeholder="https://drive.google.com/file/d/xxxx/view?usp=sharing"
+                  placeholder="https://drive.google.com/file/d/... atau https://www.instagram.com/reel/..."
                   className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 focus:border-primary focus:outline-none dark:border-white/15 dark:bg-black/40 dark:text-white"
                 />
                 {form.drive_url.trim() && (
@@ -262,9 +262,14 @@ export default function AdminGaleriPage() {
                         <CheckCircle2 className="h-3.5 w-3.5" />
                         ID Google Drive terdeteksi: <code className="font-mono">{detectedDriveId.slice(0, 12)}…</code>
                       </span>
+                    ) : previewMedia?.isInstagram ? (
+                      <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                        <CheckCircle2 className="h-3.5 w-3.5" />
+                        Link Post/Reels Instagram terdeteksi (siap di-embed)
+                      </span>
                     ) : (
                       <span className="text-amber-600 dark:text-amber-400">
-                        Bukan format link file Google Drive standar (akan dipakai sebagai URL langsung).
+                        Bukan format link Google Drive / Instagram standar (akan dipakai sebagai URL langsung).
                       </span>
                     )}
                   </p>
@@ -399,11 +404,11 @@ export default function AdminGaleriPage() {
             </h3>
             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-slate-100 dark:bg-black/50">
               {previewMedia ? (
-                form.media_type === 'video' && previewMedia.embedUrl ? (
+                (form.media_type === 'video' || previewMedia.isInstagram) && previewMedia.embedUrl ? (
                   <iframe
                     src={previewMedia.embedUrl}
-                    title="Pratinjau Video"
-                    className="h-full w-full border-0"
+                    title="Pratinjau Media"
+                    className="h-full w-full border-0 bg-white"
                     allow="autoplay; fullscreen"
                   />
                 ) : (
