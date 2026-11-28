@@ -133,6 +133,10 @@ export default function HighlightEvent({ title, subtitle, href }: Props) {
                 {displaySubtitle}
               </p>
             )}
+
+            {featuredActivity?.status === 'upcoming' && parsedDate && (
+              <EventCountdown targetDate={parsedDate} timeText={featuredActivity.time} />
+            )}
           </div>
 
           <span className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition-all group-hover:bg-primary/90 sm:self-center sm:text-sm">
@@ -151,6 +155,81 @@ export default function HighlightEvent({ title, subtitle, href }: Props) {
           </span>
         </motion.div>
       </Link>
+    </div>
+  );
+}
+
+function EventCountdown({
+  targetDate,
+  timeText,
+}: {
+  targetDate: Date;
+  timeText?: string;
+}) {
+  const [remaining, setRemaining] = useState<{
+    days: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
+  } | null>(null);
+
+  useEffect(() => {
+    const target = new Date(targetDate.getTime());
+    const timeMatch = timeText ? /(\d{1,2})[:.](\d{2})/.exec(timeText) : null;
+    if (timeMatch) {
+      target.setHours(
+        Math.min(23, Math.max(0, Number(timeMatch[1]))),
+        Math.min(59, Math.max(0, Number(timeMatch[2]))),
+        0,
+        0
+      );
+    } else {
+      target.setHours(8, 0, 0, 0);
+    }
+
+    const update = () => {
+      const diff = target.getTime() - Date.now();
+      if (diff <= 0) {
+        setRemaining(null);
+        return;
+      }
+      const totalSeconds = Math.floor(diff / 1000);
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      setRemaining({ days, hours, minutes, seconds });
+    };
+
+    update();
+    const timer = setInterval(update, 1000);
+    return () => clearInterval(timer);
+  }, [targetDate, timeText]);
+
+  if (!remaining) return null;
+
+  const units = [
+    { label: 'Hari', value: remaining.days },
+    { label: 'Jam', value: remaining.hours },
+    { label: 'Menit', value: remaining.minutes },
+    { label: 'Detik', value: remaining.seconds },
+  ];
+
+  return (
+    <div className="mt-3 flex flex-wrap items-center gap-2" aria-label="Hitung mundur menuju acara">
+      {units.map((unit) => (
+        <div
+          key={unit.label}
+          className="inline-flex items-baseline gap-1 rounded-lg bg-slate-100 px-2.5 py-1 text-xs dark:bg-white/10"
+        >
+          <span className="font-bold tabular-nums text-gray-900 dark:text-white">
+            {String(unit.value).padStart(2, '0')}
+          </span>
+          <span className="text-[11px] text-body-color dark:text-body-color-dark">
+            {unit.label}
+          </span>
+        </div>
+      ))}
     </div>
   );
 }

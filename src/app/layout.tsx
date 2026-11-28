@@ -3,6 +3,7 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import ScrollToTop from "@/components/ScrollToTop";
+import ScrollProgressBar from "@/components/Common/ScrollProgressBar";
 import { usePathname } from "next/navigation";
 import { Inter, Caveat } from "next/font/google";
 import { Providers } from "./providers";
@@ -44,6 +45,7 @@ export default function RootLayout({
 
       <body className={`bg-[#FCFCFC] text-gray-900 dark:bg-black dark:text-white ${inter.className}`}>
         <Providers>
+          {showGlobalChrome && <ScrollProgressBar />}
           {showGlobalChrome && <Header />}
           {children}
           {showGlobalChrome && <Footer />}

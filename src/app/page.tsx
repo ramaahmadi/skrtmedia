@@ -2,6 +2,7 @@ import ScrollUp from "@/components/Common/ScrollUp";
 import Features from "@/components/Features";
 import Hero from "@/components/Hero";
 import CommunityCTA from "@/components/Home/CommunityCTA";
+import CommunityFAQ from "@/components/Home/CommunityFAQ";
 import LatestUpdates from "@/components/Home/LatestUpdates";
 import { Metadata } from "next";
 
@@ -35,6 +36,7 @@ export default function Home() {
       <Hero />
       <LatestUpdates />
       <Features />
+      <CommunityFAQ />
       <CommunityCTA />
     </main>
   );

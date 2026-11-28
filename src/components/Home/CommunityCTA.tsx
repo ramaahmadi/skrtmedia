@@ -1,10 +1,12 @@
 import Link from "next/link";
+import Reveal from "@/components/Common/Reveal";
 
 const CommunityCTA = () => {
   return (
     <section className="bg-white py-20 dark:bg-black md:py-24">
       <div className="container">
-        <div className="relative overflow-hidden rounded-3xl bg-primary px-6 py-12 text-center text-white shadow-xl sm:px-12 sm:py-16">
+        <Reveal>
+          <div className="relative overflow-hidden rounded-3xl bg-primary px-6 py-12 text-center text-white shadow-xl sm:px-12 sm:py-16">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-white/10 blur-3xl"
@@ -40,7 +42,8 @@ const CommunityCTA = () => {
               </Link>
             </div>
           </div>
-        </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   );

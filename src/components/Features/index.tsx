@@ -1,5 +1,6 @@
 import SingleFeature from "./SingleFeature";
 import featuresData from "./featuresData";
+import Reveal from "@/components/Common/Reveal";
 
 const Features = () => {
   return (
@@ -9,7 +10,7 @@ const Features = () => {
     >
       <div className="container">
         {/* Visi Section */}
-        <div className="mx-auto mb-16 max-w-3xl text-center">
+        <Reveal className="mx-auto mb-16 max-w-3xl text-center">
           <p className="mb-3 text-xs font-semibold tracking-[0.2em] text-primary uppercase">
             Arah Gerak Kami
           </p>
@@ -20,16 +21,20 @@ const Features = () => {
             Terwujudnya generasi muda yang berkarakter Qur&apos;ani, solid dalam
             persaudaraan, serta menjadi pelopor dalam karya dan kebaikan.
           </p>
-        </div>
+        </Reveal>
 
         {/* Misi Section */}
         <div className="mx-auto max-w-5xl">
-          <h2 className="mb-10 text-center text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-3xl">
-            Empat Pilar Misi
-          </h2>
+          <Reveal>
+            <h2 className="mb-10 text-center text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-3xl">
+              Empat Pilar Misi
+            </h2>
+          </Reveal>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8">
-            {featuresData.map((feature) => (
-              <SingleFeature key={feature.id} feature={feature} />
+            {featuresData.map((feature, idx) => (
+              <Reveal key={feature.id} delay={idx * 0.08} className="h-full">
+                <SingleFeature feature={feature} />
+              </Reveal>
             ))}
           </div>
         </div>

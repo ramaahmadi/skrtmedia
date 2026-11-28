@@ -1,24 +1,29 @@
 import Link from "next/link";
 import HighlightEvent from "./HilightEvent";
+import HeroGallery, { GalleryPhoto } from "./HeroGallery";
+import QuoteRotator from "./QuoteRotator";
 import React from "react";
-import Image from "next/image";
 
-const portraits = [
+const portraits: GalleryPhoto[] = [
   {
     src: "/images/hero/portrait1.JPG",
     alt: "Dokumentasi kajian SKRT MEDIA 1",
+    caption: "Kajian Rutin & Saling Menguatkan dalam Ketaatan",
   },
   {
     src: "/images/hero/landscape1.JPG",
     alt: "Dokumentasi kebersamaan SKRT MEDIA 2",
+    caption: "Kebersamaan Keluarga Besar SKRT MEDIA",
   },
   {
     src: "/images/hero/portrait2.JPG",
     alt: "Dokumentasi acara SKRT MEDIA 3",
+    caption: "Diskusi Positif & Karya Kebaikan Anak Muda",
   },
   {
     src: "/images/hero/landscape2.JPG",
     alt: "Dokumentasi komunitas SKRT MEDIA 4",
+    caption: "Good Vibes, Good Circle — SKRT MEDIA Indonesia",
   },
 ];
 
@@ -76,35 +81,14 @@ const Hero = React.memo(() => {
             </Link>
           </div>
 
-          {/* Hadith Quote */}
-          <blockquote className="mx-auto mb-10 max-w-2xl rounded-2xl border border-gray-200/80 bg-white/80 px-6 py-4 text-sm leading-relaxed text-gray-700 shadow-xs backdrop-blur-xs dark:border-white/10 dark:bg-white/5 dark:text-gray-300 sm:text-base">
-            &ldquo;Seorang mukmin terhadap mukmin lainnya seperti satu bangunan,
-            sebagiannya menguatkan yang lainnya.&rdquo;
-            <footer className="mt-1.5 text-xs font-medium text-primary dark:text-sky-400">
-              — HR. Bukhari &amp; Muslim
-            </footer>
-          </blockquote>
+          {/* Interactive Hadith Quote Rotator */}
+          <QuoteRotator />
 
-          {/* Upcoming Highlight Event */}
+          {/* Upcoming Highlight Event with Live Countdown */}
           <HighlightEvent />
 
-          {/* Clean Responsive Photo Gallery */}
-          <div className="mt-12 grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-4">
-            {portraits.map((p, idx) => (
-              <div
-                key={idx}
-                className="group relative aspect-square overflow-hidden rounded-2xl bg-gray-100 shadow-md ring-1 ring-black/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-gray-800 dark:ring-white/10"
-              >
-                <Image
-                  src={p.src}
-                  alt={p.alt}
-                  fill
-                  sizes="(max-width: 768px) 50vw, 25vw"
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              </div>
-            ))}
-          </div>
+          {/* Interactive Photo Gallery with Lightbox */}
+          <HeroGallery photos={portraits} />
 
           <div className="mt-6">
             <Link
