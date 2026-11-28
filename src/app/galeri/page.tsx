@@ -405,21 +405,22 @@ export default function GaleriPage() {
                   </a>
                 </div>
 
-                <div className="mx-auto grid max-w-5xl grid-cols-1 items-start gap-6 md:grid-cols-2">
+                <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {filteredItems.map((item, idx) => {
                     const media = resolveDriveMedia(item.drive_url, item.media_type);
                     if (!media.isInstagram || !media.embedUrl) return null;
 
-                    // Match each Reel's native video aspect ratio so Instagram's
-                    // top header (54px) and bottom footer chrome are completely hidden.
-                    const aspectByCode: Record<string, string> = {
+                    // Inner crop matches each video's native aspect ratio inside a
+                    // uniform vertical Reel card (aspect-[4/5]) so Instagram's top
+                    // header (54px) and bottom footer chrome are completely hidden.
+                    const innerAspectByCode: Record<string, string> = {
                       DbTMAbStxxM: 'aspect-[485/273]',
                       DMpZpTXzPVP: 'aspect-[485/263]',
                       DV5WPFRCQpp: 'aspect-[485/367]',
                     };
-                    const aspectClass =
-                      (media.instagramCode && aspectByCode[media.instagramCode]) ||
-                      'aspect-[4/5]';
+                    const innerAspect =
+                      (media.instagramCode && innerAspectByCode[media.instagramCode]) ||
+                      'h-full';
 
                     return (
                       <motion.div
@@ -427,17 +428,19 @@ export default function GaleriPage() {
                         initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.35, delay: Math.min(idx * 0.05, 0.3) }}
-                        className={`relative w-full overflow-hidden rounded-2xl bg-black shadow-md ring-1 ring-black/10 transition-shadow hover:shadow-xl dark:ring-white/10 ${aspectClass}`}
+                        className="relative flex aspect-[4/5] w-full items-center justify-center overflow-hidden rounded-2xl bg-black shadow-md ring-1 ring-black/10 transition-shadow hover:shadow-xl dark:ring-white/10"
                       >
-                        <iframe
-                          src={media.embedUrl}
-                          title={item.title}
-                          loading="lazy"
-                          scrolling="no"
-                          allow="autoplay; encrypted-media; fullscreen"
-                          allowFullScreen
-                          className="absolute -top-[55px] left-0 h-[calc(100%+240px)] w-full border-0"
-                        />
+                        <div className={`relative w-full overflow-hidden ${innerAspect}`}>
+                          <iframe
+                            src={media.embedUrl}
+                            title={item.title}
+                            loading="lazy"
+                            scrolling="no"
+                            allow="autoplay; encrypted-media; fullscreen"
+                            allowFullScreen
+                            className="absolute -top-[55px] left-0 h-[calc(100%+240px)] w-full border-0"
+                          />
+                        </div>
                       </motion.div>
                     );
                   })}
