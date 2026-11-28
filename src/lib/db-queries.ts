@@ -448,12 +448,14 @@ export async function ensureGaleriTable() {
       media_type TEXT NOT NULL DEFAULT 'photo',
       drive_url TEXT NOT NULL,
       album_url TEXT DEFAULT '',
+      event_date DATE,
       is_featured BOOLEAN DEFAULT true,
       sort_order INTEGER DEFAULT 0,
       created_at TIMESTAMP DEFAULT NOW(),
       updated_at TIMESTAMP DEFAULT NOW()
     )
   `);
+  await query(`ALTER TABLE galeri ADD COLUMN IF NOT EXISTS event_date DATE`);
   galeriTableInitialized = true;
 }
 
@@ -461,8 +463,8 @@ export async function getAllGaleri(featuredOnly = false) {
   try {
     await ensureGaleriTable();
     const sql = featuredOnly
-      ? 'SELECT * FROM galeri WHERE is_featured = true ORDER BY sort_order ASC, created_at DESC'
-      : 'SELECT * FROM galeri ORDER BY is_featured DESC, sort_order ASC, created_at DESC';
+      ? 'SELECT * FROM galeri WHERE is_featured = true ORDER BY event_date DESC NULLS LAST, sort_order ASC, created_at DESC'
+      : 'SELECT * FROM galeri ORDER BY is_featured DESC, event_date DESC NULLS LAST, sort_order ASC, created_at DESC';
     const result = await query(sql);
     return result.rows;
   } catch (error) {
@@ -482,14 +484,15 @@ export async function createGaleri(data: any) {
       media_type,
       drive_url,
       album_url,
+      event_date,
       is_featured,
       sort_order,
       created_at,
       updated_at,
     } = data;
     const result = await query(
-      `INSERT INTO galeri (id, title, caption, category, media_type, drive_url, album_url, is_featured, sort_order, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      `INSERT INTO galeri (id, title, caption, category, media_type, drive_url, album_url, event_date, is_featured, sort_order, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
        RETURNING *`,
       [
         id,
@@ -499,6 +502,7 @@ export async function createGaleri(data: any) {
         media_type === 'video' ? 'video' : 'photo',
         drive_url,
         album_url || '',
+        event_date || null,
         Boolean(is_featured),
         Number.isFinite(Number(sort_order)) ? Number(sort_order) : 0,
         created_at,
@@ -522,6 +526,7 @@ export async function updateGaleri(id: string, data: any) {
       media_type,
       drive_url,
       album_url,
+      event_date,
       is_featured,
       sort_order,
       updated_at,
@@ -529,8 +534,8 @@ export async function updateGaleri(id: string, data: any) {
     const result = await query(
       `UPDATE galeri
        SET title = $1, caption = $2, category = $3, media_type = $4, drive_url = $5,
-           album_url = $6, is_featured = $7, sort_order = $8, updated_at = $9
-       WHERE id = $10
+           album_url = $6, event_date = $7, is_featured = $8, sort_order = $9, updated_at = $10
+       WHERE id = $11
        RETURNING *`,
       [
         title,
@@ -539,6 +544,7 @@ export async function updateGaleri(id: string, data: any) {
         media_type === 'video' ? 'video' : 'photo',
         drive_url,
         album_url || '',
+        event_date || null,
         Boolean(is_featured),
         Number.isFinite(Number(sort_order)) ? Number(sort_order) : 0,
         updated_at,

@@ -3,6 +3,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
+  ArrowUpDown,
+  Calendar,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
@@ -72,11 +74,30 @@ function DriveThumbnail({
   );
 }
 
+function formatEventDate(value?: string | null): string | null {
+  if (!value) return null;
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+function getEventTimestamp(item: GalleryItem): number {
+  const raw = item.event_date || item.created_at;
+  if (!raw) return 0;
+  const t = new Date(raw).getTime();
+  return Number.isNaN(t) ? 0 : t;
+}
+
 export default function GaleriPage() {
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [mediaFilter, setMediaFilter] = useState<'all' | 'photo' | 'video'>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('Semua');
+  const [sortBy, setSortBy] = useState<'date_desc' | 'date_asc' | 'curated'>('date_desc');
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   const loadGallery = useCallback(async () => {
@@ -110,7 +131,7 @@ export default function GaleriPage() {
   }, [items]);
 
   const filteredItems = useMemo(() => {
-    return items.filter((item) => {
+    const filtered = items.filter((item) => {
       const matchType =
         mediaFilter === 'all' || item.media_type === mediaFilter;
       const matchCategory =
@@ -118,7 +139,16 @@ export default function GaleriPage() {
         (item.category || 'Dokumentasi') === categoryFilter;
       return matchType && matchCategory;
     });
-  }, [items, mediaFilter, categoryFilter]);
+
+    return [...filtered].sort((a, b) => {
+      if (sortBy === 'curated') {
+        return Number(a.sort_order || 0) - Number(b.sort_order || 0);
+      }
+      const diff = getEventTimestamp(b) - getEventTimestamp(a);
+      if (diff !== 0) return sortBy === 'date_desc' ? diff : -diff;
+      return Number(a.sort_order || 0) - Number(b.sort_order || 0);
+    });
+  }, [items, mediaFilter, categoryFilter, sortBy]);
 
   const photoCount = useMemo(
     () => items.filter((i) => i.media_type === 'photo').length,
@@ -250,31 +280,60 @@ export default function GaleriPage() {
             })}
           </div>
 
-          {/* Category Pills */}
-          {categories.length > 2 && (
-            <div className="flex flex-wrap items-center gap-1.5">
-              {categories.map((cat) => {
-                const selected = categoryFilter === cat;
-                return (
-                  <button
-                    key={cat}
-                    type="button"
-                    onClick={() => {
-                      setCategoryFilter(cat);
-                      setActiveIndex(null);
-                    }}
-                    className={`cursor-pointer rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
-                      selected
-                        ? 'bg-primary/15 text-primary ring-1 ring-primary/30 dark:bg-primary/25 dark:text-sky-300'
-                        : 'text-body-color hover:bg-gray-100 dark:text-body-color-dark dark:hover:bg-white/10'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                );
-              })}
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {/* Category Pills */}
+            {categories.length > 2 && (
+              <div className="flex flex-wrap items-center gap-1.5">
+                {categories.map((cat) => {
+                  const selected = categoryFilter === cat;
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => {
+                        setCategoryFilter(cat);
+                        setActiveIndex(null);
+                      }}
+                      className={`cursor-pointer rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
+                        selected
+                          ? 'bg-primary/15 text-primary ring-1 ring-primary/30 dark:bg-primary/25 dark:text-sky-300'
+                          : 'text-body-color hover:bg-gray-100 dark:text-body-color-dark dark:hover:bg-white/10'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Sort by Activity Date Selector */}
+            <div className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 bg-slate-50 px-3 py-1.5 dark:border-white/10 dark:bg-white/5">
+              <ArrowUpDown className="h-3.5 w-3.5 shrink-0 text-primary dark:text-sky-400" />
+              <label htmlFor="galeri-sort" className="sr-only">
+                Urutkan galeri
+              </label>
+              <select
+                id="galeri-sort"
+                value={sortBy}
+                onChange={(e) => {
+                  setSortBy(e.target.value as 'date_desc' | 'date_asc' | 'curated');
+                  setActiveIndex(null);
+                }}
+                className="cursor-pointer bg-transparent text-xs font-semibold text-gray-800 outline-none dark:text-gray-200"
+              >
+                <option value="date_desc" className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
+                  Tanggal Terbaru
+                </option>
+                <option value="date_asc" className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
+                  Tanggal Terlama
+                </option>
+                <option value="curated" className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
+                  Urutan Kurasi
+                </option>
+              </select>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Gallery Grid */}
@@ -353,6 +412,13 @@ export default function GaleriPage() {
                             {item.category || 'Dokumentasi'}
                           </span>
                         </div>
+
+                        {formatEventDate(item.event_date) && (
+                          <span className="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur-xs">
+                            <Calendar className="h-3 w-3" />
+                            {formatEventDate(item.event_date)}
+                          </span>
+                        )}
 
                         {/* Play button center indicator for videos */}
                         {item.media_type === 'video' && (

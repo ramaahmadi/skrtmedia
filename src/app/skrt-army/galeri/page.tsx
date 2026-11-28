@@ -29,6 +29,7 @@ interface FormState {
   media_type: GalleryMediaType;
   drive_url: string;
   album_url: string;
+  event_date: string;
   is_featured: boolean;
   sort_order: number;
 }
@@ -41,6 +42,7 @@ const EMPTY_FORM: FormState = {
   media_type: 'photo',
   drive_url: '',
   album_url: '',
+  event_date: '',
   is_featured: true,
   sort_order: 0,
 };
@@ -120,6 +122,7 @@ export default function AdminGaleriPage() {
       media_type: item.media_type === 'video' ? 'video' : 'photo',
       drive_url: item.drive_url || '',
       album_url: item.album_url || '',
+      event_date: item.event_date ? String(item.event_date).slice(0, 10) : '',
       is_featured: Boolean(item.is_featured),
       sort_order: Number(item.sort_order || 0),
     });
@@ -338,13 +341,12 @@ export default function AdminGaleriPage() {
 
               <div>
                 <label className="mb-1.5 block text-sm font-semibold text-gray-800 dark:text-gray-200">
-                  Link Folder Album Drive (Opsional)
+                  Tanggal Kegiatan
                 </label>
                 <input
-                  type="url"
-                  value={form.album_url}
-                  onChange={(e) => setForm({ ...form, album_url: e.target.value })}
-                  placeholder="https://drive.google.com/drive/folders/..."
+                  type="date"
+                  value={form.event_date}
+                  onChange={(e) => setForm({ ...form, event_date: e.target.value })}
                   className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 focus:border-primary focus:outline-none dark:border-white/15 dark:bg-black/40 dark:text-white"
                 />
               </div>
@@ -357,6 +359,19 @@ export default function AdminGaleriPage() {
                   type="number"
                   value={form.sort_order}
                   onChange={(e) => setForm({ ...form, sort_order: Number(e.target.value) })}
+                  className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 focus:border-primary focus:outline-none dark:border-white/15 dark:bg-black/40 dark:text-white"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="mb-1.5 block text-sm font-semibold text-gray-800 dark:text-gray-200">
+                  Link Folder Album Drive (Opsional)
+                </label>
+                <input
+                  type="url"
+                  value={form.album_url}
+                  onChange={(e) => setForm({ ...form, album_url: e.target.value })}
+                  placeholder="https://drive.google.com/drive/folders/..."
                   className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 focus:border-primary focus:outline-none dark:border-white/15 dark:bg-black/40 dark:text-white"
                 />
               </div>

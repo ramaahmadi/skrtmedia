@@ -8,6 +8,7 @@ export interface GalleryItem {
   media_type: GalleryMediaType;
   drive_url: string;
   album_url?: string;
+  event_date?: string | null;
   is_featured: boolean;
   sort_order: number;
   created_at?: string;

@@ -52,6 +52,7 @@ export async function POST(request: Request) {
     }
 
     const now = new Date().toISOString();
+    const eventDate = body.event_date ? String(body.event_date).slice(0, 10) : null;
     const result = await createGaleri({
       id: crypto.randomUUID(),
       title,
@@ -60,6 +61,7 @@ export async function POST(request: Request) {
       media_type: body.media_type === 'video' ? 'video' : 'photo',
       drive_url: driveUrl,
       album_url: String(body.album_url || '').trim(),
+      event_date: eventDate,
       is_featured: body.is_featured !== undefined ? Boolean(body.is_featured) : true,
       sort_order: Number(body.sort_order || 0),
       created_at: now,
@@ -90,6 +92,7 @@ export async function PUT(request: Request) {
       );
     }
 
+    const eventDate = body.event_date ? String(body.event_date).slice(0, 10) : null;
     const result = await updateGaleri(id, {
       title,
       caption: String(body.caption || '').trim(),
@@ -97,6 +100,7 @@ export async function PUT(request: Request) {
       media_type: body.media_type === 'video' ? 'video' : 'photo',
       drive_url: driveUrl,
       album_url: String(body.album_url || '').trim(),
+      event_date: eventDate,
       is_featured: Boolean(body.is_featured),
       sort_order: Number(body.sort_order || 0),
       updated_at: new Date().toISOString(),
