@@ -6,7 +6,7 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative z-10 border-t border-gray-200/80 bg-white pt-16 pb-10 dark:border-white/10 dark:bg-gray-dark">
+    <footer className="relative z-10 border-t border-gray-200/80 bg-white pt-16 pb-24 dark:border-white/10 dark:bg-gray-dark lg:pb-10">
       <div className="container">
         <div className="grid grid-cols-1 gap-10 pb-12 md:grid-cols-12">
           {/* Brand Column */}
@@ -72,10 +72,26 @@ const Footer = () => {
               </li>
               <li>
                 <Link
+                  href="/program"
+                  className="text-body-color transition-colors hover:text-primary dark:text-body-color-dark dark:hover:text-white"
+                >
+                  Program Unggulan
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/kegiatan"
                   className="text-body-color transition-colors hover:text-primary dark:text-body-color-dark dark:hover:text-white"
                 >
                   Kegiatan
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/galeri"
+                  className="text-body-color transition-colors hover:text-primary dark:text-body-color-dark dark:hover:text-white"
+                >
+                  Galeri Foto &amp; Video
                 </Link>
               </li>
               <li>
@@ -92,9 +108,25 @@ const Footer = () => {
           {/* Program & Akses Column */}
           <div className="md:col-span-4">
             <h2 className="mb-4 text-sm font-semibold tracking-wider text-black uppercase dark:text-white">
-              Program & Akses
+              Partisipasi &amp; Akses
             </h2>
             <ul className="space-y-3 text-sm">
+              <li>
+                <Link
+                  href="/gabung"
+                  className="text-body-color transition-colors hover:text-primary dark:text-body-color-dark dark:hover:text-white"
+                >
+                  Gabung Komunitas / Relawan
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/donasi"
+                  className="text-body-color transition-colors hover:text-primary dark:text-body-color-dark dark:hover:text-white"
+                >
+                  Donasi &amp; Kolaborasi Kebaikan
+                </Link>
+              </li>
               <li>
                 <Link
                   href="/qurban_registration"

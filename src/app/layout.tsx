@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollProgressBar from "@/components/Common/ScrollProgressBar";
+import MobileBottomNav from "@/components/Common/MobileBottomNav";
 import { usePathname } from "next/navigation";
 import { Inter, Caveat } from "next/font/google";
 import { Providers } from "./providers";
@@ -49,6 +50,7 @@ export default function RootLayout({
           {showGlobalChrome && <Header />}
           {children}
           {showGlobalChrome && <Footer />}
+          {showGlobalChrome && <MobileBottomNav />}
           <ScrollToTop />
         </Providers>
       </body>
