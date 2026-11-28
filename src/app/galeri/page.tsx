@@ -405,44 +405,37 @@ export default function GaleriPage() {
                   </a>
                 </div>
 
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="mx-auto grid max-w-5xl grid-cols-1 items-start gap-6 md:grid-cols-2">
                   {filteredItems.map((item, idx) => {
                     const media = resolveDriveMedia(item.drive_url, item.media_type);
                     if (!media.isInstagram || !media.embedUrl) return null;
+
+                    // Match each Reel's native video aspect ratio so Instagram's
+                    // top header (54px) and bottom footer chrome are completely hidden.
+                    const aspectClass =
+                      media.instagramCode === 'DbTMAbStxxM'
+                        ? 'aspect-video'
+                        : media.instagramCode === 'DV5WPFRCQpp'
+                          ? 'aspect-[4/3]'
+                          : 'aspect-[4/5]';
+
                     return (
                       <motion.div
                         key={item.id}
                         initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.35, delay: Math.min(idx * 0.05, 0.3) }}
-                        className="flex flex-col overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm transition-shadow hover:border-primary/40 hover:shadow-lg dark:border-white/10 dark:bg-gray-dark"
+                        className={`relative w-full overflow-hidden rounded-2xl bg-black shadow-md ring-1 ring-black/10 transition-shadow hover:shadow-xl dark:ring-white/10 ${aspectClass}`}
                       >
-                        <div className="flex items-center justify-between gap-2 border-b border-gray-100 px-4 py-3 dark:border-white/10">
-                          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-semibold text-primary dark:bg-primary/20 dark:text-sky-300">
-                            <Film className="h-3 w-3" />
-                            {item.category || 'Reels'}
-                          </span>
-                          <a
-                            href={item.drive_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-xs font-semibold text-gray-600 transition hover:text-primary dark:text-gray-300 dark:hover:text-sky-400"
-                          >
-                            Buka di Instagram
-                            <ExternalLink className="h-3 w-3" />
-                          </a>
-                        </div>
-
-                        <div className="relative h-[500px] w-full bg-white dark:bg-black">
-                          <iframe
-                            src={media.embedUrl}
-                            title={item.title}
-                            loading="lazy"
-                            allow="autoplay; encrypted-media; fullscreen"
-                            allowFullScreen
-                            className="h-full w-full border-0"
-                          />
-                        </div>
+                        <iframe
+                          src={media.embedUrl}
+                          title={item.title}
+                          loading="lazy"
+                          scrolling="no"
+                          allow="autoplay; encrypted-media; fullscreen"
+                          allowFullScreen
+                          className="absolute -top-[55px] left-0 h-[calc(100%+240px)] w-full border-0"
+                        />
                       </motion.div>
                     );
                   })}
