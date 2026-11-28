@@ -29,6 +29,19 @@ const Header = () => {
 
   const pathname = usePathname();
 
+  useEffect(() => {
+    setNavbarOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!navbarOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setNavbarOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [navbarOpen]);
+
   return (
     <header
       className={`header top-0 left-0 z-40 flex w-full items-center transition-all duration-300 ${
@@ -37,13 +50,22 @@ const Header = () => {
           : "absolute bg-transparent"
       }`}
     >
+      {/* Mobile backdrop overlay */}
+      {navbarOpen && (
+        <div
+          aria-hidden="true"
+          onClick={() => setNavbarOpen(false)}
+          className="fixed inset-0 z-20 bg-black/30 backdrop-blur-[2px] lg:hidden"
+        />
+      )}
+
       <div className="container">
         <div className="relative -mx-4 flex items-center justify-between">
-          <div className="w-48 max-w-full px-4 sm:w-56 xl:mr-10">
+          <div className="w-36 max-w-full px-4 sm:w-48 lg:w-52 xl:mr-10">
             <Link
               href="/"
               className={`header-logo block w-full transition-all duration-300 ${
-                sticky ? "py-3.5 lg:py-2.5" : "py-6"
+                sticky ? "py-3 lg:py-2.5" : "py-5 sm:py-6"
               }`}
             >
               <Image
@@ -64,20 +86,20 @@ const Header = () => {
                 id="navbarToggler"
                 aria-label="Mobile Menu"
                 aria-expanded={navbarOpen}
-                className="ring-primary absolute top-1/2 right-4 block translate-y-[-50%] rounded-lg px-3 py-[6px] focus:ring-2 lg:hidden"
+                className="ring-primary absolute top-1/2 right-4 z-40 block translate-y-[-50%] rounded-xl p-2.5 transition-colors hover:bg-gray-100 focus:ring-2 dark:hover:bg-white/10 lg:hidden"
               >
                 <span
-                  className={`relative my-1.5 block h-0.5 w-[26px] bg-black transition-all duration-300 dark:bg-white ${
+                  className={`relative my-1.5 block h-0.5 w-[24px] rounded-full bg-black transition-all duration-300 dark:bg-white ${
                     navbarOpen ? "top-[7px] rotate-45" : ""
                   }`}
                 />
                 <span
-                  className={`relative my-1.5 block h-0.5 w-[26px] bg-black transition-all duration-300 dark:bg-white ${
+                  className={`relative my-1.5 block h-0.5 w-[24px] rounded-full bg-black transition-all duration-300 dark:bg-white ${
                     navbarOpen ? "opacity-0" : ""
                   }`}
                 />
                 <span
-                  className={`relative my-1.5 block h-0.5 w-[26px] bg-black transition-all duration-300 dark:bg-white ${
+                  className={`relative my-1.5 block h-0.5 w-[24px] rounded-full bg-black transition-all duration-300 dark:bg-white ${
                     navbarOpen ? "top-[-8px] -rotate-45" : ""
                   }`}
                 />
@@ -86,13 +108,13 @@ const Header = () => {
               <nav
                 id="navbarCollapse"
                 aria-label="Navigasi Utama"
-                className={`navbar absolute right-0 z-30 w-[260px] rounded-2xl border border-gray-200/80 bg-white px-6 py-4 shadow-xl transition-all duration-300 dark:border-white/10 dark:bg-dark lg:visible lg:static lg:w-auto lg:rounded-none lg:border-none lg:!bg-transparent lg:p-0 lg:opacity-100 lg:shadow-none ${
+                className={`navbar absolute right-4 z-30 w-[calc(100vw-2rem)] max-w-[300px] rounded-2xl border border-gray-200/80 bg-white/95 p-4 shadow-2xl backdrop-blur-md transition-all duration-300 dark:border-white/10 dark:bg-gray-dark/95 lg:visible lg:static lg:w-auto lg:max-w-none lg:rounded-none lg:border-none lg:!bg-transparent lg:p-0 lg:opacity-100 lg:shadow-none lg:backdrop-blur-none ${
                   navbarOpen
-                    ? "visible top-full opacity-100"
+                    ? "visible top-full mt-2 opacity-100"
                     : "invisible top-[115%] opacity-0"
                 }`}
               >
-                <ul className="block lg:flex lg:items-center lg:justify-center lg:space-x-9">
+                <ul className="space-y-1 lg:flex lg:items-center lg:justify-center lg:space-y-0 lg:space-x-8">
                   {menuData.map((menuItem, index) => {
                     const isActive =
                       menuItem.path === "/"
@@ -107,10 +129,10 @@ const Header = () => {
                           <Link
                             href={menuItem.path}
                             onClick={() => setNavbarOpen(false)}
-                            className={`relative flex py-2.5 text-sm font-medium transition-colors lg:inline-flex lg:px-0 lg:py-5 ${
+                            className={`relative flex items-center rounded-xl px-4 py-3 text-sm font-medium transition-colors lg:inline-flex lg:rounded-none lg:bg-transparent lg:px-0 lg:py-5 ${
                               isActive
-                                ? "text-primary dark:text-white"
-                                : "text-dark/80 hover:text-primary dark:text-white/75 dark:hover:text-white"
+                                ? "bg-primary/10 font-semibold text-primary dark:bg-primary/20 dark:text-sky-300 lg:bg-transparent lg:dark:bg-transparent lg:dark:text-white"
+                                : "text-dark/80 hover:bg-gray-100 hover:text-primary dark:text-white/80 dark:hover:bg-white/10 dark:hover:text-white lg:hover:bg-transparent lg:dark:hover:bg-transparent"
                             }`}
                           >
                             {menuItem.title}

@@ -30,16 +30,15 @@ export default function ScrollToTop() {
   }, []);
 
   return (
-    <div className="fixed right-4 bottom-20 z-99 lg:right-8 lg:bottom-8">
+    <div className="fixed right-8 bottom-8 z-99">
       {isVisible && (
-        <button
-          type="button"
+        <div
           onClick={scrollToTop}
-          aria-label="Kembali ke atas"
-          className="bg-primary/90 hover:bg-primary flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl text-white shadow-md transition duration-300 ease-in-out"
+          aria-label="scroll to top"
+          className="bg-primary/80 hover:shadow-signUp flex h-10 w-10 cursor-pointer items-center justify-center rounded-md text-white shadow-md transition duration-300 ease-in-out"
         >
           <span className="mt-[6px] h-3 w-3 rotate-45 border-t border-l border-white"></span>
-        </button>
+        </div>
       )}
     </div>
   );

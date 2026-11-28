@@ -50,14 +50,14 @@ const AboutSectionOne = () => {
             </div>
 
             <div className="w-full px-4 lg:w-1/2">
-              <div className="relative mx-auto aspect-25/24 max-w-[500px] lg:mr-0">
+              <div className="group relative mx-auto aspect-25/24 max-w-[500px] overflow-hidden rounded-2xl shadow-md ring-1 ring-black/5 dark:ring-white/10 lg:mr-0">
                 <Image
                   src="/images/hero/portrait1.JPG"
                   alt="kegiatan-skrtmedia"
                   fill
                   unoptimized
                   sizes="(max-width: 1024px) 100vw, 500px"
-                  className="mx-auto max-w-full rounded-lg object-cover drop-shadow-three dark:drop-shadow-none lg:mr-0"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
             </div>

@@ -145,15 +145,25 @@ export default function KegiatanPage() {
             </svg>
             <input
               id="search-kegiatan"
-              type="search"
+              type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari kegiatan berdasarkan judul, deskripsi, atau lokasi..."
-              className="w-full rounded-2xl border border-gray-200 bg-white py-3.5 pr-4 pl-12 text-sm text-gray-900 shadow-xs outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 dark:border-white/10 dark:bg-gray-dark dark:text-white dark:placeholder-gray-400 sm:text-base"
+              className="w-full rounded-2xl border border-gray-200 bg-white py-3.5 pr-11 pl-12 text-sm text-gray-900 shadow-xs outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 dark:border-white/10 dark:bg-gray-dark dark:text-white dark:placeholder-gray-400 sm:text-base"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                aria-label="Hapus pencarian"
+                className="absolute top-1/2 right-3 flex h-7 w-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-gray-100 text-gray-500 transition hover:bg-gray-200 hover:text-gray-800 dark:bg-white/10 dark:text-gray-300 dark:hover:bg-white/20"
+              >
+                ×
+              </button>
+            )}
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-2">
+          <div className="flex flex-nowrap items-center justify-start gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:justify-center sm:overflow-visible sm:pb-0">
             {filterTabs.map((tab) => {
               const active = statusFilter === tab.key;
               return (
@@ -161,7 +171,7 @@ export default function KegiatanPage() {
                   key={tab.key}
                   type="button"
                   onClick={() => setStatusFilter(tab.key)}
-                  className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all ${
+                  className={`inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all active:scale-95 ${
                     active
                       ? 'bg-primary text-white shadow-xs'
                       : 'border border-gray-200 bg-white text-gray-700 hover:border-primary/40 hover:text-primary dark:border-white/10 dark:bg-gray-dark dark:text-gray-300'
@@ -181,6 +191,11 @@ export default function KegiatanPage() {
               );
             })}
           </div>
+          {(searchQuery || statusFilter !== 'all') && !loading && (
+            <p className="text-center text-xs text-body-color dark:text-body-color-dark">
+              Menampilkan <strong>{filteredActivities.length}</strong> kegiatan
+            </p>
+          )}
         </div>
 
         {/* Loading Skeleton */}

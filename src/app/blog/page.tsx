@@ -107,13 +107,28 @@ const Blog = () => {
             </svg>
             <input
               id="search-artikel"
-              type="search"
+              type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari artikel berdasarkan judul atau penulis..."
-              className="w-full rounded-2xl border border-gray-200 bg-white py-3.5 pr-4 pl-12 text-sm text-gray-900 shadow-xs outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 dark:border-white/10 dark:bg-gray-dark dark:text-white dark:placeholder-gray-400 sm:text-base"
+              className="w-full rounded-2xl border border-gray-200 bg-white py-3.5 pr-11 pl-12 text-sm text-gray-900 shadow-xs outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 dark:border-white/10 dark:bg-gray-dark dark:text-white dark:placeholder-gray-400 sm:text-base"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                aria-label="Hapus pencarian"
+                className="absolute top-1/2 right-3 flex h-7 w-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-gray-100 text-gray-500 transition hover:bg-gray-200 hover:text-gray-800 dark:bg-white/10 dark:text-gray-300 dark:hover:bg-white/20"
+              >
+                ×
+              </button>
+            )}
           </div>
+          {searchQuery && !loading && (
+            <p className="mt-2.5 text-center text-xs text-body-color dark:text-body-color-dark">
+              Menampilkan <strong>{filteredArticles.length}</strong> artikel untuk &ldquo;{searchQuery}&rdquo;
+            </p>
+          )}
         </div>
 
         {loading ? (
