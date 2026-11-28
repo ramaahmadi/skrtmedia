@@ -478,13 +478,21 @@ export default function GaleriPage() {
             >
               {/* Media Viewport */}
               <div className="relative aspect-[16/10] w-full bg-black">
-                {(activeItem.media_type === 'video' || activeMedia.isInstagram) && activeMedia.embedUrl ? (
+                {activeMedia.isDirectVideo ? (
+                  <video
+                    src={activeMedia.originalUrl}
+                    controls
+                    autoPlay
+                    playsInline
+                    className="h-full w-full object-contain"
+                  />
+                ) : (activeItem.media_type === 'video' || activeMedia.isInstagram || activeMedia.isYouTube) && activeMedia.embedUrl ? (
                   <iframe
                     src={activeMedia.embedUrl}
                     title={activeItem.title}
-                    allow="autoplay; fullscreen"
+                    allow="autoplay; encrypted-media; fullscreen"
                     allowFullScreen
-                    className="h-full w-full border-0 bg-white"
+                    className={`h-full w-full border-0 ${activeMedia.isInstagram ? 'bg-white' : 'bg-black'}`}
                   />
                 ) : (
                   <img

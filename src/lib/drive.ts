@@ -18,6 +18,8 @@ export interface ResolvedDriveMedia {
   fileId: string | null;
   isDrive: boolean;
   isInstagram: boolean;
+  isYouTube: boolean;
+  isDirectVideo: boolean;
   instagramCode: string | null;
   thumbnailUrl: string;
   fullImageUrl: string;
@@ -70,6 +72,25 @@ export function extractInstagramPost(
   };
 }
 
+/**
+ * Extracts a YouTube or YouTube Shorts video ID from standard URLs.
+ */
+export function extractYouTubeId(rawUrl: string): string | null {
+  if (!rawUrl || typeof rawUrl !== 'string') return null;
+  const url = rawUrl.trim();
+  const patterns = [
+    /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/watch\?[^#]*v=([a-zA-Z0-9_-]{11})/,
+    /youtu\.be\/([a-zA-Z0-9_-]{11})/,
+    /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
+  ];
+  for (const pattern of patterns) {
+    const match = pattern.exec(url);
+    if (match?.[1]) return match[1];
+  }
+  return null;
+}
+
 export function isGoogleDriveFolderUrl(rawUrl: string): boolean {
   if (!rawUrl) return false;
   return /drive\.google\.com\/drive\/(u\/\d+\/)?folders\/[a-zA-Z0-9_-]+/.test(rawUrl);
@@ -87,6 +108,8 @@ export function resolveDriveMedia(
       fileId,
       isDrive: true,
       isInstagram: false,
+      isYouTube: false,
+      isDirectVideo: false,
       instagramCode: null,
       thumbnailUrl: `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200`,
       fullImageUrl:
@@ -99,12 +122,31 @@ export function resolveDriveMedia(
     };
   }
 
+  const ytId = extractYouTubeId(cleanUrl);
+  if (ytId) {
+    return {
+      fileId: ytId,
+      isDrive: false,
+      isInstagram: false,
+      isYouTube: true,
+      isDirectVideo: false,
+      instagramCode: null,
+      thumbnailUrl: `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`,
+      fullImageUrl: `https://i.ytimg.com/vi/${ytId}/maxresdefault.jpg`,
+      fallbackImageUrl: `https://i.ytimg.com/vi/${ytId}/hqdefault.jpg`,
+      embedUrl: `https://www.youtube.com/embed/${ytId}?rel=0`,
+      originalUrl: cleanUrl,
+    };
+  }
+
   const ig = extractInstagramPost(cleanUrl);
   if (ig) {
     return {
       fileId: null,
       isDrive: false,
       isInstagram: true,
+      isYouTube: false,
+      isDirectVideo: false,
       instagramCode: ig.code,
       thumbnailUrl: '',
       fullImageUrl: '',
@@ -114,15 +156,20 @@ export function resolveDriveMedia(
     };
   }
 
+  const isDirectVideo =
+    mediaType === 'video' && /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(cleanUrl);
+
   return {
     fileId: null,
     isDrive: false,
     isInstagram: false,
+    isYouTube: false,
+    isDirectVideo,
     instagramCode: null,
-    thumbnailUrl: cleanUrl,
+    thumbnailUrl: isDirectVideo ? '' : cleanUrl,
     fullImageUrl: cleanUrl,
     fallbackImageUrl: null,
-    embedUrl: mediaType === 'video' ? cleanUrl : null,
+    embedUrl: mediaType === 'video' && !isDirectVideo ? cleanUrl : null,
     originalUrl: cleanUrl,
   };
 }
