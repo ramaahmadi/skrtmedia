@@ -308,69 +308,147 @@ export default function GaleriPage() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredItems.map((item, idx) => (
-              <motion.button
-                key={item.id}
-                type="button"
-                onClick={() => setActiveIndex(idx)}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.35, delay: Math.min(idx * 0.05, 0.3) }}
-                whileHover={{ y: -4 }}
-                aria-label={`Buka ${item.media_type === 'video' ? 'video' : 'foto'}: ${item.title}`}
-                className="group relative block w-full cursor-pointer overflow-hidden rounded-2xl border border-gray-200/80 bg-white text-left shadow-sm transition-shadow duration-300 hover:border-primary/40 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:border-white/10 dark:bg-gray-dark"
-              >
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 dark:bg-gray-900">
-                  <DriveThumbnail
-                    item={item}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
+          <div className="space-y-12">
+            {/* Standard Photo & Drive Video Grid (4:3) */}
+            {filteredItems.some((item) => !resolveDriveMedia(item.drive_url, item.media_type).isInstagram) && (
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredItems.map((item, idx) => {
+                  const media = resolveDriveMedia(item.drive_url, item.media_type);
+                  if (media.isInstagram) return null;
+                  return (
+                    <motion.button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setActiveIndex(idx)}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.35, delay: Math.min(idx * 0.05, 0.3) }}
+                      whileHover={{ y: -4 }}
+                      aria-label={`Buka ${item.media_type === 'video' ? 'video' : 'foto'}: ${item.title}`}
+                      className="group relative block w-full cursor-pointer overflow-hidden rounded-2xl border border-gray-200/80 bg-white text-left shadow-sm transition-shadow duration-300 hover:border-primary/40 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:border-white/10 dark:bg-gray-dark"
+                    >
+                      <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 dark:bg-gray-900">
+                        <DriveThumbnail
+                          item={item}
+                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
 
-                  {/* Subtle gradient overlay */}
-                  <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent opacity-80 transition-opacity group-hover:opacity-95" />
+                        {/* Subtle gradient overlay */}
+                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent opacity-80 transition-opacity group-hover:opacity-95" />
 
-                  {/* Media Type Badge */}
-                  <div className="absolute top-3 left-3 flex items-center gap-1.5">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-xs">
-                      {item.media_type === 'video' ? (
-                        <>
-                          <Film className="h-3 w-3" /> Video
-                        </>
-                      ) : (
-                        <>
-                          <ImageIcon className="h-3 w-3" /> Foto
-                        </>
-                      )}
-                    </span>
-                    <span className="rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-gray-800 backdrop-blur-xs dark:bg-gray-900/80 dark:text-gray-100">
-                      {item.category || 'Dokumentasi'}
-                    </span>
-                  </div>
+                        {/* Media Type Badge */}
+                        <div className="absolute top-3 left-3 flex items-center gap-1.5">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-xs">
+                            {item.media_type === 'video' ? (
+                              <>
+                                <Film className="h-3 w-3" /> Video
+                              </>
+                            ) : (
+                              <>
+                                <ImageIcon className="h-3 w-3" /> Foto
+                              </>
+                            )}
+                          </span>
+                          <span className="rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-gray-800 backdrop-blur-xs dark:bg-gray-900/80 dark:text-gray-100">
+                            {item.category || 'Dokumentasi'}
+                          </span>
+                        </div>
 
-                  {/* Play button center indicator for videos */}
-                  {item.media_type === 'video' && (
-                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                      <span className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/90 text-white shadow-lg ring-4 ring-white/25 transition-transform duration-300 group-hover:scale-110">
-                        <Play className="ml-0.5 h-6 w-6 fill-current" />
-                      </span>
-                    </div>
-                  )}
+                        {/* Play button center indicator for videos */}
+                        {item.media_type === 'video' && (
+                          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/90 text-white shadow-lg ring-4 ring-white/25 transition-transform duration-300 group-hover:scale-110">
+                              <Play className="ml-0.5 h-6 w-6 fill-current" />
+                            </span>
+                          </div>
+                        )}
 
-                  {/* Bottom Title */}
-                  <div className="absolute right-4 bottom-3.5 left-4">
-                    <h2 className="line-clamp-1 text-base font-bold text-white drop-shadow-xs">
-                      {item.title}
+                        {/* Bottom Title */}
+                        <div className="absolute right-4 bottom-3.5 left-4">
+                          <h2 className="line-clamp-1 text-base font-bold text-white drop-shadow-xs">
+                            {item.title}
+                          </h2>
+                          {item.caption && (
+                            <p className="mt-0.5 line-clamp-1 text-xs text-gray-200">
+                              {item.caption}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Instagram Reels Section (Native Vertical Embed Cards) */}
+            {filteredItems.some((item) => resolveDriveMedia(item.drive_url, item.media_type).isInstagram) && (
+              <div>
+                <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h2 className="flex items-center gap-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-2xl">
+                      <Instagram className="h-5 w-5 text-primary dark:text-sky-400" />
+                      Video Reels @skrtmedia.id
                     </h2>
-                    {item.caption && (
-                      <p className="mt-0.5 line-clamp-1 text-xs text-gray-200">
-                        {item.caption}
-                      </p>
-                    )}
+                    <p className="mt-0.5 text-sm text-body-color dark:text-body-color-dark">
+                      Putar langsung cuplikan reels pilihan dari Instagram resmi SKRT MEDIA.
+                    </p>
                   </div>
+                  <a
+                    href="https://www.instagram.com/skrtmedia.id/reels/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline dark:text-sky-400"
+                  >
+                    Lihat semua Reels
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
                 </div>
-              </motion.button>
-            ))}
+
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {filteredItems.map((item, idx) => {
+                    const media = resolveDriveMedia(item.drive_url, item.media_type);
+                    if (!media.isInstagram || !media.embedUrl) return null;
+                    return (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.35, delay: Math.min(idx * 0.05, 0.3) }}
+                        className="flex flex-col overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm transition-shadow hover:border-primary/40 hover:shadow-lg dark:border-white/10 dark:bg-gray-dark"
+                      >
+                        <div className="flex items-center justify-between gap-2 border-b border-gray-100 px-4 py-3 dark:border-white/10">
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-semibold text-primary dark:bg-primary/20 dark:text-sky-300">
+                            <Film className="h-3 w-3" />
+                            {item.category || 'Reels'}
+                          </span>
+                          <a
+                            href={item.drive_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-xs font-semibold text-gray-600 transition hover:text-primary dark:text-gray-300 dark:hover:text-sky-400"
+                          >
+                            Buka di Instagram
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        </div>
+
+                        <div className="relative h-[500px] w-full bg-white dark:bg-black">
+                          <iframe
+                            src={media.embedUrl}
+                            title={item.title}
+                            loading="lazy"
+                            allow="autoplay; encrypted-media; fullscreen"
+                            allowFullScreen
+                            className="h-full w-full border-0"
+                          />
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -467,12 +467,22 @@ export default function AdminGaleriPage() {
                     }`}
                   >
                     <div className="relative aspect-[16/10] w-full bg-slate-100 dark:bg-gray-900">
-                      <img
-                        src={media.thumbnailUrl}
-                        alt={item.title}
-                        referrerPolicy="no-referrer"
-                        className="h-full w-full object-cover"
-                      />
+                      {media.isInstagram ? (
+                        <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-gray-800 p-4 text-center text-white">
+                          <Film className="mb-1.5 h-7 w-7 text-sky-400" />
+                          <span className="text-xs font-semibold">Instagram Reels</span>
+                          <span className="mt-0.5 font-mono text-[11px] text-gray-300">
+                            {media.instagramCode}
+                          </span>
+                        </div>
+                      ) : (
+                        <img
+                          src={media.thumbnailUrl}
+                          alt={item.title}
+                          referrerPolicy="no-referrer"
+                          className="h-full w-full object-cover"
+                        />
+                      )}
                       <span className="absolute top-2 left-2 rounded-full bg-black/70 px-2.5 py-0.5 text-[11px] font-semibold text-white">
                         {item.media_type === 'video' ? 'Video' : 'Foto'} • {item.category}
                       </span>
