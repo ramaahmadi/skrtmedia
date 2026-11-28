@@ -14,6 +14,8 @@ const AboutSectionTwo = () => {
                 src="/images/hero/landscape1.JPG"
                 alt="kegiatan-skrtmedia"
                 fill
+                unoptimized
+                sizes="(max-width: 1024px) 100vw, 500px"
                 className="rounded-lg object-cover drop-shadow-three dark:drop-shadow-none"
               />
             </div>

@@ -60,12 +60,13 @@ export default function HeroGallery({ photos }: HeroGalleryProps) {
             transition={{ duration: 0.4, delay: 0.08 * idx }}
             whileHover={{ y: -4 }}
             aria-label={`Perbesar foto: ${photo.caption}`}
-            className="group relative aspect-square cursor-pointer overflow-hidden rounded-2xl bg-gray-100 text-left shadow-md ring-1 ring-black/5 transition-shadow duration-300 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:bg-gray-800 dark:ring-white/10"
+            className="group relative block aspect-square w-full cursor-pointer overflow-hidden rounded-2xl bg-gray-100 text-left shadow-md ring-1 ring-black/5 transition-shadow duration-300 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:bg-gray-800 dark:ring-white/10"
           >
             <Image
               src={photo.src}
               alt={photo.alt}
               fill
+              unoptimized
               sizes="(max-width: 768px) 50vw, 25vw"
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
@@ -110,6 +111,7 @@ export default function HeroGallery({ photos }: HeroGalleryProps) {
                   src={photos[activeIndex].src}
                   alt={photos[activeIndex].alt}
                   fill
+                  unoptimized
                   sizes="(max-width: 1024px) 100vw, 900px"
                   className="object-contain"
                   priority
