@@ -1,6 +1,6 @@
 # SKRT Media
 
-Website resmi dan portal informasi **SKRT (Satuan Komunitas Rayon Tiga)** untuk publikasi kegiatan, artikel & berita komunitas, pendaftaran acara, serta dashboard internal pengurus (**SKRT Army**).
+Website resmi dan portal informasi **SKRT (Sempat Kelam, Resah, Tinggalkan)** — komunitas generasi muda Muslim (*Good Vibes, Good Circle*) yang menjadi ruang tumbuh bersama melalui kajian rutin, publikasi kegiatan, artikel & berita dakwah, pendaftaran acara, serta dashboard internal pengurus (**SKRT Army**).
 
 ## Fitur Utama
 
