@@ -412,12 +412,14 @@ export default function GaleriPage() {
 
                     // Match each Reel's native video aspect ratio so Instagram's
                     // top header (54px) and bottom footer chrome are completely hidden.
+                    const aspectByCode: Record<string, string> = {
+                      DbTMAbStxxM: 'aspect-[485/273]',
+                      DMpZpTXzPVP: 'aspect-[485/263]',
+                      DV5WPFRCQpp: 'aspect-[485/367]',
+                    };
                     const aspectClass =
-                      media.instagramCode === 'DbTMAbStxxM'
-                        ? 'aspect-video'
-                        : media.instagramCode === 'DV5WPFRCQpp'
-                          ? 'aspect-[4/3]'
-                          : 'aspect-[4/5]';
+                      (media.instagramCode && aspectByCode[media.instagramCode]) ||
+                      'aspect-[4/5]';
 
                     return (
                       <motion.div
