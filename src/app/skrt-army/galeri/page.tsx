@@ -26,6 +26,7 @@ interface FormState {
   title: string;
   caption: string;
   category: string;
+  album_name: string;
   media_type: GalleryMediaType;
   drive_url: string;
   album_url: string;
@@ -39,6 +40,7 @@ const EMPTY_FORM: FormState = {
   title: '',
   caption: '',
   category: 'Kajian',
+  album_name: '',
   media_type: 'photo',
   drive_url: '',
   album_url: '',
@@ -119,6 +121,7 @@ export default function AdminGaleriPage() {
       title: item.title || '',
       caption: item.caption || '',
       category: item.category || 'Dokumentasi',
+      album_name: item.album_name || '',
       media_type: item.media_type === 'video' ? 'video' : 'photo',
       drive_url: item.drive_url || '',
       album_url: item.album_url || '',
@@ -322,6 +325,19 @@ export default function AdminGaleriPage() {
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   placeholder="Contoh: Kajian Bulanan SKRT — Ramadan 2026"
+                  className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 focus:border-primary focus:outline-none dark:border-white/15 dark:bg-black/40 dark:text-white"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="mb-1.5 block text-sm font-semibold text-gray-800 dark:text-gray-200">
+                  Nama Album Kegiatan
+                </label>
+                <input
+                  type="text"
+                  value={form.album_name}
+                  onChange={(e) => setForm({ ...form, album_name: e.target.value })}
+                  placeholder="Contoh: Yatim Care Masjid Al-Istiqomah / Qurban SKRT 2025"
                   className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 focus:border-primary focus:outline-none dark:border-white/15 dark:bg-black/40 dark:text-white"
                 />
               </div>

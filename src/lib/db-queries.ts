@@ -445,6 +445,7 @@ export async function ensureGaleriTable() {
       title TEXT NOT NULL,
       caption TEXT DEFAULT '',
       category TEXT DEFAULT 'Dokumentasi',
+      album_name TEXT DEFAULT '',
       media_type TEXT NOT NULL DEFAULT 'photo',
       drive_url TEXT NOT NULL,
       album_url TEXT DEFAULT '',
@@ -456,6 +457,7 @@ export async function ensureGaleriTable() {
     )
   `);
   await query(`ALTER TABLE galeri ADD COLUMN IF NOT EXISTS event_date DATE`);
+  await query(`ALTER TABLE galeri ADD COLUMN IF NOT EXISTS album_name TEXT DEFAULT ''`);
   galeriTableInitialized = true;
 }
 
@@ -481,6 +483,7 @@ export async function createGaleri(data: any) {
       title,
       caption,
       category,
+      album_name,
       media_type,
       drive_url,
       album_url,
@@ -491,14 +494,15 @@ export async function createGaleri(data: any) {
       updated_at,
     } = data;
     const result = await query(
-      `INSERT INTO galeri (id, title, caption, category, media_type, drive_url, album_url, event_date, is_featured, sort_order, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      `INSERT INTO galeri (id, title, caption, category, album_name, media_type, drive_url, album_url, event_date, is_featured, sort_order, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
        RETURNING *`,
       [
         id,
         title,
         caption || '',
         category || 'Dokumentasi',
+        album_name || '',
         media_type === 'video' ? 'video' : 'photo',
         drive_url,
         album_url || '',
@@ -523,6 +527,7 @@ export async function updateGaleri(id: string, data: any) {
       title,
       caption,
       category,
+      album_name,
       media_type,
       drive_url,
       album_url,
@@ -533,14 +538,15 @@ export async function updateGaleri(id: string, data: any) {
     } = data;
     const result = await query(
       `UPDATE galeri
-       SET title = $1, caption = $2, category = $3, media_type = $4, drive_url = $5,
-           album_url = $6, event_date = $7, is_featured = $8, sort_order = $9, updated_at = $10
-       WHERE id = $11
+       SET title = $1, caption = $2, category = $3, album_name = $4, media_type = $5, drive_url = $6,
+           album_url = $7, event_date = $8, is_featured = $9, sort_order = $10, updated_at = $11
+       WHERE id = $12
        RETURNING *`,
       [
         title,
         caption || '',
         category || 'Dokumentasi',
+        album_name || '',
         media_type === 'video' ? 'video' : 'photo',
         drive_url,
         album_url || '',

@@ -5,6 +5,7 @@ export interface GalleryItem {
   title: string;
   caption?: string;
   category: string;
+  album_name?: string;
   media_type: GalleryMediaType;
   drive_url: string;
   album_url?: string;
